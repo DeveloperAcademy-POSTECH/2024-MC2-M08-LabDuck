@@ -3,4 +3,5 @@ Lab Dr.? Lab Duck! 🦆
 
 # 인원 구성
 
-* [Mosu](https://github.com/chongin12) 
+* [Mosu](https://github.com/chongin12)
+* [Spark](https://github.com/swpark95) 
