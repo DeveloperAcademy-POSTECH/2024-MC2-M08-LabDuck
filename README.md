@@ -7,3 +7,4 @@ Lab Dr.? Lab Duck! 🦆
 * [Tanya](https://github.com/seoyounghan) 
 * [Spark](https://github.com/swpark95) 
 * [Pika](https://github.com/hajizn-pi) 
+* [Hera](https://github.com/heracloud)
