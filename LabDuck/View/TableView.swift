@@ -16,9 +16,8 @@ struct TableView: View {
             Table(of: KPNode.self, selection: $selection) {
                 TableColumn("색") { node in
                     Circle()
-                        .frame(width: 20, height: 20)
                         .foregroundColor(node.colorTheme.backgroundColor)
-                        
+                    
                 }
                 .width(20)
                 
@@ -51,8 +50,7 @@ struct TableView: View {
             }
         }
         .tableStyle(.inset(alternatesRowBackgrounds: false))
-                   .scrollContentBackground(.hidden)
-                   .background(RadialGradient(colors:[.white,.white], center:UnitPoint(x:1,y:1), startRadius: 0.0, endRadius:20))
+        .scrollContentBackground(.hidden)
     }
 }
 
