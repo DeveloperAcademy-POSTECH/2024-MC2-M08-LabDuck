@@ -7,16 +7,28 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6F050B1D2BF1AAA3003D54BD /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F050B1C2BF1AAA3003D54BD /* MainView.swift */; };
+		6F050B202BF1AB60003D54BD /* CGSize+Operators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F050B1F2BF1AB60003D54BD /* CGSize+Operators.swift */; };
+		6F050B222BF1AC08003D54BD /* GraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F050B212BF1AC08003D54BD /* GraphView.swift */; };
+		6F050B242BF1AC30003D54BD /* KPNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F050B232BF1AC30003D54BD /* KPNode.swift */; };
+		6F050B262BF1AC6B003D54BD /* View+draggable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F050B252BF1AC6B003D54BD /* View+draggable.swift */; };
+		6F050B282BF1ACA0003D54BD /* DraggableViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F050B272BF1ACA0003D54BD /* DraggableViewModifier.swift */; };
+		6F050B2A2BF1AD8A003D54BD /* NodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F050B292BF1AD8A003D54BD /* NodeView.swift */; };
 		6F9D09C92BEDC29500159BFC /* LabDuckApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9D09C82BEDC29500159BFC /* LabDuckApp.swift */; };
-		6F9D09CB2BEDC29500159BFC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9D09CA2BEDC29500159BFC /* ContentView.swift */; };
 		6F9D09CD2BEDC29700159BFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F9D09CC2BEDC29700159BFC /* Assets.xcassets */; };
 		6F9D09D02BEDC29700159BFC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F9D09CF2BEDC29700159BFC /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		6F050B1C2BF1AAA3003D54BD /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		6F050B1F2BF1AB60003D54BD /* CGSize+Operators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGSize+Operators.swift"; sourceTree = "<group>"; };
+		6F050B212BF1AC08003D54BD /* GraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphView.swift; sourceTree = "<group>"; };
+		6F050B232BF1AC30003D54BD /* KPNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KPNode.swift; sourceTree = "<group>"; };
+		6F050B252BF1AC6B003D54BD /* View+draggable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+draggable.swift"; sourceTree = "<group>"; };
+		6F050B272BF1ACA0003D54BD /* DraggableViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggableViewModifier.swift; sourceTree = "<group>"; };
+		6F050B292BF1AD8A003D54BD /* NodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodeView.swift; sourceTree = "<group>"; };
 		6F9D09C52BEDC29500159BFC /* LabDuck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LabDuck.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F9D09C82BEDC29500159BFC /* LabDuckApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabDuckApp.swift; sourceTree = "<group>"; };
-		6F9D09CA2BEDC29500159BFC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		6F9D09CC2BEDC29700159BFC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6F9D09CF2BEDC29700159BFC /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		6F9D09D12BEDC29700159BFC /* LabDuck.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LabDuck.entitlements; sourceTree = "<group>"; };
@@ -33,6 +45,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6F050B1A2BF1AA5B003D54BD /* View */ = {
+			isa = PBXGroup;
+			children = (
+				6F050B1C2BF1AAA3003D54BD /* MainView.swift */,
+				6F050B212BF1AC08003D54BD /* GraphView.swift */,
+				6F050B292BF1AD8A003D54BD /* NodeView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		6F050B1B2BF1AA61003D54BD /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				6F050B232BF1AC30003D54BD /* KPNode.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		6F050B1E2BF1AB04003D54BD /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				6F050B1F2BF1AB60003D54BD /* CGSize+Operators.swift */,
+				6F050B252BF1AC6B003D54BD /* View+draggable.swift */,
+				6F050B272BF1ACA0003D54BD /* DraggableViewModifier.swift */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
 		6F9D09BC2BEDC29500159BFC = {
 			isa = PBXGroup;
 			children = (
@@ -53,7 +93,9 @@
 			isa = PBXGroup;
 			children = (
 				6F9D09C82BEDC29500159BFC /* LabDuckApp.swift */,
-				6F9D09CA2BEDC29500159BFC /* ContentView.swift */,
+				6F050B1E2BF1AB04003D54BD /* Util */,
+				6F050B1B2BF1AA61003D54BD /* Model */,
+				6F050B1A2BF1AA5B003D54BD /* View */,
 				6F9D09CC2BEDC29700159BFC /* Assets.xcassets */,
 				6F9D09D12BEDC29700159BFC /* LabDuck.entitlements */,
 				6F9D09CE2BEDC29700159BFC /* Preview Content */,
@@ -139,8 +181,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6F9D09CB2BEDC29500159BFC /* ContentView.swift in Sources */,
+				6F050B262BF1AC6B003D54BD /* View+draggable.swift in Sources */,
+				6F050B202BF1AB60003D54BD /* CGSize+Operators.swift in Sources */,
+				6F050B2A2BF1AD8A003D54BD /* NodeView.swift in Sources */,
+				6F050B1D2BF1AAA3003D54BD /* MainView.swift in Sources */,
 				6F9D09C92BEDC29500159BFC /* LabDuckApp.swift in Sources */,
+				6F050B242BF1AC30003D54BD /* KPNode.swift in Sources */,
+				6F050B282BF1ACA0003D54BD /* DraggableViewModifier.swift in Sources */,
+				6F050B222BF1AC08003D54BD /* GraphView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,10 +319,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = LabDuck/LabDuck.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"LabDuck/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
@@ -286,6 +335,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = team.kapochip.LabDuck;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -297,10 +347,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = LabDuck/LabDuck.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"LabDuck/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
@@ -312,6 +363,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = team.kapochip.LabDuck;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
