@@ -7,24 +7,30 @@
 
 import Foundation
 
-struct KPNode: Identifiable {
+@Observable
+class KPNode: Identifiable {
     var id: UUID
     var title: String?
     var note: String?
     var url: String?
-    //    var tags: [KPTag]
-    //    var colorTheme: ColorTheme = .default
-    var position: CGPoint
-    //    var size: CGSize = CGSize(400, 400)
-    //    var inputPoints: [KPInputPoint]
-    //    var outputPoints: [KPOutputPoint]
+    var tags: [KPTag] = []
+    var colorTheme: KPColorTheme = .default
+    var position: CGPoint = .zero
+    var size: CGSize
+    var inputPoints: [KPInputPoint] = []
+    var outputPoints: [KPOutputPoint] = []
 
-    init(id: UUID = UUID(), title: String? = nil, note: String? = nil, url: String? = nil, position: CGPoint = .zero) {
-        self.id = id
+    init(title: String? = nil, note: String? = nil, url: String? = nil, tags: [KPTag] = [], colorTheme: KPColorTheme = .default, position: CGPoint = .zero, size: CGSize = CGSize(width: 400, height: 400), inputPoints: [KPInputPoint] = [], outputPoints: [KPOutputPoint] = []) {
+        self.id = UUID()
         self.title = title
         self.note = note
         self.url = url
+        self.tags = tags
+        self.colorTheme = colorTheme
         self.position = position
+        self.size = size
+        self.inputPoints = inputPoints
+        self.outputPoints = outputPoints
     }
 }
 
@@ -38,15 +44,25 @@ extension KPNode {
         }
     }
     var unwrappedNote: String {
-        self.note ?? ""
+        get {
+            self.note ?? ""
+        }
+        set {
+            self.note = newValue
+        }
     }
     var unwrappedURL: String {
-        self.url ?? ""
+        get {
+            self.url ?? ""
+        }
+        set {
+            self.url = newValue
+        }
     }
 }
 
 extension KPNode {
-    static var mockData: Self {
+    static var mockData: KPNode {
         .init(title: "title1", position: .init(x: 50, y: 20))
     }
 }
