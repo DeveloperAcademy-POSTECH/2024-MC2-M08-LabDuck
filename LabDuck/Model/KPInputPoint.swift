@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable
-class KPInputPoint {
+class KPInputPoint: Identifiable {
     var id: UUID
     var name: String?
     var ownerNode: KPNode.ID
