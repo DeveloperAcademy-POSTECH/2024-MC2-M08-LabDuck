@@ -8,12 +8,12 @@
 import Foundation
 
 @Observable
-class KPOutputPoint: Identifiable {
+class KPOutputPoint {
     var id: UUID
     var name: String?
-    var ownerNode: UUID
+    var ownerNode: KPNode.ID
 
-    init(name: String? = nil, ownerNode: UUID) {
+    init(name: String? = nil, ownerNode: KPNode.ID) {
         self.id = UUID()
         self.name = name
         self.ownerNode = ownerNode

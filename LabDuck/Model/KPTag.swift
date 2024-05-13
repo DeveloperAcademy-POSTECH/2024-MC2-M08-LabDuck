@@ -11,3 +11,9 @@ struct KPTag: Identifiable {
     var id: UUID
     var name: String
 }
+
+extension KPTag {
+    static var mockData: KPTag {
+        .init(id: UUID(), name: "tag1")
+    }
+}

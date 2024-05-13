@@ -10,10 +10,10 @@ import Foundation
 @Observable
 class KPEdge: Identifiable {
     var id: UUID
-    var sourceID: UUID // OutputPoint의 id
-    var sinkID: UUID // InputPoint의 id
+    var sourceID: KPOutputPoint.ID // OutputPoint의 id
+    var sinkID: KPInputPoint.ID // InputPoint의 id
 
-    init(sourceID: UUID, sinkID: UUID) {
+    init(sourceID: KPOutputPoint.ID, sinkID: KPInputPoint.ID) {
         self.id = UUID()
         self.sourceID = sourceID
         self.sinkID = sinkID

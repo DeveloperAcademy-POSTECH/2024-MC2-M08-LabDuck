@@ -22,7 +22,7 @@ class KPBoard: Identifiable {
         case graph
         case table
     }
-    
+
     init(title: String, nodes: [KPNode], edges: [KPEdge], texts: [KPText], modifiedDate: Date, viewType: BoardViewType, previewImage: Data? = nil) {
         self.id = UUID()
         self.title = title
@@ -32,5 +32,16 @@ class KPBoard: Identifiable {
         self.modifiedDate = modifiedDate
         self.viewType = viewType
         self.previewImage = previewImage
+    }
+}
+
+extension KPBoard {
+    static var mockData: KPBoard {
+        let nodes: [KPNode] = .mockData
+        let outputPoint = nodes[0].outputPoints[0]
+        let inputPoint = nodes[1].inputPoints[0]
+        let edge = KPEdge(sourceID: outputPoint.id, sinkID: inputPoint.id)
+
+        return .init(title: "board1", nodes: .mockData, edges: [edge], texts: [], modifiedDate: .now, viewType: .table)
     }
 }
