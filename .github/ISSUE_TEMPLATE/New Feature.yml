@@ -7,6 +7,6 @@ body:
   attributes:
     label: 이슈의 SubTask들을 알려주세요.
     description: 해당 내용의 SubTask를 나열해주세요.
-    placeholder: subtask1
+    placeholder: - [ ] subtask1
   validations:
     required: true
