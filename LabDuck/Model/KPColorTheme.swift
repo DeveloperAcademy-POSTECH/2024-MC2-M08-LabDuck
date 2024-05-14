@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum KPColorTheme {
+enum KPColorTheme: Int {
     case `default`
     case cyan
 
