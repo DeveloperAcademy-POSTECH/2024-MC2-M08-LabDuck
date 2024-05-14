@@ -76,11 +76,17 @@ extension Array where Element == KPNode {
         .init(
             title: "Thrilled by Your Progress! Large Language Models (GPT-4) No Longer Struggle to Pass Assessments in Higher Education Programming Courses",
             url: "https://arxiv.org/pdf/2306.10073.pdf",
+<<<<<<< feature/#19
             tags: [KPTag.mockData], 
             position: .init(x: 50, y: 20),
             inputPoints: .mockData,
             outputPoints: .mockData
         ),
+=======
+            tags: [KPTag.mockData, KPTag.mockData],
+            colorTheme: .cyan, 
+            position: .init(x: 50, y: 20)),
+>>>>>>> main
         .init(
             title: "Cracking the code: Co-coding with AI in creative programming education",
             url: "https://dl.acm.org/doi/abs/10.1145/3527927.3532801",
