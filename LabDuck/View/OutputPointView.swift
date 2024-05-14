@@ -8,11 +8,20 @@
 import SwiftUI
 
 struct OutputPointView: View {
+    var outputPoint: KPOutputPoint
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Rectangle()
+            .fill(Color.green)
+            .frame(width: 20, height: 20)
+            .anchorPreference(
+                key: OutputPointPreferenceKey.self,
+                value: .bounds
+            ) {
+                [OutputPointPreference(outputID: outputPoint.id, bounds: $0)]
+            }
     }
 }
 
 #Preview {
-    OutputPointView()
+    OutputPointView(outputPoint: .mockData)
 }

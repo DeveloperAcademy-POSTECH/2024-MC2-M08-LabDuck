@@ -8,11 +8,20 @@
 import SwiftUI
 
 struct InputPointView: View {
+    var inputPoint: KPInputPoint
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Circle()
+            .fill(Color.green)
+            .frame(width: 20, height: 20)
+            .anchorPreference(
+                key: InputPointPreferenceKey.self,
+                value: .bounds
+            ) {
+                [InputPointPreference(inputID: inputPoint.id, bounds: $0)]
+            }
     }
 }
 
 #Preview {
-    InputPointView()
+    InputPointView(inputPoint: .mockData)
 }

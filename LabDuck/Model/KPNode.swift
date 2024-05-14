@@ -31,6 +31,14 @@ class KPNode: Identifiable {
         self.size = size
         self.inputPoints = inputPoints
         self.outputPoints = outputPoints
+
+        self.inputPoints.forEach { inputPoint in
+            inputPoint.ownerNode = self.id
+        }
+
+        self.outputPoints.forEach { outputPoint in
+            outputPoint.ownerNode = self.id
+        }
     }
 }
 
@@ -63,7 +71,7 @@ extension KPNode {
 
 extension KPNode {
     static var mockData: KPNode {
-        .init(title: "title1", position: .init(x: 50, y: 20))
+        .init(title: "title1", position: .init(x: 50, y: 20), inputPoints: .mockData, outputPoints: .mockData)
     }
 }
 
@@ -73,25 +81,40 @@ extension Array where Element == KPNode {
             title: "Thrilled by Your Progress! Large Language Models (GPT-4) No Longer Struggle to Pass Assessments in Higher Education Programming Courses",
             url: "https://arxiv.org/pdf/2306.10073.pdf",
             tags: [KPTag.mockData], 
-            position: .init(x: 50, y: 20)),
+            position: .init(x: 50, y: 20),
+            inputPoints: .mockData,
+            outputPoints: .mockData
+        ),
         .init(
             title: "Cracking the code: Co-coding with AI in creative programming education",
             url: "https://dl.acm.org/doi/abs/10.1145/3527927.3532801",
-            position: .init(x: 80, y: 40)),
+            position: .init(x: 80, y: 40),
+            inputPoints: .mockData,
+            outputPoints: .mockData
+        ),
         .init(
             title: "AlgoSolve: Supporting Subgoal Learning in Algorithmic Problem-Solving with Learnersourced Microtasks",
             note: "Related work 살펴보기 좋을듯",
             url: "https://kixlab.github.io/website-files/2022/chi2022-AlgoSolve-paper.pdf",
-            position: .init(x: 110, y: 30)),
+            position: .init(x: 110, y: 30),
+            inputPoints: .mockData,
+            outputPoints: .mockData
+        ),
         .init(
             title: "Supporting programming and learning-to-program with an integrated CAD and scaffolding workbench",
             tags: [KPTag.mockData],
-            position: .init(x: 140, y: 60)),
+            position: .init(x: 140, y: 60),
+            inputPoints: .mockData,
+            outputPoints: .mockData
+        ),
         .init(
             title: "Robust and Scalable Online Code Execution System",
             note: "Judge0 - code execution system",
             url: "https://ieeexplore.ieee.org/document/9245310",
             tags: [KPTag.mockData],
-            position: .init(x: 170, y: 70)),
+            position: .init(x: 170, y: 70),
+            inputPoints: .mockData,
+            outputPoints: .mockData
+        ),
     ]
 }
