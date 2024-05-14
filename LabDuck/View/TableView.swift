@@ -15,7 +15,7 @@ struct TableView: View {
     var body: some View {
         VStack{
             Table(nodes, selection: $selection, sortOrder: $sortOrder) {
-                TableColumn("색") { node in
+                TableColumn("색", value: \.colorTheme.rawValue) { node in
                     Circle()
                         .foregroundColor(node.colorTheme.backgroundColor)
                 }

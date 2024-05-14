@@ -72,7 +72,8 @@ extension Array where Element == KPNode {
         .init(
             title: "Thrilled by Your Progress! Large Language Models (GPT-4) No Longer Struggle to Pass Assessments in Higher Education Programming Courses",
             url: "https://arxiv.org/pdf/2306.10073.pdf",
-            tags: [KPTag.mockData], 
+            tags: [KPTag.mockData, KPTag.mockData],
+            colorTheme: .cyan, 
             position: .init(x: 50, y: 20)),
         .init(
             title: "Cracking the code: Co-coding with AI in creative programming education",
