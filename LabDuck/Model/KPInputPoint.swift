@@ -7,14 +7,13 @@
 
 import Foundation
 
-@Observable
-class KPInputPoint: Identifiable {
+struct KPInputPoint: Identifiable {
     var id: UUID
     var name: String?
     var ownerNode: KPNode.ID?
 
-    init(name: String? = nil, ownerNode: KPNode.ID? = nil) {
-        self.id = UUID()
+    init(id: ID = UUID(), name: String? = nil, ownerNode: KPNode.ID? = nil) {
+        self.id = id
         self.name = name
         self.ownerNode = ownerNode
     }

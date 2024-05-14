@@ -7,8 +7,7 @@
 
 import Foundation
 
-@Observable
-class KPNode: Identifiable {
+struct KPNode: Identifiable {
     var id: UUID
     var title: String?
     var note: String?
@@ -29,16 +28,13 @@ class KPNode: Identifiable {
         self.colorTheme = colorTheme
         self.position = position
         self.size = size
-        self.inputPoints = inputPoints
-        self.outputPoints = outputPoints
+        self.inputPoints = inputPoints.map({ inputPoint in
+            KPInputPoint(id: inputPoint.id, name: inputPoint.name, ownerNode: self.id)
+        })
 
-        self.inputPoints.forEach { inputPoint in
-            inputPoint.ownerNode = self.id
-        }
-
-        self.outputPoints.forEach { outputPoint in
-            outputPoint.ownerNode = self.id
-        }
+        self.outputPoints = outputPoints.map({ outputPoint in
+            KPOutputPoint(id: outputPoint.id, name: outputPoint.name, ownerNode: self.id)
+        })
     }
 }
 

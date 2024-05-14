@@ -8,16 +8,26 @@
 import SwiftUI
 
 struct GraphView: View {
-    @State private var nodes: [KPNode] = .mockData
-    @State private var inputPoints: [(KPInputPoint.ID, CGRect)] = []
-    @State private var outputPoints: [(KPOutputPoint.ID, CGRect)] = []
+    @State private var board: KPBoard = .mockData
+    @State private var inputPointRects: [KPInputPoint.ID : CGRect] = [:]
+    @State private var outputPointRects: [KPOutputPoint.ID : CGRect] = [:]
     var body: some View {
         ZStack {
-            ForEach($nodes) { node in
+            ForEach(board.edges) { edge in
+                Path { path in
+                    if let sourcePoint = outputPointRects[edge.sourceID],
+                       let sinkPoint = inputPointRects[edge.sinkID] {
+                        path.move(to: sourcePoint.center)
+                        path.addLine(to: sinkPoint.center)
+                    }
+                }
+                .stroke(lineWidth: 2)
+            }
+            ForEach(self.$board.nodes) { node in
                 NodeView(
                     node: node,
                     judgeConnection: self.judgeConnection(outputID:dragLocation:),
-                    connectEdge: self.connectEdge(outputID:inputID:)
+                    addEdge: self.addEdge(edge:)
                 )
             }
         }
@@ -32,13 +42,19 @@ struct GraphView: View {
             }
         }
     }
+}
 
+#Preview {
+    GraphView()
+}
+
+// MARK: - read preferences : 각 지점의 아이디와 위치를 가져오기 위한 메소드들
+extension GraphView {
     private func readPreferenceValues(from values: [InputPointPreference], in proxy: GeometryProxy) -> some View {
         DispatchQueue.main.async {
-            self.inputPoints = values.map({ preference in
-                (preference.inputID, proxy[preference.bounds])
-            })
-            print(inputPoints)
+            values.forEach { preference in
+                self.inputPointRects[preference.inputID] = proxy[preference.bounds]
+            }
         }
         return Rectangle()
             .fill(Color.clear)
@@ -46,42 +62,46 @@ struct GraphView: View {
 
     private func readPreferenceValues(from values: [OutputPointPreference], in proxy: GeometryProxy) -> some View {
         DispatchQueue.main.async {
-            self.outputPoints = values.map({ preference in
-                (preference.outputID, proxy[preference.bounds])
-            })
-            print(outputPoints)
+            values.forEach { preference in
+                self.outputPointRects[preference.outputID] = proxy[preference.bounds]
+            }
         }
         return Rectangle()
             .fill(Color.clear)
     }
+}
 
+// MARK: - Callback Defenition : 하위 뷰에서 read preferences로 읽어온 데이터를 활용하기 위해 전달하는 클로저.
+extension GraphView {
     private func judgeConnection(
         outputID: KPOutputPoint.ID,
         dragLocation: CGPoint
     ) -> (KPOutputPoint.ID, KPInputPoint.ID)? {
-        guard let outputItem = self.outputPoints.first(where: { id, _ in
+        guard let outputItem = self.outputPointRects.first(where: { id, _ in
             id == outputID
         }) else { return nil }
 
         let calculatedPoint = outputItem.1.origin + dragLocation
 
-        guard let inputItem = self.inputPoints.first(where: { _, rect in
+        guard let inputItem = self.inputPointRects.first(where: { _, rect in
             CGRectContainsPoint(rect, calculatedPoint)
         }) else { return nil }
 
         return (outputItem.0, inputItem.0)
     }
 
-    private func connectEdge(
-        outputID: KPOutputPoint.ID,
-        inputID: KPInputPoint.ID
+    private func addEdge(
+        edge: KPEdge
     ) {
-        self.nodes.forEach { node in
+        self.board.addEdge(edge)
+
+        // MARK: 디버그용 출력 문장들, 추후 삭제 등에 이 코드가 필요할 것 같음
+        self.board.nodes.forEach { node in
             node.outputPoints.forEach { outputPoint in
-                if outputPoint.id == outputID {
+                if outputPoint.id == edge.sourceID {
                     print("outputPoint 정보 : \(outputPoint.name ?? "")")
                     if let ownerNodeID = outputPoint.ownerNode {
-                        self.nodes.forEach { node in
+                        self.board.nodes.forEach { node in
                             if node.id == ownerNodeID {
                                 print("<- 그의 부모는 \(node.title ?? "") 입니다.")
                             }
@@ -90,10 +110,10 @@ struct GraphView: View {
                 }
             }
             node.inputPoints.forEach { inputPoint in
-                if inputPoint.id == inputID {
+                if inputPoint.id == edge.sinkID {
                     print("inputPoint 정보 : \(inputPoint.name ?? "")")
                     if let ownerNodeID = inputPoint.ownerNode {
-                        self.nodes.forEach { node in
+                        self.board.nodes.forEach { node in
                             if node.id == ownerNodeID {
                                 print("<- 그의 부모는 \(node.title ?? "") 입니다.")
                             }
@@ -103,8 +123,4 @@ struct GraphView: View {
             }
         }
     }
-}
-
-#Preview {
-    GraphView()
 }

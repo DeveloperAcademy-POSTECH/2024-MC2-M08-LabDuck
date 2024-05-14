@@ -7,8 +7,7 @@
 
 import Foundation
 
-@Observable
-class KPEdge: Identifiable {
+struct KPEdge: Identifiable {
     var id: UUID
     var sourceID: KPOutputPoint.ID // OutputPoint의 id
     var sinkID: KPInputPoint.ID // InputPoint의 id
