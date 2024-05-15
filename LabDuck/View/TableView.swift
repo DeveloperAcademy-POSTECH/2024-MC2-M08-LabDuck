@@ -85,8 +85,8 @@ struct TableView: View {
         
         var nodeDict = [UUID: KPNode]()
         
-        for node in nodes {
-            for inputPoint in node.inputPoints {
+        nodes.forEach { node in
+            node.inputPoints.forEach { inputPoint in
                 if matchingSinkIDs.contains(inputPoint.id) {
                     nodeDict[node.id] = node
                 }
