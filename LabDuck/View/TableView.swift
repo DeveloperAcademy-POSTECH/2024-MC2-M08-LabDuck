@@ -15,6 +15,7 @@ struct TableView: View {
     //Edge 더미데이터 -> 표에서 output을 표현하기 위함
     @State var edges: [KPEdge] = [
         KPEdge(sourceID: Array.mockData[0].outputPoints[0].id, sinkID: Array.mockData[1].inputPoints[0].id),
+        KPEdge(sourceID: Array.mockData[0].outputPoints[0].id, sinkID: Array.mockData[3].inputPoints[0].id),
     ]
     
     var body: some View {
@@ -78,15 +79,15 @@ struct TableView: View {
     }
     // MARK: - 노드의 ouputPoint에 대한 inputPoint들을 찾아 해당 노드들 리턴
     func findNodes(matching node: KPNode) -> [KPNode] {
-        let sinkIDs = node.inputPoints.map { $0.id }
+        let sourceIDs = node.outputPoints.map { $0.id }
         
-        let matchingSourceIDs = edges.filter { sinkIDs.contains($0.sinkID) }.map { $0.sourceID }
+        let matchingSinkIDs = edges.filter { sourceIDs.contains($0.sourceID) }.map { $0.sinkID }
         
         var nodeDict = [UUID: KPNode]()
         
         for node in nodes {
-            for outputPoint in node.outputPoints {
-                if matchingSourceIDs.contains(outputPoint.id) {
+            for inputPoint in node.inputPoints {
+                if matchingSinkIDs.contains(inputPoint.id) {
                     nodeDict[node.id] = node
                 }
             }
