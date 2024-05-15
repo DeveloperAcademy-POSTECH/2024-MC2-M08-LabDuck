@@ -7,8 +7,7 @@
 
 import Foundation
 
-@Observable
-class KPBoard: Identifiable {
+struct KPBoard: Identifiable {
     var id: UUID
     var title: String
     var nodes: [KPNode]
@@ -32,6 +31,10 @@ class KPBoard: Identifiable {
         self.modifiedDate = modifiedDate
         self.viewType = viewType
         self.previewImage = previewImage
+    }
+
+    public mutating func addEdge(_ edge: KPEdge) {
+        self.edges.append(edge)
     }
 }
 

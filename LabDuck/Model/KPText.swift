@@ -7,8 +7,7 @@
 
 import Foundation
 
-@Observable
-class KPText: Identifiable {
+struct KPText: Identifiable {
     var id: UUID
     var text: String?
     var position: CGPoint = .zero

@@ -7,15 +7,30 @@
 
 import Foundation
 
-@Observable
-class KPInputPoint: Identifiable {
+struct KPInputPoint: Identifiable {
     var id: UUID
     var name: String?
-    var ownerNode: KPNode.ID
+    var ownerNode: KPNode.ID?
 
-    init(name: String? = nil, ownerNode: KPNode.ID) {
-        self.id = UUID()
+    init(id: ID = UUID(), name: String? = nil, ownerNode: KPNode.ID? = nil) {
+        self.id = id
         self.name = name
         self.ownerNode = ownerNode
+    }
+}
+
+extension KPInputPoint {
+    static var mockData: KPInputPoint {
+        KPInputPoint(name: "input1")
+    }
+}
+
+extension Array where Element == KPInputPoint {
+    static var mockData: [KPInputPoint] {
+        [
+            .init(name: "input1"),
+            .init(name: "input2"),
+            .init(name: "input3"),
+        ]
     }
 }
