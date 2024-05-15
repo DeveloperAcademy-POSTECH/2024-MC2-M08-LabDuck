@@ -11,6 +11,8 @@ struct GraphView: View {
     @State private var board: KPBoard = .mockData
     @State private var inputPointRects: [KPInputPoint.ID : CGRect] = [:]
     @State private var outputPointRects: [KPOutputPoint.ID : CGRect] = [:]
+
+    @State private var previewEdge: (CGPoint, CGPoint)? = nil
     var body: some View {
         ZStack {
             ForEach(board.edges) { edge in
@@ -27,8 +29,16 @@ struct GraphView: View {
                 NodeView(
                     node: node,
                     judgeConnection: self.judgeConnection(outputID:dragLocation:),
-                    addEdge: self.addEdge(edge:)
+                    addEdge: self.addEdge(edge:),
+                    updatePreviewEdge: self.updatePreviewEdge(from:to:)
                 )
+            }
+            if let previewEdge {
+                Path { path in
+                    path.move(to: previewEdge.0)
+                    path.addLine(to: previewEdge.1)
+                }
+                .stroke(lineWidth: 2)
             }
         }
         .backgroundPreferenceValue(InputPointPreferenceKey.self) { values in
@@ -121,6 +131,17 @@ extension GraphView {
                     }
                 }
             }
+        }
+    }
+
+    private func updatePreviewEdge(
+        from sourceID: KPOutputPoint.ID,
+        to dragPoint: CGPoint?
+    ) {
+        if let outputPointRect = outputPointRects[sourceID], let dragPoint {
+            self.previewEdge = (outputPointRect.center, outputPointRect.origin + dragPoint)
+        } else {
+            self.previewEdge = nil
         }
     }
 }
