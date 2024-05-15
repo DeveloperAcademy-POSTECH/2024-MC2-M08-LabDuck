@@ -13,6 +13,8 @@ struct MainView: View {
     @GestureState private var gestureZoom = 1.0
     @State private var dragOffset = CGSize.zero
     @GestureState private var gestureDrag = CGSize.zero
+    
+    //@Binding private var zoomstate : Bool
 
     @State var subs = Set<AnyCancellable>() // Cancel onDisappear
     var body: some View {
@@ -23,13 +25,19 @@ struct MainView: View {
         }
         .background(Color.gray)
         .gesture(
-            MagnifyGesture()
+            MagnifyGesture()// 업데이트가 되고 있는 상태. zoom하고 있는 상태를 ture로 바꾸고, end가 되면 false로 바꿔주기.
                 .updating($gestureZoom) { value, gestureState, _ in
-                    gestureState = value.magnification
+//                    print(value.magnification)
+                    if value.magnification > 0 {
+                        gestureState = value.magnification
+                    }
+                    //zoomstate = true
                 }
                 .onEnded { value in
-                    print(zoom, gestureZoom)
-                    zoom *= value.magnification
+                    if value.magnification > 0 {
+                        zoom *= value.magnification
+                    }
+                    //zoomstate = false
                 }
         )
         .gesture(
