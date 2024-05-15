@@ -8,6 +8,8 @@
 import SwiftUI
 import Combine
 
+
+
 struct MainView: View {
     @State private var zoom = 1.0
     @GestureState private var gestureZoom = 1.0
@@ -15,6 +17,7 @@ struct MainView: View {
     @GestureState private var gestureDrag = CGSize.zero
     
     //@Binding private var zoomstate : Bool
+    //@State private var zoomstate: Bool
 
     @State var subs = Set<AnyCancellable>() // Cancel onDisappear
     var body: some View {
