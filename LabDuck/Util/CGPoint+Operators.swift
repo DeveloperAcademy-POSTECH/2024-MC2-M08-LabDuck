@@ -15,4 +15,8 @@ extension CGPoint {
     static func += (lhs: inout Self, rhs: Self) {
         lhs = lhs + rhs
     }
+
+    static func / (lhs: Self, rhs: CGFloat) -> Self {
+        Self(x: lhs.x / rhs, y: lhs.y / rhs)
+    }
 }

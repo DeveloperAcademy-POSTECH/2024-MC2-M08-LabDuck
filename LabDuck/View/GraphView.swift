@@ -23,12 +23,9 @@ struct GraphView: View {
             ForEach(board.edges) { edge in
                 if let sourcePoint = outputPointRects[edge.sourceID]?.center,
                    let sinkPoint = inputPointRects[edge.sinkID]?.center {
-                    Path { path in
-                        path.move(to: sourcePoint)
-                        path.addLine(to: sinkPoint)
-                    }
-                    .stroke(hoveredEdgeID == edge.id ? .red : .black, lineWidth: 2)
-                    .shadow(radius: selectedEdgeID == edge.id ? 6 : 0)
+                    PathBetween(sourcePoint, sinkPoint)
+                        .stroke(hoveredEdgeID == edge.id ? .red : .black, lineWidth: 2)
+                        .shadow(radius: selectedEdgeID == edge.id ? 6 : 0)
                     PathShapes(sourcePoint, sinkPoint, edge.id)
                 }
             }
@@ -41,11 +38,8 @@ struct GraphView: View {
                 )
             }
             if let previewEdge {
-                Path { path in
-                    path.move(to: previewEdge.0)
-                    path.addLine(to: previewEdge.1)
-                }
-                .stroke(lineWidth: 2)
+                PathBetween(previewEdge.0, previewEdge.1)
+                    .stroke(lineWidth: 2)
             }
         }
         .background()
@@ -71,9 +65,12 @@ struct GraphView: View {
 
     @ViewBuilder
     private func PathBetween(_ sourcePoint: CGPoint, _ sinkPoint: CGPoint) -> Path {
+        let midPoint = (sourcePoint + sinkPoint) / 2
+        let control1 = CGPoint(x: midPoint.x, y: sourcePoint.y)
+        let control2 = CGPoint(x: midPoint.x, y: sinkPoint.y)
         Path { path in
             path.move(to: sourcePoint)
-            path.addLine(to: sinkPoint)
+            path.addCurve(to: sinkPoint, control1: control1, control2: control2)
         }
     }
 
