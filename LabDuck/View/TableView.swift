@@ -16,6 +16,8 @@ struct TableView: View {
     @State var edges: [KPEdge] = [
         KPEdge(sourceID: Array.mockData[0].outputPoints[0].id, sinkID: Array.mockData[1].inputPoints[0].id),
         KPEdge(sourceID: Array.mockData[0].outputPoints[0].id, sinkID: Array.mockData[3].inputPoints[0].id),
+        KPEdge(sourceID: Array.mockData[0].outputPoints[0].id, sinkID: Array.mockData[4].inputPoints[0].id),
+        KPEdge(sourceID: Array.mockData[0].outputPoints[0].id, sinkID: Array.mockData[3].inputPoints[1].id),
     ]
     
     var body: some View {
@@ -66,15 +68,19 @@ struct TableView: View {
                         TableRow(node)
                     } else {
                         DisclosureTableRow(node) {
-                            ForEach(findNodes(matching: node))
+                            ForEach(findNodes(matching: node).sorted(using: sortOrder)) { subNode in
+                                TableRow(subNode)
+                            }
                         }
                     }
                 }
             }
             .tableStyle(.inset(alternatesRowBackgrounds: false))
             .scrollContentBackground(.hidden)
-            .onChange(of: sortOrder) { newOrder in
-                nodes.sort(using: newOrder) }
+            .onChange(of: sortOrder) { _, newSortOrder in
+                nodes.sort(using: newSortOrder)}
+            .onChange(of: selection) { _, newSelection in
+                updateSelection(newSelection: newSelection)}
         }
     }
     // MARK: - 노드의 ouputPoint에 대한 inputPoint들을 찾아 해당 노드들 리턴
@@ -95,7 +101,18 @@ struct TableView: View {
         
         return Array(nodeDict.values)
     }
-    
+    // MARK: - selection된 리스트를 받아서 같은 id인 것들을 업데이트
+    func updateSelection(newSelection: Set<KPNode.ID>) {
+        var allSelectedIDs = newSelection
+        
+        newSelection.forEach { nodeID in
+            if let node = nodes.first(where: { $0.id == nodeID }) {
+                allSelectedIDs.insert(node.id)
+            }
+        }
+        
+        selection = allSelectedIDs
+    }
 }
 
 #Preview {
