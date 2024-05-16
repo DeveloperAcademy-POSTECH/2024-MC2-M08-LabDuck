@@ -62,8 +62,8 @@ struct MainView: View {
             .filter { event in event?.type == .scrollWheel }
             .sink { (event: NSEvent?) in
                 if let event {
-                    self.dragOffset.width += event.deltaX
-                    self.dragOffset.height += event.deltaY
+                    self.dragOffset.width += ( event.deltaX ) * 3.5
+                    self.dragOffset.height += ( event.deltaY ) * 3.5
                 }
             }
             .store(in: &subs)
