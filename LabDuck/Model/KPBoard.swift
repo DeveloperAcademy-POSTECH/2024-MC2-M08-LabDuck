@@ -36,6 +36,12 @@ struct KPBoard: Identifiable {
     public mutating func addEdge(_ edge: KPEdge) {
         self.edges.append(edge)
     }
+
+    public mutating func removeEdge(_ edgeID: KPEdge.ID) {
+        self.edges.removeAll { edge in
+            edge.id == edgeID
+        }
+    }
 }
 
 extension KPBoard {

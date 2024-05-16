@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct GraphView: View {
     @State private var board: KPBoard = .mockData
@@ -18,8 +19,12 @@ struct GraphView: View {
     @State private var hoveredEdgeID: KPEdge.ID? = nil
     @State private var selectedEdgeID: KPEdge.ID? = nil
 
+    // MARK: Combine
+    @State var cancellabes = Set<AnyCancellable>()
+
     var body: some View {
         ZStack {
+            Color.white
             ForEach(board.edges) { edge in
                 if let sourcePoint = outputPointRects[edge.sourceID]?.center,
                    let sinkPoint = inputPointRects[edge.sinkID]?.center {
@@ -42,15 +47,6 @@ struct GraphView: View {
                     .stroke(lineWidth: 2)
             }
         }
-        .background()
-        .simultaneousGesture(
-            TapGesture()
-                .onEnded {
-                    if hoveredEdgeID == nil {
-                        self.selectedEdgeID = nil
-                    }
-                }
-        )
         .backgroundPreferenceValue(InputPointPreferenceKey.self) { values in
             GeometryReader { proxy in
                 self.readPreferenceValues(from: values, in: proxy)
@@ -59,6 +55,22 @@ struct GraphView: View {
         .backgroundPreferenceValue(OutputPointPreferenceKey.self) { values in
             GeometryReader { proxy in
                 self.readPreferenceValues(from: values, in: proxy)
+            }
+        }
+        .simultaneousGesture(
+            TapGesture()
+                .onEnded {
+                    if hoveredEdgeID == nil {
+                        self.selectedEdgeID = nil
+                    }
+                }
+        )
+        .onAppear {
+            trackDeleteCommand {
+                if let selectedEdgeID {
+                    self.board.removeEdge(selectedEdgeID)
+                }
+                selectedEdgeID = nil
             }
         }
     }
@@ -190,5 +202,19 @@ extension GraphView {
         } else {
             self.previewEdge = nil
         }
+    }
+}
+
+// MARK: - Delete key를 받기 위한
+extension GraphView {
+    private func trackDeleteCommand(_ perform: @escaping () -> ()) {
+        NSApp.publisher(for: \.currentEvent)
+            .filter { event in
+                event?.type == .keyUp && (event?.keyCode == 51 || event?.keyCode == 117)
+            }
+            .sink { (event: NSEvent?) in
+                perform()
+            }
+            .store(in: &cancellabes)
     }
 }
