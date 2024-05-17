@@ -9,6 +9,6 @@ import SwiftUI
 
 extension View {
     func draggable(offset: Binding<CGPoint>) -> some View {
-        return modifier(DraggableViewModifier(offset: offset))
+        return modifier(DraggableViewModifier(offset: offset, hoverState: HoverState()))
     }
 }

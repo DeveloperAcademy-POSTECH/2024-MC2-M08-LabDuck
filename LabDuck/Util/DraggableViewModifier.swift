@@ -6,19 +6,26 @@
 //
 
 import SwiftUI
+import Combine
+
+
 
 struct DraggableViewModifier: ViewModifier {//바인딩으로 전달. false면 반영 ture면 반영 안하기.
     @Binding var offset: CGPoint
     //@Binding var zoomstate: Bool
-
+    //@State private var isHovering = true
+    //@Binding var isHovering: Bool
     //드래그된 뷰의 위치를 저장.
+    @ObservedObject var hoverState: HoverState
 
     func body(content: Content) -> some View {
         content.gesture(DragGesture(minimumDistance: 0)
                 .onChanged { value in
                     print(value)
-                    self.offset.x += value.location.x - value.startLocation.x
-                    self.offset.y += value.location.y - value.startLocation.y
+                    if hoverState.isHover == false { //여기 확대 축소와 관련된 것 같음
+                        self.offset.x += value.location.x - value.startLocation.x
+                        self.offset.y += value.location.y - value.startLocation.y
+                    }
                 })
             .offset(x: offset.x, y: offset.y)
     }

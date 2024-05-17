@@ -6,3 +6,8 @@
 //
 
 import Foundation
+import SwiftUI
+
+class HoverState: ObservableObject {
+    @Published var isHover: Bool = false
+}

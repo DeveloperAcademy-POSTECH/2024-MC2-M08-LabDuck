@@ -13,6 +13,10 @@ struct GraphView: View {
     @State private var outputPointRects: [KPOutputPoint.ID : CGRect] = [:]
 
     @State private var previewEdge: (CGPoint, CGPoint)? = nil
+    
+    //@State private var isHovering = false
+    //@StateObject private var hoverState = HoverState()
+
     var body: some View {
         ZStack {
             ForEach(board.edges) { edge in
@@ -28,9 +32,11 @@ struct GraphView: View {
             ForEach(self.$board.nodes) { node in
                 NodeView(
                     node: node,
+                    hoverState :HoverState(),
                     judgeConnection: self.judgeConnection(outputID:dragLocation:),
                     addEdge: self.addEdge(edge:),
                     updatePreviewEdge: self.updatePreviewEdge(from:to:)
+
                 )
             }
             if let previewEdge {
