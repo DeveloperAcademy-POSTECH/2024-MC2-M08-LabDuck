@@ -12,6 +12,7 @@ struct TableView: View {
     @State private var expanded: Bool = true
     @State private var selection = Set<KPNode.ID>()
     @State private var sortOrder = [KeyPathComparator(\KPNode.title)]
+    @State private var searchText = ""
     //Edge 더미데이터 -> 표에서 output을 표현하기 위함
     @State var edges: [KPEdge] = [
         KPEdge(sourceID: Array.mockData[0].outputPoints[0].id, sinkID: Array.mockData[1].inputPoints[0].id),
@@ -63,7 +64,7 @@ struct TableView: View {
                 }
                 
             } rows: {
-                ForEach(nodes, id: \.id) { node in
+                ForEach(filteredNodes, id: \.id) { node in
                     if findNodes(matching: node).isEmpty {
                         TableRow(node)
                     } else {
@@ -81,6 +82,7 @@ struct TableView: View {
                 nodes.sort(using: newSortOrder)}
             .onChange(of: selection) { _, newSelection in
                 updateSelection(newSelection: newSelection)}
+            .searchable(text: $searchText)
         }
     }
     // MARK: - 노드의 ouputPoint에 대한 inputPoint들을 찾아 해당 노드들 리턴
@@ -113,6 +115,21 @@ struct TableView: View {
         
         selection = allSelectedIDs
     }
+    // MARK: - 필터링 기능
+    var filteredNodes: [KPNode] {
+        if searchText.isEmpty {
+            return nodes
+        } else {
+            return nodes.filter { node in
+                let titleMatch = node.unwrappedTitle.lowercased().contains(searchText.lowercased())
+                let tagsMatch = node.tags.map { $0.name.lowercased() }.contains { $0.contains(searchText.lowercased()) }
+                let urlMatch = node.unwrappedURL.lowercased().contains(searchText.lowercased())
+                let noteMatch = node.unwrappedNote.lowercased().contains(searchText.lowercased())
+                return titleMatch || tagsMatch || urlMatch || noteMatch
+            }
+        }
+    }
+
 }
 
 #Preview {

@@ -8,8 +8,6 @@
 import SwiftUI
 import Combine
 
-
-
 struct MainView: View {
     @State private var zoom = 1.0
     @GestureState private var gestureZoom = 1.0
@@ -63,7 +61,6 @@ struct MainView: View {
                 }
             } else {
                 TableView()
-                    .searchable(text: $searchText)
             }
         }
         // MARK: - 툴바 코드
