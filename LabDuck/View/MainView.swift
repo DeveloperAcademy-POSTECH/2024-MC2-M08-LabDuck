@@ -21,6 +21,12 @@ struct MainView: View {
     //@State private var zoomstate: Bool
     @State var subs = Set<AnyCancellable>() // Cancel onDisappear
     
+    
+    @State private var magnifyBy = 1.0
+    
+    
+    
+    
     var body: some View {
         HStack {
             if isGraphView {
@@ -32,23 +38,23 @@ struct MainView: View {
                 }
                 .background(Color.gray)
                 .gesture(
-                    MagnifyGesture()// 업데이트가 되고 있는 상태. zoom하고 있는 상태를 ture로 바꾸고, end가 되면 false로 바꿔주기.
-                        .updating($gestureZoom) { value, gestureState, _ in
-                            //                    print(value.magnification)
+                    MagnifyGesture() //확대하는 제스처
+                        //.updating($gestureZoom) { value, gestureState, _ in
+                        .onChanged{ value in
+                            print(value.magnification)
                             if value.magnification > 0 {
-                                gestureState = value.magnification
+                                //gestureState = value.magnification
+                                magnifyBy = value.magnification
                             }
-                            //zoomstate = true
                         }
                         .onEnded { value in
                             if value.magnification > 0 {
                                 zoom *= value.magnification
                             }
-                            //zoomstate = false
                         }
                 )
                 .gesture(
-                    DragGesture()
+                    DragGesture() //드래그 제스처
                         .updating($gestureDrag) { value, gestureState, _ in
                             gestureState = value.translation
                         }
@@ -58,11 +64,11 @@ struct MainView: View {
                 )
                 .onAppear {
                     trackScrollWheel()
-                }
+                } //opnappear
             } else {
                 TableView()
-            }
-        }
+            }//else만
+        } //Hstack 즁료 코드
         // MARK: - 툴바 코드
         .toolbar {
             ToolbarItem(placement: .navigation) {

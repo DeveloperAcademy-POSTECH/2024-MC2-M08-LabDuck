@@ -108,6 +108,8 @@ struct GraphView: View {
                         self.selectedEdgeID = edgeID
                     }
                     .position(point)
+                    .frame(width: 1800, height: 900)
+
             }
         }
     }
