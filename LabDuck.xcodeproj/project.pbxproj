@@ -32,6 +32,8 @@
 		6F9D09CD2BEDC29700159BFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F9D09CC2BEDC29700159BFC /* Assets.xcassets */; };
 		6F9D09D02BEDC29700159BFC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F9D09CF2BEDC29700159BFC /* Preview Assets.xcassets */; };
 		BD57969D2BF1F2AC0023A92C /* TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD57969C2BF1F2AC0023A92C /* TableView.swift */; };
+		F669EF522BF86493001E99EF /* DetailBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F669EF512BF86493001E99EF /* DetailBoardView.swift */; };
+		F669EF542BF88096001E99EF /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F669EF532BF88096001E99EF /* BoardView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,6 +64,8 @@
 		6F9D09CF2BEDC29700159BFC /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		6F9D09D12BEDC29700159BFC /* LabDuck.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LabDuck.entitlements; sourceTree = "<group>"; };
 		BD57969C2BF1F2AC0023A92C /* TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableView.swift; sourceTree = "<group>"; };
+		F669EF512BF86493001E99EF /* DetailBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailBoardView.swift; sourceTree = "<group>"; };
+		F669EF532BF88096001E99EF /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +88,8 @@
 				BD57969C2BF1F2AC0023A92C /* TableView.swift */,
 				6F050B392BF302B1003D54BD /* InputPointView.swift */,
 				6F050B3B2BF302F5003D54BD /* OutputPointView.swift */,
+				F669EF512BF86493001E99EF /* DetailBoardView.swift */,
+				F669EF532BF88096001E99EF /* BoardView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -241,6 +247,7 @@
 				6F050B342BF1BE04003D54BD /* KPInputPoint.swift in Sources */,
 				6F050B2A2BF1AD8A003D54BD /* NodeView.swift in Sources */,
 				6F050B3E2BF34420003D54BD /* InputPointPreference.swift in Sources */,
+				F669EF542BF88096001E99EF /* BoardView.swift in Sources */,
 				6F050B362BF1BE14003D54BD /* KPOutputPoint.swift in Sources */,
 				6F050B432BF348A0003D54BD /* CGPoint+Operators.swift in Sources */,
 				6F050B452BF37D4B003D54BD /* CGRect+center.swift in Sources */,
@@ -255,6 +262,7 @@
 				6F050B222BF1AC08003D54BD /* GraphView.swift in Sources */,
 				6F050B2C2BF1BD4B003D54BD /* KPBoard.swift in Sources */,
 				BD57969D2BF1F2AC0023A92C /* TableView.swift in Sources */,
+				F669EF522BF86493001E99EF /* DetailBoardView.swift in Sources */,
 				6F050B2E2BF1BDBF003D54BD /* KPTag.swift in Sources */,
 				6F050B322BF1BDF4003D54BD /* KPEdge.swift in Sources */,
 			);
