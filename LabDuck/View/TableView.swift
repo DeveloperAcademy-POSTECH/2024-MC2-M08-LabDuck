@@ -24,16 +24,29 @@ struct TableView: View {
     var body: some View {
         VStack{
             Table(of: KPNode.self, selection: $selection, sortOrder: $sortOrder) {
-                TableColumn("색", value: \.colorTheme.rawValue) { node in
-                    Circle()
+                TableColumn("색", value: \.colorTheme.rawValue)
+                { node in
+                    Rectangle()
+                        .frame(width: 18, height: 18)
+                        .cornerRadius(5)
                         .foregroundColor(node.colorTheme.backgroundColor)
+                        .padding(5)
                 }
-                .width(30)
+                .width(77)
                 
                 TableColumn("제목", value: \.unwrappedTitle) { node in
-                    Text(node.unwrappedTitle)
-                        .lineLimit(1)
-                        .padding(10)
+                    if let _ = node.title {
+                        Text(node.unwrappedTitle)
+                            .lineLimit(1)
+                    } else {
+                        Text(node.unwrappedTitle)
+                            .lineLimit(1)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                TableColumn("노트", value: \.unwrappedNote) { node in
+                    Text(node.unwrappedNote)
                 }
                 
                 TableColumn("태그") { node in
@@ -45,8 +58,8 @@ struct TableView: View {
                                 Text("#\(tag.name)")
                                     .foregroundColor(.white)
                                     .padding(5)
-                                    .background(tag.colorTheme)
-                                    .cornerRadius(40)
+                                    .background(tag.colorTheme.backgroundColor)
+                                    .cornerRadius(6)
                             }
                         }
                     }
@@ -57,10 +70,6 @@ struct TableView: View {
                         Text(node.unwrappedURL)
                             .lineLimit(1)
                     })
-                }
-                
-                TableColumn("노트", value: \.unwrappedNote) { node in
-                    Text(node.unwrappedNote)
                 }
                 
             } rows: {
@@ -125,11 +134,11 @@ struct TableView: View {
                 let tagsMatch = node.tags.map { $0.name.lowercased() }.contains { $0.contains(searchText.lowercased()) }
                 let urlMatch = node.unwrappedURL.lowercased().contains(searchText.lowercased())
                 let noteMatch = node.unwrappedNote.lowercased().contains(searchText.lowercased())
+                
                 return titleMatch || tagsMatch || urlMatch || noteMatch
             }
         }
     }
-
 }
 
 #Preview {
