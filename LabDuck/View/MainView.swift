@@ -122,6 +122,7 @@ struct MainView: View {
             }
         }
         .navigationTitle("Untitled")    //보드의 이름 나타내는 기능 추가 필요
+        .toolbarBackground(Color(hex: 0xEAEAEA))
     }
     
     private func trackScrollWheel() {
