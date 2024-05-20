@@ -75,6 +75,7 @@ extension Array where Element == KPNode {
     static var mockData: [Element] = [
         .init(
             title: "Thrilled by Your Progress! Large Language Models (GPT-4) No Longer Struggle to Pass Assessments in Higher Education Programming Courses",
+            note: "Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯",
             url: "https://arxiv.org/pdf/2306.10073.pdf",
             tags: [KPTag.mockData, KPTag.mockData1],
             colorTheme: .blue,
