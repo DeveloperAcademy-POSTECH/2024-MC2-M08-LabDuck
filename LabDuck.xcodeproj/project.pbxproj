@@ -66,7 +66,7 @@
 		6F9D09CF2BEDC29700159BFC /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		6F9D09D12BEDC29700159BFC /* LabDuck.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LabDuck.entitlements; sourceTree = "<group>"; };
 		6FA98D702BFADD6F00F7D19E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		BD57969C2BF1F2AC0023A92C /* TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableView.swift; sourceTree = "<group>"; };
+		BD57969C2BF1F2AC0023A92C /* TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableView.swift; sourceTree = "<group>"; wrapsLines = 1; };
 		BDFE71A72BF87B8400D68E04 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		BDFE71A92BF889A400D68E04 /* KPTagColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KPTagColor.swift; sourceTree = "<group>"; };
 		F669EF512BF86493001E99EF /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
