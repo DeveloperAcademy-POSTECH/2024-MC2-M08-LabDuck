@@ -10,9 +10,8 @@ import SwiftUI
 struct InputPointView: View {
     var inputPoint: KPInputPoint
     var body: some View {
-        Circle()
-            .fill(Color.green)
-            .frame(width: 20, height: 20)
+        Image(systemName: "arrow.right.circle.fill")
+            .imageScale(.large)
             .anchorPreference(
                 key: InputPointPreferenceKey.self,
                 value: .bounds

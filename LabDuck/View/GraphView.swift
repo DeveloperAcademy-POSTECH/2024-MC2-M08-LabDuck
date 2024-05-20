@@ -41,6 +41,7 @@ struct GraphView: View {
                     addEdge: self.addEdge(edge:),
                     updatePreviewEdge: self.updatePreviewEdge(from:to:)
                 )
+                .draggable(offset: node.position)
             }
             if let previewEdge {
                 PathBetween(previewEdge.0, previewEdge.1)

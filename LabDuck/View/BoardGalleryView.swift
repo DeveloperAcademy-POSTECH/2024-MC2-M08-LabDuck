@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct BoardGallery: View {
+    @Environment(\.openWindow) private var openWindow
+
     @State var boards: [KPBoard] = [.mockData, .mockData, .mockData, .mockData, .mockData, .mockData, .mockData]
     
     let columns = [
@@ -15,12 +17,14 @@ struct BoardGallery: View {
                     .fontWeight(.bold)
                     .padding(.leading, 40)
                 LazyVGrid(columns: columns) {
-                    ForEach($boards, id: \.id) { $board in
-                        BoardView(board: $board)
+                    ForEach($boards, id: \.id) { board in
+                        BoardView(board: board)
+                            .onTapGesture(count: 2) {
+                                openWindow(id: "main")
+                            }
                     }
                 }
                 .padding(.horizontal, 20)
-                .background(Color.green)
             }
             .padding(.top, 40)
             
