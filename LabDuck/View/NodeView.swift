@@ -13,6 +13,7 @@ struct NodeView: View {
     @State private var currentOutputPoint: KPOutputPoint.ID?
     var judgeConnection: (_ outputID: KPOutputPoint.ID, _ dragLocation: CGPoint) -> (KPOutputPoint.ID, KPInputPoint.ID)?
     var addEdge: (_ edge: KPEdge) -> ()
+    var updatePreviewEdge: (_ sourceID: KPOutputPoint.ID, _ dragPoint: CGPoint?) -> ()
 
     var body: some View {
         HStack {
@@ -37,11 +38,9 @@ struct NodeView: View {
                                 .onChanged { value in
                                     dragLocation = value.location
                                     currentOutputPoint = outputPoint.id
+                                    updatePreviewEdge(outputPoint.id, dragLocation)
                                 }
                                 .onEnded { value in
-                                    dragLocation = value.location
-                                    currentOutputPoint = outputPoint.id
-                                    print(dragLocation!)
                                     if let dragLocation {
                                         if let (outputID, inputID) = self.judgeConnection(with: dragLocation) {
                                             print("Connection 찾기 성공")
@@ -50,6 +49,8 @@ struct NodeView: View {
                                             print("Connection 찾기 실패")
                                         }
                                     }
+                                    dragLocation = nil
+                                    updatePreviewEdge(outputPoint.id, dragLocation)
                                 }
                         )
                 }
@@ -72,5 +73,5 @@ struct NodeView: View {
 }
 
 #Preview {
-    NodeView(node: .constant(.mockData), judgeConnection: { _, _ in (UUID(), UUID()) }, addEdge: { _ in })
+    NodeView(node: .constant(.mockData), judgeConnection: { _, _ in (UUID(), UUID()) }, addEdge: { _ in }, updatePreviewEdge: { _, _ in })
 }

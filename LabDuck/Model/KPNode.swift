@@ -41,7 +41,7 @@ struct KPNode: Identifiable {
 extension KPNode {
     var unwrappedTitle: String {
         get {
-            self.title ?? ""
+            self.title ?? "Untitled"
         }
         set {
             self.title = newValue
@@ -77,8 +77,8 @@ extension Array where Element == KPNode {
             title: "Thrilled by Your Progress! Large Language Models (GPT-4) No Longer Struggle to Pass Assessments in Higher Education Programming Courses",
             note: "Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯",
             url: "https://arxiv.org/pdf/2306.10073.pdf",
-            tags: [KPTag.mockData, KPTag.mockData],
-            colorTheme: .cyan,
+            tags: [KPTag.mockData, KPTag.mockData1],
+            colorTheme: .blue,
             position: .init(x: 50, y: 20),
             inputPoints: .mockData,
             outputPoints: .mockData
@@ -109,7 +109,14 @@ extension Array where Element == KPNode {
             title: "Robust and Scalable Online Code Execution System",
             note: "Judge0 - code execution system",
             url: "https://ieeexplore.ieee.org/document/9245310",
-            tags: [KPTag.mockData],
+            tags: [KPTag.mockData, KPTag.mockData2],
+            position: .init(x: 170, y: 70),
+            inputPoints: .mockData,
+            outputPoints: .mockData
+        ),
+        .init(
+            note: "이름없는노드다.",
+            tags: [KPTag.mockData, KPTag.mockData2],
             position: .init(x: 170, y: 70),
             inputPoints: .mockData,
             outputPoints: .mockData
