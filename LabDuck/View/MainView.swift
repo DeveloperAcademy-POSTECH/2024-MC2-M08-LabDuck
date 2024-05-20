@@ -9,63 +9,88 @@ import SwiftUI
 import Combine
 
 struct MainView: View {
+    // MARK: - Zoom
     @State private var zoom = 5.0
-    @GestureState private var gestureZoom = 1.0
+    @State private var updatingZoom: Double = 1.0
+
+    private var scaleValue: Double {
+        if zoom * updatingZoom < 1 {
+            return 1
+        } else if zoom * updatingZoom > 10 {
+            return 10
+        } else {
+            return zoom * updatingZoom
+        }
+    }
+
+    // MARK: - Drag
     @State private var dragOffset = CGSize.zero
-    @GestureState private var gestureDrag = CGSize.zero
+    @State private var updatingOffset = CGSize.zero
+
+    private var offsetValue: CGSize {
+        self.dragOffset + self.updatingOffset
+    }
+
+    @State private var subs = Set<AnyCancellable>()
+
     @State private var isGraphView: Bool = true
     @State private var isTableView: Bool = false
     @State private var searchText: String = ""
 
-    @State var subs = Set<AnyCancellable>() // Cancel onDisappear
+    private func magnifyGesture(_ width: Double, _ height: Double) -> some Gesture {
+        MagnifyGesture()
+            .onChanged { value in
+                updatingZoom = value.magnification
+                if zoom * updatingZoom != scaleValue {
+                    zoom = scaleValue
+                    updatingZoom = 1.0
+                    return
+                }
+                let currentWidth = width / (zoom * value.magnification)
+                let currentHeight = height / (zoom * value.magnification)
+                let magnificationDelta = value.magnification - 1.0 // 0 이상 : 확대, 0 이하 : 축소
+                print("원래 offset : ", dragOffset)
+                self.updatingOffset = CGSize(
+                    width: (0.5 - value.startAnchor.x) * currentWidth * magnificationDelta,
+                    height: (0.5 - value.startAnchor.y) * currentHeight * magnificationDelta
+                )
+                print("updatingOffset : \(updatingOffset)")
+                print("startAnchor : ", value.startAnchor)
+                print("magnification : ", value.magnification)
+                print("currentWidth, currentHeight : ", currentWidth, currentHeight)
+            }
+            .onEnded { value in
+                self.zoom = scaleValue
+                self.updatingZoom = 1.0
+                self.dragOffset = offsetValue
+                self.updatingOffset = .zero
+                print("dragOffset : ", dragOffset)
+            }
+    }
+
+    private var dragGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                self.updatingOffset = value.translation
+            }
+            .onEnded { value in
+                dragOffset += value.translation
+                updatingOffset = .zero
+            }
+    }
 
     var body: some View {
-        HStack {
+        GeometryReader { proxy in
             if isGraphView {
-                GeometryReader { proxy in
-                    var scaleValue: CGFloat {
-                        if zoom * gestureZoom < 1 {
-                            return 1
-                        } else if zoom * gestureZoom > 10 {
-                            return 10
-                        } else {
-                            return zoom * gestureZoom
-                        }
+                GraphView()
+                    .offset(offsetValue)
+                    .scaleEffect(scaleValue, anchor: .center)
+                    .searchable(text: $searchText)
+                    .gesture(magnifyGesture(proxy.size.width, proxy.size.height))
+                    .gesture(dragGesture)
+                    .onAppear {
+                        trackScrollWheel()
                     }
-                    GraphView()
-                        .scaleEffect(scaleValue)
-                        .offset(dragOffset + gestureDrag)
-                        .searchable(text: $searchText)
-                }
-                .background(Color.gray)
-                .gesture(
-                    MagnifyGesture()
-                        .updating($gestureZoom) { value, gestureState, _ in
-                            gestureState = value.magnification
-                        }
-                        .onEnded { value in
-                            let newValue = zoom * value.magnification
-                            if newValue < 1 {
-                                zoom = 1
-                            } else if newValue > 10 {
-                                zoom = 10
-                            } else {
-                                zoom = newValue
-                            }
-                        }
-                )
-                .gesture(
-                    DragGesture()
-                        .updating($gestureDrag) { value, gestureState, _ in
-                            gestureState = value.translation
-                        }
-                        .onEnded { value in
-                            dragOffset += value.translation
-                        }
-                )
-                .onAppear {
-                    trackScrollWheel()
-                }
             } else {
                 TableView()
             }
@@ -77,7 +102,7 @@ struct MainView: View {
                     Image(systemName: "chevron.backward")
                 })
             }
-            
+
             ToolbarItem(placement: .principal) {
                 Toggle(isOn: Binding(
                     get: { self.isGraphView },
@@ -91,7 +116,7 @@ struct MainView: View {
                         Text("Graph View")
                     }
             }
-            
+
             ToolbarItem(placement: .principal) {
                 Toggle(isOn: Binding(
                     get: { self.isTableView },
@@ -105,11 +130,11 @@ struct MainView: View {
                         Text("Table View")
                     }
             }
-            
+
             ToolbarItem {
                 Spacer()
             }
-            
+
             if isGraphView {
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: {
@@ -119,7 +144,7 @@ struct MainView: View {
                     })
                 }
             }
-            
+
             ToolbarItem(placement: .primaryAction) {
                 Button(action: {
                     // 그래프 & 테이블 뷰에서 노드 추가 기능 필요
@@ -131,7 +156,7 @@ struct MainView: View {
         .navigationTitle("Untitled")    //보드의 이름 나타내는 기능 추가 필요
         .toolbarBackground(Color(hex: 0xEAEAEA))
     }
-    
+
     private func trackScrollWheel() {
         NSApp.publisher(for: \.currentEvent)
             .filter { event in event?.type == .scrollWheel }

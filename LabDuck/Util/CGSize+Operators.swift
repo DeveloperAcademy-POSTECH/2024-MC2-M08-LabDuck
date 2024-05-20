@@ -11,8 +11,13 @@ extension CGSize {
     static func + (lhs: Self, rhs: Self) -> Self {
         Self(width: lhs.width + rhs.width, height: lhs.height + rhs.height)
     }
+
     static func += (lhs: inout Self, rhs: Self) {
         //lhs = Self(width: lhs.width + rhs.width, height: lhs.height + rhs.height)//두 CGSize 값을 더하고 첫 번째 값에 결과를 할당
         lhs = lhs + rhs
+    }
+
+    static func * (lhs: Self, rhs: CGFloat) -> Self {
+        Self(width: lhs.width * rhs, height: lhs.height * rhs)
     }
 }

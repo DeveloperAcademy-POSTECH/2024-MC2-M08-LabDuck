@@ -91,7 +91,7 @@ struct GraphView: View {
     private func PathShapes(_ sourcePoint: CGPoint, _ sinkPoint: CGPoint, _ edgeID: KPEdge.ID) -> some View {
         let pathShapeSide = 10.0 // 선을 이루는 shape들의 width, height, 간격은 모두 10.0으로 설정합니다.
         let pathShapeCount = sourcePoint.distance(from: sinkPoint) / pathShapeSide // 선의 길이에 따라 개수가 달라집니다.
-        let pathShapeRange: [Double] = (1..<Int(pathShapeCount)).map { Double($0) / pathShapeCount }
+        let pathShapeRange: [Double] = (0..<Int(pathShapeCount)).map { Double($0) / pathShapeCount }
         let path = PathBetween(sourcePoint, sinkPoint)
         ForEach(pathShapeRange, id: \.self) {
             if let point = path.trimmedPath(from: 0.0, to: $0).currentPoint {
