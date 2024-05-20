@@ -9,42 +9,49 @@ import SwiftUI
 import Combine
 
 struct MainView: View {
-    @State private var zoom = 1.0
+    @State private var zoom = 5.0
     @GestureState private var gestureZoom = 1.0
     @State private var dragOffset = CGSize.zero
     @GestureState private var gestureDrag = CGSize.zero
     @State private var isGraphView: Bool = true
     @State private var isTableView: Bool = false
     @State private var searchText: String = ""
-    
-    //@Binding private var zoomstate : Bool
-    //@State private var zoomstate: Bool
+
     @State var subs = Set<AnyCancellable>() // Cancel onDisappear
-    
+
     var body: some View {
         HStack {
             if isGraphView {
                 GeometryReader { proxy in
+                    var scaleValue: CGFloat {
+                        if zoom * gestureZoom < 1 {
+                            return 1
+                        } else if zoom * gestureZoom > 10 {
+                            return 10
+                        } else {
+                            return zoom * gestureZoom
+                        }
+                    }
                     GraphView()
-                        .scaleEffect(zoom * gestureZoom)
+                        .scaleEffect(scaleValue)
                         .offset(dragOffset + gestureDrag)
                         .searchable(text: $searchText)
                 }
                 .background(Color.gray)
                 .gesture(
-                    MagnifyGesture()// 업데이트가 되고 있는 상태. zoom하고 있는 상태를 ture로 바꾸고, end가 되면 false로 바꿔주기.
+                    MagnifyGesture()
                         .updating($gestureZoom) { value, gestureState, _ in
-                            //                    print(value.magnification)
-                            if value.magnification > 0 {
-                                gestureState = value.magnification
-                            }
-                            //zoomstate = true
+                            gestureState = value.magnification
                         }
                         .onEnded { value in
-                            if value.magnification > 0 {
-                                zoom *= value.magnification
+                            let newValue = zoom * value.magnification
+                            if newValue < 1 {
+                                zoom = 1
+                            } else if newValue > 10 {
+                                zoom = 10
+                            } else {
+                                zoom = newValue
                             }
-                            //zoomstate = false
                         }
                 )
                 .gesture(
