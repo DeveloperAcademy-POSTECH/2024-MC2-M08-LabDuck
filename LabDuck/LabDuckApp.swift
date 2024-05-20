@@ -11,6 +11,10 @@ import SwiftUI
 struct LabDuckApp: App {
     var body: some Scene {
         WindowGroup {
+            BoardGallery()
+        }
+
+        WindowGroup("메인 뷰", id: "main") {
             MainView()
         }
     }

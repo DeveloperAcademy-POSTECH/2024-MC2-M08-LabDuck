@@ -10,9 +10,8 @@ import SwiftUI
 struct OutputPointView: View {
     var outputPoint: KPOutputPoint
     var body: some View {
-        Rectangle()
-            .fill(Color.green)
-            .frame(width: 20, height: 20)
+        Image(systemName: "arrow.right.circle.fill")
+            .imageScale(.large)
             .anchorPreference(
                 key: OutputPointPreferenceKey.self,
                 value: .bounds
