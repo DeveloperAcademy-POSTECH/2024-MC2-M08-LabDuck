@@ -14,14 +14,8 @@ struct MainView: View {
     @State private var dragOffset = CGSize.zero
     @GestureState private var gestureDrag = CGSize.zero
     @State private var searchText: String = ""
-    @State var selectedView: ViewType = .graph
+    @State var selectedView: KPBoard.BoardViewType = KPBoard.mockData.viewType
     
-    enum ViewType: String, CaseIterable, Identifiable {
-        case graph = "Graph View"
-        case table = "Table View"
-        
-        var id: String { self.rawValue }
-    }
     
     //@Binding private var zoomstate : Bool
     //@State private var zoomstate: Bool
@@ -80,7 +74,7 @@ struct MainView: View {
             
             ToolbarItem(placement: .principal) {
                 Picker("View", selection: $selectedView) {
-                    ForEach(ViewType.allCases) { view in
+                    ForEach(KPBoard.BoardViewType.allCases, id: \.self) { view in
                         Text(view.rawValue).tag(view)
                     }
                 }
