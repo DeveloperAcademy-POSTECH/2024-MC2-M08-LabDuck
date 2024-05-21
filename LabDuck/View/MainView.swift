@@ -9,6 +9,7 @@ import SwiftUI
 import Combine
 
 struct MainView: View {
+    @State var selectedView: KPBoard.BoardViewType = KPBoard.mockData.viewType
     // MARK: - Zoom
     @State private var zoom = 5.0
     @State private var updatingZoom: Double = 1.0
@@ -33,10 +34,10 @@ struct MainView: View {
 
     @State private var subs = Set<AnyCancellable>()
 
-    @State private var isGraphView: Bool = true
-    @State private var isTableView: Bool = false
+    // MARK: - Search
     @State private var searchText: String = ""
 
+    // MARK: - Gestures
     private func magnifyGesture(_ width: Double, _ height: Double) -> some Gesture {
         MagnifyGesture()
             .onChanged { value in
@@ -72,7 +73,8 @@ struct MainView: View {
                 updatingOffset = .zero
             }
     }
-    @State var selectedView: KPBoard.BoardViewType = KPBoard.mockData.viewType
+
+    // MARK: - Body
     var body: some View {
         GeometryReader { proxy in
             if selectedView == .graph {
@@ -133,6 +135,7 @@ struct MainView: View {
         .toolbarBackground(Color(hex: 0xEAEAEA))
     }
 
+    // MARK: - TrackScrollWheel
     private func trackScrollWheel() {
         NSApp.publisher(for: \.currentEvent)
             .filter { event in event?.type == .scrollWheel }
