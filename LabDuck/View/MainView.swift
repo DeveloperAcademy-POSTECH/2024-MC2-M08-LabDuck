@@ -49,22 +49,16 @@ struct MainView: View {
                 let currentWidth = width / (zoom * value.magnification)
                 let currentHeight = height / (zoom * value.magnification)
                 let magnificationDelta = value.magnification - 1.0 // 0 이상 : 확대, 0 이하 : 축소
-                print("원래 offset : ", dragOffset)
                 self.updatingOffset = CGSize(
                     width: (0.5 - value.startAnchor.x) * currentWidth * magnificationDelta,
                     height: (0.5 - value.startAnchor.y) * currentHeight * magnificationDelta
                 )
-                print("updatingOffset : \(updatingOffset)")
-                print("startAnchor : ", value.startAnchor)
-                print("magnification : ", value.magnification)
-                print("currentWidth, currentHeight : ", currentWidth, currentHeight)
             }
             .onEnded { value in
                 self.zoom = scaleValue
                 self.updatingZoom = 1.0
                 self.dragOffset = offsetValue
                 self.updatingOffset = .zero
-                print("dragOffset : ", dragOffset)
             }
     }
 
