@@ -38,13 +38,11 @@ struct MainView: View {
                             if value.magnification > 0 {
                                 gestureState = value.magnification
                             }
-                            //zoomstate = true
                         }
                         .onEnded { value in
                             if value.magnification > 0 {
                                 zoom *= value.magnification
                             }
-                            //zoomstate = false
                         }
                 )
                 .gesture(
