@@ -9,9 +9,10 @@ import SwiftUI
 
 struct InputPointView: View {
     var inputPoint: KPInputPoint
+    
     var body: some View {
         Image(systemName: "arrow.right.circle.fill")
-            .imageScale(.large)
+            .imageScale(.large).foregroundColor(.pink)
             .anchorPreference(
                 key: InputPointPreferenceKey.self,
                 value: .bounds
@@ -21,6 +22,6 @@ struct InputPointView: View {
     }
 }
 
-#Preview {
-    InputPointView(inputPoint: .mockData)
-}
+//#Preview {
+//    InputPointView(inputPoint: .mockData, clickingOutput: clickingOutput )
+//}
