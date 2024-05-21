@@ -72,10 +72,10 @@ struct MainView: View {
                 updatingOffset = .zero
             }
     }
-
+    @State var selectedView: KPBoard.BoardViewType = KPBoard.mockData.viewType
     var body: some View {
         GeometryReader { proxy in
-            if isGraphView {
+            if selectedView == .graph {
                 GraphView()
                     .offset(offsetValue)
                     .scaleEffect(scaleValue, anchor: .center)
@@ -89,6 +89,7 @@ struct MainView: View {
                 TableView()
             }
         }
+        
         // MARK: - 툴바 코드
         .toolbar {
             ToolbarItem(placement: .navigation) {
@@ -98,38 +99,19 @@ struct MainView: View {
             }
 
             ToolbarItem(placement: .principal) {
-                Toggle(isOn: Binding(
-                    get: { self.isGraphView },
-                    set: { newValue in
-                        self.isGraphView = newValue
-                        if newValue {
-                            self.isTableView = false
-                        }
-                    })) {
-                        Image(systemName: "point.bottomleft.filled.forward.to.point.topright.scurvepath")
-                        Text("Graph View")
+                Picker("View", selection: $selectedView) {
+                    ForEach(KPBoard.BoardViewType.allCases, id: \.self) { view in
+                        Text(view.rawValue).tag(view)
                     }
-            }
-
-            ToolbarItem(placement: .principal) {
-                Toggle(isOn: Binding(
-                    get: { self.isTableView },
-                    set: { newValue in
-                        self.isTableView = newValue
-                        if newValue {
-                            self.isGraphView = false
-                        }
-                    })) {
-                        Image(systemName: "tablecells")
-                        Text("Table View")
-                    }
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .padding()
             }
 
             ToolbarItem {
                 Spacer()
             }
-
-            if isGraphView {
+            if selectedView == .graph {
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: {
                         // 그래프 뷰에서 텍스트 박스 추가 기능 필요
