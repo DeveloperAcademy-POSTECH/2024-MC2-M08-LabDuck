@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 struct GraphView: View {
-    @State private var board: KPBoard = .mockData
+    @Binding var board: KPBoard
 
     // MARK: Edges
     @State private var inputPointRects: [KPInputPoint.ID : CGRect] = [:]
@@ -115,7 +115,7 @@ struct GraphView: View {
 }
 
 #Preview {
-    GraphView()
+    GraphView(board: .constant(.mockData))
 }
 
 // MARK: - read preferences : 각 지점의 아이디와 위치를 가져오기 위한 메소드들

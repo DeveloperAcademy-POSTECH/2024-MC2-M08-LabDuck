@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 struct MainView: View {
-    @State var selectedView: KPBoard.BoardViewType = KPBoard.mockData.viewType
+    @State private var board: KPBoard = .mockData
     // MARK: - Zoom
     @State private var zoom = 5.0
     @State private var updatingZoom: Double = 1.0
@@ -77,8 +77,8 @@ struct MainView: View {
     // MARK: - Body
     var body: some View {
         GeometryReader { proxy in
-            if selectedView == .graph {
-                GraphView()
+            if board.viewType == .graph {
+                GraphView(board: $board)
                     .offset(offsetValue)
                     .scaleEffect(scaleValue, anchor: .center)
                     .searchable(text: $searchText)
@@ -88,7 +88,7 @@ struct MainView: View {
                         trackScrollWheel()
                     }
             } else {
-                TableView()
+                TableView(board: $board)
             }
         }
         
@@ -101,7 +101,7 @@ struct MainView: View {
             }
 
             ToolbarItem(placement: .principal) {
-                Picker("View", selection: $selectedView) {
+                Picker("View", selection: $board.viewType) {
                     ForEach(KPBoard.BoardViewType.allCases, id: \.self) { view in
                         Text(view.rawValue).tag(view)
                     }
@@ -113,7 +113,7 @@ struct MainView: View {
             ToolbarItem {
                 Spacer()
             }
-            if selectedView == .graph {
+            if board.viewType == .graph {
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: {
                         // 그래프 뷰에서 텍스트 박스 추가 기능 필요
