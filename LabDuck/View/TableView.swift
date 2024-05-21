@@ -8,18 +8,11 @@
 import SwiftUI
 
 struct TableView: View {
-    @State var nodes: [KPNode] = .mockData
+    @Binding var board: KPBoard
     @State private var expanded: Bool = true
     @State private var selection = Set<KPNode.ID>()
     @State private var sortOrder = [KeyPathComparator(\KPNode.title)]
     @State private var searchText = ""
-    //Edge 더미데이터 -> 표에서 output을 표현하기 위함
-    @State var edges: [KPEdge] = [
-        KPEdge(sourceID: Array.mockData[0].outputPoints[0].id, sinkID: Array.mockData[1].inputPoints[0].id),
-        KPEdge(sourceID: Array.mockData[0].outputPoints[0].id, sinkID: Array.mockData[3].inputPoints[0].id),
-        KPEdge(sourceID: Array.mockData[0].outputPoints[0].id, sinkID: Array.mockData[4].inputPoints[0].id),
-        KPEdge(sourceID: Array.mockData[0].outputPoints[0].id, sinkID: Array.mockData[3].inputPoints[1].id),
-    ]
     
     var body: some View {
         VStack{
@@ -93,7 +86,7 @@ struct TableView: View {
             .tableStyle(.inset(alternatesRowBackgrounds: false))
             .scrollContentBackground(.hidden)
             .onChange(of: sortOrder) { _, newSortOrder in
-                nodes.sort(using: newSortOrder)}
+                board.nodes.sort(using: newSortOrder)}
             .onChange(of: selection) { _, newSelection in
                 updateSelection(newSelection: newSelection)}
             .searchable(text: $searchText)
@@ -104,11 +97,11 @@ struct TableView: View {
     func findNodes(matching node: KPNode) -> [KPNode] {
         let sourceIDs = node.outputPoints.map { $0.id }
         
-        let matchingSinkIDs = edges.filter { sourceIDs.contains($0.sourceID) }.map { $0.sinkID }
-        
+        let matchingSinkIDs = board.edges.filter { sourceIDs.contains($0.sourceID) }.map { $0.sinkID }
+
         var nodeDict = [UUID: KPNode]()
         
-        nodes.forEach { node in
+        board.nodes.forEach { node in
             node.inputPoints.forEach { inputPoint in
                 if matchingSinkIDs.contains(inputPoint.id) {
                     nodeDict[node.id] = node
@@ -124,7 +117,7 @@ struct TableView: View {
         var allSelectedIDs = newSelection
         
         newSelection.forEach { nodeID in
-            if let node = nodes.first(where: { $0.id == nodeID }) {
+            if let node = board.nodes.first(where: { $0.id == nodeID }) {
                 allSelectedIDs.insert(node.id)
             }
         }
@@ -135,9 +128,9 @@ struct TableView: View {
     // MARK: - 필터링 기능
     var filteredNodes: [KPNode] {
         if searchText.isEmpty {
-            return nodes
+            return board.nodes
         } else {
-            return nodes.filter { node in
+            return board.nodes.filter { node in
                 let titleMatch = node.unwrappedTitle.lowercased().contains(searchText.lowercased())
                 let tagsMatch = node.tags.map { $0.name.lowercased() }.contains { $0.contains(searchText.lowercased()) }
                 let urlMatch = node.unwrappedURL.lowercased().contains(searchText.lowercased())
@@ -158,5 +151,5 @@ struct TableView: View {
 }
 
 #Preview {
-    TableView()
+    TableView(board: .constant(.mockData))
 }
