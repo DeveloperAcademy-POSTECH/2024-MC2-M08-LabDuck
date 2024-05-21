@@ -14,6 +14,20 @@ struct KPTag: Identifiable {
     var colorTheme: KPTagColor = KPTagColor.default
 }
 
+extension String {
+    // 추후 태그 생성 방식에 대해 더 논의
+    func toKPTag() -> KPTag {
+        KPTag(id: UUID(), name: self)
+    }
+}
+
+extension Array<String> {
+    // 추후 태그 생성 방식에 대해 더 논의
+    func toKPTags() -> [KPTag] {
+        self.map { $0.toKPTag() }
+    }
+}
+
 extension KPTag {
     static var mockData: KPTag {
         .init(id: UUID(), name: "tag1", colorTheme: KPTagColor.blue)
