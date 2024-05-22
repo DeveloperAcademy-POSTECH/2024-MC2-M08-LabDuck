@@ -22,7 +22,7 @@ struct GraphView: View {
     
     @State private var clickingOutput: Bool = false
 
-    @State var isEditingForTitle: Bool = false
+//    @State var isEditingForTitle: Bool = false
 
     // MARK: Combine
     @State var cancellabes = Set<AnyCancellable>()
@@ -31,9 +31,9 @@ struct GraphView: View {
         ZStack {
             Color.white
                 .contentShape(Rectangle()) // 클릭 이벤트를 감지할 수 있도록 설정
-                .onTapGesture {
-                        isEditingForTitle.toggle()
-                }
+//                .onTapGesture {
+//                        isEditingForTitle.toggle()
+//                }
             ForEach(board.edges) { edge in
                 if let sourcePoint = outputPointRects[edge.sourceID]?.center,
                    let sinkPoint = inputPointRects[edge.sinkID]?.center {
@@ -46,7 +46,7 @@ struct GraphView: View {
             ForEach(self.$board.nodes) { node in
 
                 NodeView(
-                    board: $board, node: node, clickingOutput: $clickingOutput, isEditingForTitle: $isEditingForTitle, inputPointLinking: KPNode.mockData,
+                    node: node, clickingOutput: $clickingOutput, /*isEditingForTitle: $isEditingForTitle,*/
                     judgeConnection: self.judgeConnection(outputID:dragLocation:),
                     addEdge: self.addEdge(edge:),
                     updatePreviewEdge: self.updatePreviewEdge(from:to:)
@@ -153,6 +153,7 @@ extension GraphView {
 
 // MARK: - Callback Defenition : 하위 뷰에서 read preferences로 읽어온 데이터를 활용하기 위해 전달하는 클로저.
 extension GraphView {
+    
     private func judgeConnection(
         outputID: KPOutputPoint.ID,
         dragLocation: CGPoint
@@ -177,8 +178,6 @@ extension GraphView {
 
         // MARK: 디버그용 출력 문장들, 추후 삭제 등에 이 코드가 필요할 것 같음
         self.board.nodes.forEach { node in
-            
-            inputPointLinking(matching: node)
             
             node.outputPoints.forEach { outputPoint in
                 if outputPoint.id == edge.sourceID {
@@ -219,24 +218,6 @@ extension GraphView {
         } else {
             self.previewEdge = nil
         }
-    }
-    
-
-    func inputPointLinking(matching node: KPNode){
-        let sourceIDs = node.outputPoints.map{ $0.id }
-        
-        let matchingSinkIDs = board.edges.filter{sourceIDs.contains($0.sourceID)}.map { $0.sinkID }
-        
-        var linkedInputpoint = KPInputPoint(isLinked: false)
-        
-        board.nodes.forEach { node in
-            node.inputPoints.forEach { inputPoint in
-                if matchingSinkIDs.contains(inputPoint.id) {
-                    linkedInputpoint.isLinked = true
-                }
-            }
-        }
-        
     }
 }
 
