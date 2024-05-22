@@ -9,6 +9,10 @@ import SwiftUI
 
 struct BoardView: View {
     @Binding var board: KPBoard
+    @Binding var isEditing: Bool
+    @State private var editingBoardID: UUID?
+    @FocusState private var isFocused: Bool
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Image("test")
@@ -18,9 +22,24 @@ struct BoardView: View {
                 .clipped()
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(board.title)
-                    .font(.title3)
-                    .bold()
+                if isEditing {
+                        TextField("새 이름 입력", text: $board.title)
+                            .onSubmit {
+                                editingBoardID = nil
+                                print("편집 종료")
+                                isEditing = false
+                            }
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .onAppear{isFocused = true}                    
+                }
+                else{
+                    Text(board.title)
+                        .font(.title3)
+                        .bold()
+                        .onTapGesture {
+                            isEditing = true
+                        }
+                }
                 Text(formattedDate(from: board.modifiedDate))
                     .font(.caption)
             }
@@ -54,6 +73,6 @@ struct BoardView: View {
     }
 }
 
-#Preview {
-    BoardView(board: .constant(.mockData))
-}
+//#Preview {
+//    BoardView(board: .constant(.mockData))
+//}
