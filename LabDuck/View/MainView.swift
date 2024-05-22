@@ -28,7 +28,6 @@ struct MainView: View {
     // MARK: - Drag
     @State private var dragOffset = CGSize.zero
     @State private var updatingOffset = CGSize.zero
-    @State private var viewSize: CGSize = .zero
 
     private var offsetValue: CGSize {
         self.dragOffset + self.updatingOffset
@@ -130,7 +129,7 @@ struct MainView: View {
 
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: {
-                        let center = calculateCenterCoordinate(viewSize)
+                        let center = calculateCenterCoordinate(.zero)
                         board.nodes.append(KPNode(position: CGPoint(x: center.x, y: center.y)))
                     }, label: {
                         Image(systemName: "plus.rectangle")
