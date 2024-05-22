@@ -14,7 +14,12 @@ struct KPNode: Identifiable {
     var url: String?
     var tags: [KPTag] = []
     var colorTheme: KPColorTheme = .default
-    var position: CGPoint = .zero
+    var position: CGPoint {
+            didSet {
+                position.x = min(max(position.x, -2300), 2300)
+                position.y = min(max(position.y, -1800), 1800)
+            }
+        }
     var size: CGSize
     var inputPoints: [KPInputPoint] = []
     var outputPoints: [KPOutputPoint] = []
