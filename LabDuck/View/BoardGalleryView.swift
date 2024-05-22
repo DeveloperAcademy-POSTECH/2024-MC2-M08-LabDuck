@@ -133,7 +133,7 @@ struct BoardGallery: View {
     
     func duplicateBoard(board: KPBoard) {
         let newBoard = KPBoard(title: board.title, nodes: board.nodes, edges: board.edges,
-                               texts: board.texts, modifiedDate: board.modifiedDate, viewType: board.viewType)
+                               texts: board.texts, modifiedDate: Date(), viewType: board.viewType)
         boards.append(newBoard)
     }
     
