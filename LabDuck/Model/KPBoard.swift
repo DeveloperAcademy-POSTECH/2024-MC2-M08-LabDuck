@@ -17,9 +17,9 @@ struct KPBoard: Identifiable {
     var viewType: BoardViewType
     var previewImage: Data?
 
-    enum BoardViewType {
-        case graph
-        case table
+    enum BoardViewType: String, CaseIterable {
+        case graph = "Graph View"
+        case table = "Table View"
     }
 
     init(title: String, nodes: [KPNode], edges: [KPEdge], texts: [KPText], modifiedDate: Date, viewType: BoardViewType, previewImage: Data? = nil) {
