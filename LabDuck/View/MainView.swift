@@ -14,12 +14,15 @@ struct MainView: View {
     // MARK: - Zoom
     @State private var zoom = 5.0
     @State private var updatingZoom: Double = 1.0
+    
+    private let minZoom = 0.5
+    private let maxZoom = 10.0
 
     private var scaleValue: Double {
-        if zoom * updatingZoom < 1 {
-            return 1
-        } else if zoom * updatingZoom > 10 {
-            return 10
+        if zoom * updatingZoom < minZoom {
+            return minZoom
+        } else if zoom * updatingZoom > maxZoom {
+            return maxZoom
         } else {
             return zoom * updatingZoom
         }
@@ -30,7 +33,10 @@ struct MainView: View {
     @State private var updatingOffset = CGSize.zero
 
     private var offsetValue: CGSize {
-        self.dragOffset + self.updatingOffset
+        CGSize(
+            width: min(max(self.dragOffset.width + self.updatingOffset.width, -1000), 1000),
+            height: min(max(self.dragOffset.height + self.updatingOffset.height, -1000), 1000)
+        )
     }
 
     @State private var subs = Set<AnyCancellable>()
@@ -70,9 +76,17 @@ struct MainView: View {
                 self.updatingOffset = value.translation
             }
             .onEnded { value in
-                dragOffset += value.translation
-                updatingOffset = .zero
+                let newOffset = CGSize(
+                    width: self.dragOffset.width + value.translation.width,
+                    height: self.dragOffset.height + value.translation.height
+                )
+                self.dragOffset = CGSize(
+                    width: min(max(newOffset.width, -1000), 1000),
+                    height: min(max(newOffset.height, -1000), 1000)
+                )
+                self.updatingOffset = .zero
             }
+
     }
 
     // MARK: - Body
@@ -81,6 +95,7 @@ struct MainView: View {
             VStack{
                 if board.viewType == .graph {
                     GraphView(board: $board)
+                        .background(Rectangle().fill(Color.white).frame(width: 5000, height: 5000))
                         .offset(offsetValue)
                         .scaleEffect(scaleValue, anchor: .center)
                         .searchable(text: $searchText)
@@ -149,6 +164,8 @@ struct MainView: View {
                 if let event {
                     self.dragOffset.width += ( event.deltaX ) * 3.5
                     self.dragOffset.height += ( event.deltaY ) * 3.5
+                    self.dragOffset.width = min(max(self.dragOffset.width, -1000), 1000)
+                    self.dragOffset.height = min(max(self.dragOffset.height, -1000), 1000)
                 }
             }
             .store(in: &subs)
@@ -162,8 +179,6 @@ struct MainView: View {
         
         return CGPoint(x: centerX , y: centerY)
     }
-
-
 }
 
 #Preview {
