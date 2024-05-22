@@ -9,10 +9,10 @@ import SwiftUI
 
 struct TableView: View {
     @Binding var board: KPBoard
+    @Binding var searchText: String
     @State private var expanded: Bool = true
     @State private var selection = Set<KPNode.ID>()
     @State private var sortOrder = [KeyPathComparator(\KPNode.title)]
-    @State private var searchText = ""
     
     var body: some View {
         VStack{
@@ -151,5 +151,5 @@ struct TableView: View {
 }
 
 #Preview {
-    TableView(board: .constant(.mockData))
+    TableView(board: .constant(.mockData), searchText: .constant(""))
 }

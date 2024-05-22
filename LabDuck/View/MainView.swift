@@ -10,6 +10,7 @@ import Combine
 
 struct MainView: View {
     @State private var board: KPBoard = .mockData
+    
     // MARK: - Zoom
     @State private var zoom = 5.0
     @State private var updatingZoom: Double = 1.0
@@ -27,6 +28,7 @@ struct MainView: View {
     // MARK: - Drag
     @State private var dragOffset = CGSize.zero
     @State private var updatingOffset = CGSize.zero
+    @State private var viewSize: CGSize = .zero
 
     private var offsetValue: CGSize {
         self.dragOffset + self.updatingOffset
@@ -77,62 +79,67 @@ struct MainView: View {
     // MARK: - Body
     var body: some View {
         GeometryReader { proxy in
-            if board.viewType == .graph {
-                GraphView(board: $board)
-                    .offset(offsetValue)
-                    .scaleEffect(scaleValue, anchor: .center)
-                    .searchable(text: $searchText)
-                    .gesture(magnifyGesture(proxy.size.width, proxy.size.height))
-                    .gesture(dragGesture)
-                    .onAppear {
-                        trackScrollWheel()
-                    }
-            } else {
-                TableView(board: $board)
+            VStack{
+                if board.viewType == .graph {
+                    GraphView(board: $board)
+                        .offset(offsetValue)
+                        .scaleEffect(scaleValue, anchor: .center)
+                        .searchable(text: $searchText)
+                        .gesture(magnifyGesture(proxy.size.width, proxy.size.height))
+                        .gesture(dragGesture)
+                        .onAppear {
+                            trackScrollWheel()
+                        }
+                } else {
+                    TableView(board: $board, searchText: $searchText)
+                }
             }
-        }
-        
-        // MARK: - 툴바 코드
-        .toolbar {
-            ToolbarItem(placement: .navigation) {
-                Button(action: {}, label: {
-                    Image(systemName: "chevron.backward")
-                })
-            }
+            
+            // MARK: - Toolbar
+            .toolbar {
+                ToolbarItem(placement: .navigation) {
+                    Button(action: {}, 
+                           label: {
+                        Image(systemName: "chevron.backward")
+                    })
+                }
 
-            ToolbarItem(placement: .principal) {
-                Picker("View", selection: $board.viewType) {
-                    ForEach(KPBoard.BoardViewType.allCases, id: \.self) { view in
-                        Text(view.rawValue).tag(view)
+                ToolbarItem(placement: .principal) {
+                    Picker("View", selection: $board.viewType) {
+                        ForEach(KPBoard.BoardViewType.allCases, id: \.self) { view in
+                            Text(view.rawValue).tag(view)
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding()
+                }
+
+                ToolbarItem {
+                    Spacer()
+                }
+
+                if board.viewType == .graph {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button(action: {
+                            // 그래프 뷰에서 텍스트 박스 추가 기능 필요
+                        }, label: {
+                            Image(systemName: "character.textbox")
+                        })
                     }
                 }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding()
-            }
 
-            ToolbarItem {
-                Spacer()
-            }
-            if board.viewType == .graph {
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: {
-                        // 그래프 뷰에서 텍스트 박스 추가 기능 필요
+                        let center = calculateCenterCoordinate(viewSize)
+                        board.nodes.append(KPNode(position: CGPoint(x: center.x, y: center.y)))
                     }, label: {
-                        Image(systemName: "character.textbox")
+                        Image(systemName: "plus.rectangle")
                     })
                 }
             }
-
-            ToolbarItem(placement: .primaryAction) {
-                Button(action: {
-                    // 그래프 & 테이블 뷰에서 노드 추가 기능 필요
-                }, label: {
-                    Image(systemName: "plus.rectangle")
-                })
-            }
+            .navigationTitle("\(board.title)")
+            .toolbarBackground(Color(hex: 0xEAEAEA))
         }
-        .navigationTitle("Untitled")    //보드의 이름 나타내는 기능 추가 필요
-        .toolbarBackground(Color(hex: 0xEAEAEA))
     }
 
     // MARK: - TrackScrollWheel
@@ -147,6 +154,17 @@ struct MainView: View {
             }
             .store(in: &subs)
     }
+    
+    private func calculateCenterCoordinate(_ size: CGSize) -> CGPoint {
+        let scaledWidth = size.width * scaleValue
+        let scaledHeight = size.height * scaleValue
+        let centerX = (scaledWidth / 2) - offsetValue.width
+        let centerY = (scaledHeight / 2) - offsetValue.height
+        
+        return CGPoint(x: centerX , y: centerY)
+    }
+
+
 }
 
 #Preview {
