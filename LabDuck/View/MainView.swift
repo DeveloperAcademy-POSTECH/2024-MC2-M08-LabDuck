@@ -34,7 +34,7 @@ struct MainView: View {
                 .gesture(
                     MagnifyGesture()// 업데이트가 되고 있는 상태. zoom하고 있는 상태를 ture로 바꾸고, end가 되면 false로 바꿔주기.
                         .updating($gestureZoom) { value, gestureState, _ in
-                            //                    print(value.magnification)
+                            //print(value.magnification)
                             if value.magnification > 0 {
                                 gestureState = value.magnification
                             }
