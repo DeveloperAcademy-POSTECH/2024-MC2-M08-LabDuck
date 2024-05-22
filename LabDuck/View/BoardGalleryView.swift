@@ -1,7 +1,7 @@
 import SwiftUI
 import AppKit
 
-struct BoardGallery: View {
+struct BoardGalleryView: View {
     @Environment(\.openWindow) private var openWindow
 
     @State var boards: [KPBoard] = [.mockData2, .mockData, .mockData, .mockData, .mockData, .mockData, .mockData]
@@ -144,12 +144,12 @@ struct BoardGallery: View {
     }
 }
 
-extension BoardGallery {
+extension BoardGalleryView {
     private func addBoard(_ board: KPBoard) {
         self.boards.append(board)
     }
 }
 
 #Preview {
-    BoardGallery()
+    BoardGalleryView()
 }

@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct LabDuckApp: App {
+    let boardGalleryManager = KPBoardGalleryManager()
+    let boardManager = KPBoardManager()
     var body: some Scene {
         WindowGroup {
-            BoardGallery()
+            BoardGalleryView()
         }
 
         WindowGroup("메인 뷰", id: "main") {
