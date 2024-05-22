@@ -42,6 +42,14 @@ struct KPBoard: Identifiable {
             edge.id == edgeID
         }
     }
+
+    public mutating func addNode(_ node: KPNode) {
+        self.nodes.append(node)
+    }
+
+    public mutating func addNodes(_ nodes: [KPNode]) {
+        self.nodes.append(contentsOf: nodes)
+    }
 }
 
 extension KPBoard {
@@ -61,5 +69,9 @@ extension KPBoard {
         let edge = KPEdge(sourceID: outputPoint.id, sinkID: inputPoint.id)
 
         return .init(title: "내가만든보드", nodes: .mockData, edges: [edge], texts: [], modifiedDate: .now, viewType: .table)
+    }
+
+    static var emptyData: KPBoard {
+        KPBoard(title: "Untitled", nodes: [], edges: [], texts: [], modifiedDate: .now, viewType: .table)
     }
 }

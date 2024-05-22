@@ -10,6 +10,8 @@ struct BoardGallery: View {
     @State private var selectedBoard: KPBoard?
     @State private var editingBoardID: UUID?
 
+    @State var showFileChooser = false
+
     let columns = [
         GridItem(.adaptive(minimum: 240), spacing: 10)
     ]
@@ -79,6 +81,54 @@ struct BoardGallery: View {
                 },
                   secondaryButton: .cancel(Text("아니오")))
         }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    Button(action: {
+                        self.addBoard(.emptyData)
+                    }, label: {
+                        Text("새 보드")
+                    })
+                    CSVImportButton()
+                } label: {
+                    Image(systemName: "square.and.pencil")
+                }
+            }
+        }
+        .fileImporter(isPresented: $showFileChooser, allowedContentTypes: [.init(filenameExtension: "csv")!]) { result in
+            switch result {
+            case .success(let file):
+                print(file)
+                let gotAccess = file.startAccessingSecurityScopedResource()
+                if !gotAccess { return }
+                do {
+                    let contents = try String(contentsOf: file, encoding: .utf8)
+                    print(contents)
+                    let dictionaryData = try CSVConvertManager.csvStringToDictionary(contents)
+                    let parsedNodes = dictionaryData.map { dictionary in
+                        CSVConvertManager.dictionaryToKPNode(dictionary)
+                    }
+                    var newBoard = KPBoard.emptyData
+                    newBoard.addNodes(parsedNodes)
+                    dump("newBoard : \(newBoard)")
+                    self.addBoard(newBoard)
+                } catch {
+                    print(error.localizedDescription)
+                }
+                file.stopAccessingSecurityScopedResource()
+            case .failure(let failure):
+                print(failure)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func CSVImportButton() -> some View {
+        Button(action: {
+            showFileChooser.toggle()
+        }, label: {
+            Text("CSV에서 가져오기")
+        })
     }
     
     func duplicateBoard(board: KPBoard) {
@@ -92,4 +142,14 @@ struct BoardGallery: View {
             boards.remove(at: index)
         }
     }
+}
+
+extension BoardGallery {
+    private func addBoard(_ board: KPBoard) {
+        self.boards.append(board)
+    }
+}
+
+#Preview {
+    BoardGallery()
 }
