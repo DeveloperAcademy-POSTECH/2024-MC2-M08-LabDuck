@@ -10,6 +10,7 @@ import Combine
 
 struct MainView: View {
     @State private var board: KPBoard = .mockData
+    
     // MARK: - Zoom
     @State private var zoom = 5.0
     @State private var updatingZoom: Double = 1.0
@@ -93,9 +94,12 @@ struct MainView: View {
                     TableView(board: $board, searchText: $searchText)
                 }
             }
+            
+            // MARK: - Toolbar
             .toolbar {
                 ToolbarItem(placement: .navigation) {
-                    Button(action: {}, label: {
+                    Button(action: {}, 
+                           label: {
                         Image(systemName: "chevron.backward")
                     })
                 }
@@ -152,10 +156,15 @@ struct MainView: View {
     }
     
     private func calculateCenterCoordinate(_ size: CGSize) -> CGPoint {
-        let centerX = (size.width / 2) - (offsetValue.width / scaleValue)
-        let centerY = (size.height / 2) - (offsetValue.height / scaleValue)
-        return CGPoint(x: centerX, y: centerY)
+        let scaledWidth = size.width * scaleValue
+        let scaledHeight = size.height * scaleValue
+        let centerX = (scaledWidth / 2) - offsetValue.width
+        let centerY = (scaledHeight / 2) - offsetValue.height
+        
+        return CGPoint(x: centerX , y: centerY)
     }
+
+
 }
 
 #Preview {
