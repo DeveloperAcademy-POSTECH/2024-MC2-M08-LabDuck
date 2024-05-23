@@ -95,7 +95,7 @@ struct TableView: View {
             .searchable(text: $searchText)
             .inspector(isPresented: $isSheet) {
                 if let editingNodeID = editingNodeID, let editingNodeIndex = board.nodes.firstIndex(where: { $0.id == editingNodeID }) {
-                    EditSheet(node: $board.nodes[editingNodeIndex], board: $board, findNodes: findNodes)
+                    EditSheetView(node: $board.nodes[editingNodeIndex], board: $board, findNodes: findNodes)
                         .inspectorColumnWidth(min: 320, ideal: 320, max: 900)
                 }
                 

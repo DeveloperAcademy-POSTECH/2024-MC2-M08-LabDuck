@@ -72,7 +72,3 @@ struct BoardView: View {
         return timeFormatter.string(from: date)
     }
 }
-
-//#Preview {
-//    BoardView(board: .constant(.mockData))
-//}

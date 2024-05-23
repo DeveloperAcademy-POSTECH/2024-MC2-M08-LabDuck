@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct EditSheet: View {
+struct EditSheetView: View {
     @Binding var node: KPNode
     @Binding var board: KPBoard
     @State private var relatedNodes: [KPNode] = []
