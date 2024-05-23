@@ -10,15 +10,19 @@ import Combine
 
 struct MainView: View {
     @State private var board: KPBoard = .mockData
+    
     // MARK: - Zoom
     @State private var zoom = 5.0
     @State private var updatingZoom: Double = 1.0
+    
+    private let minZoom = 0.5
+    private let maxZoom = 10.0
 
     private var scaleValue: Double {
-        if zoom * updatingZoom < 1 {
-            return 1
-        } else if zoom * updatingZoom > 10 {
-            return 10
+        if zoom * updatingZoom < minZoom {
+            return minZoom
+        } else if zoom * updatingZoom > maxZoom {
+            return maxZoom
         } else {
             return zoom * updatingZoom
         }
@@ -27,10 +31,12 @@ struct MainView: View {
     // MARK: - Drag
     @State private var dragOffset = CGSize.zero
     @State private var updatingOffset = CGSize.zero
-    @State private var viewSize: CGSize = .zero
 
     private var offsetValue: CGSize {
-        self.dragOffset + self.updatingOffset
+        CGSize(
+            width: min(max(self.dragOffset.width + self.updatingOffset.width, -1000), 1000),
+            height: min(max(self.dragOffset.height + self.updatingOffset.height, -1000), 1000)
+        )
     }
 
     @State private var subs = Set<AnyCancellable>()
@@ -70,9 +76,17 @@ struct MainView: View {
                 self.updatingOffset = value.translation
             }
             .onEnded { value in
-                dragOffset += value.translation
-                updatingOffset = .zero
+                let newOffset = CGSize(
+                    width: self.dragOffset.width + value.translation.width,
+                    height: self.dragOffset.height + value.translation.height
+                )
+                self.dragOffset = CGSize(
+                    width: min(max(newOffset.width, -1000), 1000),
+                    height: min(max(newOffset.height, -1000), 1000)
+                )
+                self.updatingOffset = .zero
             }
+
     }
 
     // MARK: - Body
@@ -81,6 +95,7 @@ struct MainView: View {
             VStack{
                 if board.viewType == .graph {
                     GraphView(board: $board)
+                        .background(Rectangle().fill(Color.white).frame(width: 5000, height: 5000))
                         .offset(offsetValue)
                         .scaleEffect(scaleValue, anchor: .center)
                         .searchable(text: $searchText)
@@ -93,9 +108,12 @@ struct MainView: View {
                     TableView(board: $board, searchText: $searchText)
                 }
             }
+            
+            // MARK: - Toolbar
             .toolbar {
                 ToolbarItem(placement: .navigation) {
-                    Button(action: {}, label: {
+                    Button(action: {}, 
+                           label: {
                         Image(systemName: "chevron.backward")
                     })
                 }
@@ -126,7 +144,7 @@ struct MainView: View {
 
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: {
-                        let center = calculateCenterCoordinate(viewSize)
+                        let center = calculateCenterCoordinate(.zero)
                         board.nodes.append(KPNode(position: CGPoint(x: center.x, y: center.y)))
                     }, label: {
                         Image(systemName: "plus.rectangle")
@@ -146,15 +164,20 @@ struct MainView: View {
                 if let event {
                     self.dragOffset.width += ( event.deltaX ) * 3.5
                     self.dragOffset.height += ( event.deltaY ) * 3.5
+                    self.dragOffset.width = min(max(self.dragOffset.width, -1000), 1000)
+                    self.dragOffset.height = min(max(self.dragOffset.height, -1000), 1000)
                 }
             }
             .store(in: &subs)
     }
     
     private func calculateCenterCoordinate(_ size: CGSize) -> CGPoint {
-        let centerX = (size.width / 2) - (offsetValue.width / scaleValue)
-        let centerY = (size.height / 2) - (offsetValue.height / scaleValue)
-        return CGPoint(x: centerX, y: centerY)
+        let scaledWidth = size.width * scaleValue
+        let scaledHeight = size.height * scaleValue
+        let centerX = (scaledWidth / 2) - offsetValue.width
+        let centerY = (scaledHeight / 2) - offsetValue.height
+        
+        return CGPoint(x: centerX , y: centerY)
     }
 }
 
