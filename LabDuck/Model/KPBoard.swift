@@ -35,6 +35,14 @@ struct KPBoard: Identifiable {
 
     public mutating func addEdge(_ edge: KPEdge) {
         self.edges.append(edge)
+        
+        self.nodes.enumerated().forEach { nodeIndex, node in
+            node.inputPoints.enumerated().forEach { inputPointIndex, inputPoint in
+                if inputPoint.id == edge.sinkID {
+                    self.nodes[nodeIndex].inputPoints[inputPointIndex].isLinked = true
+                }
+            }
+        }
     }
 
     public mutating func removeEdge(_ edgeID: KPEdge.ID) {
