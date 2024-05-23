@@ -3,15 +3,15 @@ import AppKit
 
 struct BoardGallery: View {
     @Environment(\.openWindow) private var openWindow
-
+    
     @State var boards: [KPBoard] = [.mockData2, .mockData, .mockData, .mockData, .mockData, .mockData, .mockData]
     
     @State private var showAlert = false
     @State private var selectedBoard: KPBoard?
     @State private var editingBoardID: UUID?
-
+    
     @State var showFileChooser = false
-
+    
     let columns = [
         GridItem(.adaptive(minimum: 240), spacing: 10)
     ]
@@ -36,32 +36,32 @@ struct BoardGallery: View {
                                     }
                                 }
                             ))
-                                .onTapGesture(count: 1) {
+                            .onTapGesture(count: 1) {
+                                openWindow(id: "main")
+                            }
+                            .contextMenu(ContextMenu(menuItems: {
+                                Button(action: {
                                     openWindow(id: "main")
+                                }) {
+                                    Text("파일 보기")
                                 }
-                                .contextMenu(ContextMenu(menuItems: {
-                                    Button(action: {
-                                        openWindow(id: "main")
-                                    }) {
-                                        Text("파일 보기")
-                                    }
-                                    Button(action: {
-                                        editingBoardID = board.id
-                                    }) {
-                                        Text("이름 바꾸기")
-                                    }
-                                    Button(action: {
-                                        duplicateBoard(board: board)
-                                    }) {
-                                        Text("파일 복제하기")
-                                    }
-                                    Button(action: {
-                                        selectedBoard = board
-                                        showAlert = true
-                                    }) {
-                                        Text("파일 삭제하기")
-                                    }
-                                }))
+                                Button(action: {
+                                    editingBoardID = board.id
+                                }) {
+                                    Text("이름 바꾸기")
+                                }
+                                Button(action: {
+                                    duplicateBoard(board: board)
+                                }) {
+                                    Text("파일 복제하기")
+                                }
+                                Button(action: {
+                                    selectedBoard = board
+                                    showAlert = true
+                                }) {
+                                    Text("파일 삭제하기")
+                                }
+                            }))
                             
                         }
                     }
@@ -71,15 +71,54 @@ struct BoardGallery: View {
             .padding(.top, 40)
         }
         .frame(minWidth: 800, minHeight: 600)
-        .alert(isPresented: $showAlert) {
-            Alert(title: Text("파일 삭제하기"),
-                  message: Text("정말 삭제하시겠습니까?"),
-                  primaryButton: .default(Text("네")) {
-                    if let boardToDelete = selectedBoard {
-                        deleteBoard(board: boardToDelete)
-                    }
-                },
-                  secondaryButton: .cancel(Text("아니오")))
+        .sheet(isPresented: $showAlert) {
+            
+            VStack(spacing: 20) {
+                Text("\n")
+                Text("파일 삭제")
+                    .font(.title3)
+                    .bold()
+                
+                Text("이 파일을 삭제하시겠습니까?")
+                    .multilineTextAlignment(.center)
+                    .font(.system(size: 12))
+                
+                HStack {
+                    Button(action: {
+                        showAlert = false
+                    }) {
+                        Text("취소")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 7)
+                            .background(Color.gray.opacity(0.3))
+                            .foregroundColor(.black)
+                            .cornerRadius(8)
+                    }.buttonStyle(PlainButtonStyle())
+                    
+                    
+                    Button(action: {
+                        if let boardToDelete = selectedBoard
+                        {
+                            deleteBoard(board: boardToDelete)
+                        }
+                        showAlert = false
+                    }) {
+                        Text("삭제")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 7)
+                            .background(Color.red)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                    }.buttonStyle(PlainButtonStyle())
+                    
+                }
+                .padding()
+            }
+            .padding()
+            .frame(width: 280, height: 160)
+            .background(Color.white)
+            .cornerRadius(12)
+            .shadow(radius: 20)
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
