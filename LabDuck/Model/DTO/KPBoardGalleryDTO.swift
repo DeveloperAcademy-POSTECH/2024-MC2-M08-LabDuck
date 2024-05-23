@@ -9,13 +9,13 @@ import Foundation
 
 struct KPBoardGalleryDTO {
     var version: String?
-    var boardsURLString: [String]?
+    var boardsURL: [URL]?
 }
 
 extension KPBoardGalleryDTO: Codable {}
 
 extension KPBoardGalleryDTO {
     static var emptyData: Self {
-        KPBoardGalleryDTO(version: "0.1", boardsURLString: [])
+        KPBoardGalleryDTO(version: "0.1", boardsURL: [])
     }
 }

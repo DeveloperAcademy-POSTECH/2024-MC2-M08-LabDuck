@@ -24,7 +24,7 @@ struct KPNode: Identifiable, Equatable {
     var inputPoints: [KPInputPoint] = []
     var outputPoints: [KPOutputPoint] = []
 
-    init(title: String? = nil, note: String? = nil, url: String? = nil, tags: [KPTag] = [], colorTheme: KPColorTheme = .default, position: CGPoint = .zero, size: CGSize = CGSize(width: 400, height: 400), inputPoints: [KPInputPoint] = [], outputPoints: [KPOutputPoint] = []) {
+    init(id: UUID = UUID(), title: String? = nil, note: String? = nil, url: String? = nil, tags: [KPTag] = [], colorTheme: KPColorTheme = .default, position: CGPoint = .zero, size: CGSize = CGSize(width: 400, height: 400), inputPoints: [KPInputPoint] = [], outputPoints: [KPOutputPoint] = []) {
         self.id = UUID()
         self.title = title
         self.note = note

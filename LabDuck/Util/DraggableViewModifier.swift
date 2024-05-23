@@ -12,7 +12,6 @@ struct DraggableViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         content.gesture(DragGesture(minimumDistance: 0)
                 .onChanged { value in
-                    print(value)
                     self.offset.x += value.location.x - value.startLocation.x
                     self.offset.y += value.location.y - value.startLocation.y
                 })

@@ -8,7 +8,12 @@
 import Foundation
 
 enum BoardGalleryErrors: Error {
-    case error
+    case getPathError
+    case isExistFailed
+    case readError
+    case writeError
+    case decodeError
+    case encodeError
 }
 
 protocol BoardGalleryUseCase {
@@ -29,11 +34,11 @@ final class DefaultBoardGalleryUseCase: BoardGalleryUseCase {
 
     func readData() async -> Result<KPBoardGallery, BoardGalleryErrors> {
         guard case .success(let boardGalleryPath) = fileManageUseCase.getBoardGalleryPath() else {
-            return .failure(.error)
+            return .failure(.getPathError)
         }
 
         guard case .success(let isExist) = fileManageUseCase.isExist(boardGalleryPath) else {
-            return .failure(.error)
+            return .failure(.isExistFailed)
         }
 
         if !isExist {
@@ -41,11 +46,11 @@ final class DefaultBoardGalleryUseCase: BoardGalleryUseCase {
         }
 
         guard case .success(let data) = await fileManageUseCase.readFile(boardGalleryPath) else {
-            return .failure(.error)
+            return .failure(.readError)
         }
 
         guard case .success(let dto) = codingUseCase.decode(KPBoardGalleryDTO.self, from: data) else {
-            return .failure(.error)
+            return .failure(.decodeError)
         }
 
         return .success(toVO(dto))
@@ -55,20 +60,22 @@ final class DefaultBoardGalleryUseCase: BoardGalleryUseCase {
         let dto = toDTO(boardGallery)
 
         guard case .success(let data) = codingUseCase.encode(dto) else {
-            return .failure(.error)
+            return .failure(.encodeError)
         }
 
         guard case .success(let boardGalleryPath) = fileManageUseCase.getBoardGalleryPath() else {
-            return .failure(.error)
+            return .failure(.getPathError)
         }
 
         guard case .success = await fileManageUseCase.writeFile(boardGalleryPath, contents: data) else {
-            return .failure(.error)
+            return .failure(.writeError)
         }
 
         return .success(())
     }
+}
 
+extension DefaultBoardGalleryUseCase {
     private func saveDefaultData(_ path: URL) async {
         guard case .success(let data) = codingUseCase.encode(KPBoardGalleryDTO.emptyData) else {
             return
@@ -79,14 +86,14 @@ final class DefaultBoardGalleryUseCase: BoardGalleryUseCase {
     private func toDTO(_ boardGallery: KPBoardGallery) -> KPBoardGalleryDTO {
         KPBoardGalleryDTO(
             version: boardGallery.version,
-            boardsURLString: boardGallery.boardsURLString
+            boardsURL: boardGallery.boardsURL
         )
     }
 
     private func toVO(_ boardGalleryDTO: KPBoardGalleryDTO) -> KPBoardGallery {
         KPBoardGallery(
             version: boardGalleryDTO.version ?? "0.0.1",
-            boardsURLString: boardGalleryDTO.boardsURLString ?? []
+            boardsURL: boardGalleryDTO.boardsURL ?? []
         )
     }
 }

@@ -22,8 +22,8 @@ struct KPBoard: Identifiable {
         case table = "Table View"
     }
 
-    init(title: String, nodes: [KPNode], edges: [KPEdge], texts: [KPText], modifiedDate: Date, viewType: BoardViewType, previewImage: Data? = nil) {
-        self.id = UUID()
+    init(id: UUID = UUID(), title: String, nodes: [KPNode], edges: [KPEdge], texts: [KPText], modifiedDate: Date, viewType: BoardViewType, previewImage: Data? = nil) {
+        self.id = id
         self.title = title
         self.nodes = nodes
         self.edges = edges

@@ -7,6 +7,7 @@ struct BoardGalleryView: View {
     @Environment(\.openWindow) private var openWindow
 
     @State var boards: [KPBoard] = [.mockData2, .mockData, .mockData, .mockData, .mockData, .mockData, .mockData]
+    @State private var boardGallery: KPBoardGallery = .emptyData
 
     @State private var showAlert = false
     @State private var selectedBoard: KPBoard?
@@ -17,6 +18,13 @@ struct BoardGalleryView: View {
     let columns = [
         GridItem(.adaptive(minimum: 240), spacing: 10)
     ]
+
+    var boardPreviews: [KPBoardPreview] {
+        self.boardGallery.boardsURL.map { url in
+            // 각 url별로 board 정보를 담아서 boardpreview에 뿌리기. 더블클릭하면 해당 url을 기반으로 새로운 window 띄우기
+        }
+        return []
+    }
 
     init(boardGalleryUseCase: BoardGalleryUseCase) {
         self.boardGalleryUseCase = boardGalleryUseCase
