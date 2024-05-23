@@ -112,6 +112,7 @@ struct NodeView: View {
                         if isEditing{
                             
                             if isEditingForNote {
+                                
                                 TextEditor(text: $node.unwrappedNote)
                                     .scrollContentBackground(.hidden)
                                     .background(Color.clear)
