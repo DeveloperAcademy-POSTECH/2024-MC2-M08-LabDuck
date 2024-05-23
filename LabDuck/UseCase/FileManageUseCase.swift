@@ -15,50 +15,75 @@ enum FileManageErrors: Error {
 }
 
 protocol FileManageUseCase {
-    func readFile(_ urlString: String) async -> Result<Data, FileManageErrors>
-    func writeFile(_ urlString: String, contents: Data) async -> Result<Void, FileManageErrors>
+    func getBoardGalleryPath() -> Result<URL, FileManageErrors>
+    func isExist(_ path: URL) -> Result<Bool, Never>
+    func readFile(_ url: URL) async -> Result<Data, FileManageErrors>
+    func writeFile(_ url: URL, contents: Data) async -> Result<Void, FileManageErrors>
 }
 
 final class LocalFileManageUseCase: FileManageUseCase {
-    func readFile(_ urlString: String) async -> Result<Data, FileManageErrors> {
-        guard let url = URL(string: urlString) else { return .failure(.invalidURL) }
-        let gotAccess = url.startAccessingSecurityScopedResource()
-        if !gotAccess { return .failure(.cannotAccess) }
+    let fileManager = FileManager.default
 
-        defer {
-            url.stopAccessingSecurityScopedResource()
+    func getBoardGalleryPath() -> Result<URL, FileManageErrors> {
+        guard let documentDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return .failure(.cannotAccess)
         }
-
-        guard let fileData = try? Data(contentsOf: url) else { return .failure(.invalidData)}
-
-        return .success(fileData)
+        print("documentDirectory : ", documentDirectory)
+        let boardGalleryFileURLString = documentDirectory.appendingPathComponent("BoardGallery")
+        return .success(boardGalleryFileURLString)
     }
-    
-    func writeFile(_ urlString: String, contents: Data) async -> Result<Void, FileManageErrors> {
-        guard let url = URL(string: urlString) else { return .failure(.invalidURL) }
-        let gotAccess = url.startAccessingSecurityScopedResource()
-        if !gotAccess { return .failure(.cannotAccess) }
 
-        defer {
-            url.stopAccessingSecurityScopedResource()
+    func isExist(_ path: URL) -> Result<Bool, Never> {
+        if fileManager.fileExists(atPath: path.path()) {
+            return .success(true)
+        } else {
+            return .success(false)
         }
+    }
 
+    func readFile(_ url: URL) async -> Result<Data, FileManageErrors> {
         do {
-            try contents.write(to: url, options: .atomic)
+            let data = try Data(contentsOf: url)
+            return .success(data)
         } catch {
+            print(error.localizedDescription)
+        }
+        return .failure(.cannotAccess)
+    }
+
+    func writeFile(_ url: URL, contents: Data) async -> Result<Void, FileManageErrors> {
+        if fileManager.createFile(atPath: url.path(), contents: contents) {
+            return .success(())
+        } else {
             return .failure(.writeFailed)
         }
-
-        return .success(())
     }
 }
 
 final class TestFileManageUseCase: FileManageUseCase {
-    func readFile(_ urlString: String) async -> Result<Data, FileManageErrors> {
+    let fileManager = FileManager.default
+    func getBoardGalleryPath() -> Result<URL, FileManageErrors> {
+        guard let documentDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return .failure(.cannotAccess)
+        }
+        print("documentDirectory : ", documentDirectory)
+        let boardGalleryFileURLString = documentDirectory.appendingPathComponent("BoardGallery")
+        return .success(boardGalleryFileURLString)
+    }
+
+    func isExist(_ path: URL) -> Result<Bool, Never> {
+        if fileManager.fileExists(atPath: path.path()) {
+            return .success(true)
+        } else {
+            return .success(false)
+        }
+    }
+
+    func readFile(_ url: URL) async -> Result<Data, FileManageErrors> {
         return .success("".data(using: .utf8)!)
     }
     
-    func writeFile(_ urlString: String, contents: Data) async -> Result<Void, FileManageErrors> {
+    func writeFile(_ url: URL, contents: Data) async -> Result<Void, FileManageErrors> {
         return .success(())
     }
 }

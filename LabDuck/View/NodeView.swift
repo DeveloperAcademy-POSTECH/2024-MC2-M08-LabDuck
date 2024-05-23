@@ -150,6 +150,12 @@ struct NodeView: View {
     }
 }
 
+extension NodeView: Equatable {
+    static func == (lhs: NodeView, rhs: NodeView) -> Bool {
+        lhs.node == rhs.node
+    }
+}
+
 #Preview {
     NodeView(node: .constant(.mockData), judgeConnection: { _, _ in (UUID(), UUID()) }, addEdge: { _ in }, updatePreviewEdge: { _, _ in })
 }

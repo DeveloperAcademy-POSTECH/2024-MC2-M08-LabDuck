@@ -181,6 +181,12 @@ struct MainView: View {
     }
 }
 
+extension MainView: Equatable {
+    static func == (lhs: MainView, rhs: MainView) -> Bool {
+        lhs.board == rhs.board
+    }
+}
+
 #Preview {
     MainView()
 }

@@ -52,6 +52,8 @@ struct KPBoard: Identifiable {
     }
 }
 
+extension KPBoard: Equatable {}
+
 extension KPBoard {
     static var mockData: KPBoard {
         let nodes: [KPNode] = .mockData

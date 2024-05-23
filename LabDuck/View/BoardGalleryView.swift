@@ -2,10 +2,12 @@ import SwiftUI
 import AppKit
 
 struct BoardGalleryView: View {
+    let boardGalleryUseCase: BoardGalleryUseCase
+
     @Environment(\.openWindow) private var openWindow
 
     @State var boards: [KPBoard] = [.mockData2, .mockData, .mockData, .mockData, .mockData, .mockData, .mockData]
-    
+
     @State private var showAlert = false
     @State private var selectedBoard: KPBoard?
     @State private var editingBoardID: UUID?
@@ -15,7 +17,11 @@ struct BoardGalleryView: View {
     let columns = [
         GridItem(.adaptive(minimum: 240), spacing: 10)
     ]
-    
+
+    init(boardGalleryUseCase: BoardGalleryUseCase) {
+        self.boardGalleryUseCase = boardGalleryUseCase
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -120,6 +126,18 @@ struct BoardGalleryView: View {
                 print(failure)
             }
         }
+        .task {
+            if let gallery = await self.getBoardGallery() {
+                dump(gallery)
+            }
+        }
+    }
+
+    private func getBoardGallery() async -> KPBoardGallery? {
+        guard case .success(let gallery) = await self.boardGalleryUseCase.readData() else {
+            return nil
+        }
+        return gallery
     }
 
     @ViewBuilder
@@ -151,5 +169,8 @@ extension BoardGalleryView {
 }
 
 #Preview {
-    BoardGalleryView()
+    BoardGalleryView(boardGalleryUseCase: TestDIContainer().makeBoardGalleryUseCase())
 }
+
+
+

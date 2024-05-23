@@ -9,11 +9,17 @@ import SwiftUI
 
 @main
 struct LabDuckApp: App {
-    let boardGalleryManager = KPBoardGalleryManager()
-    let boardManager = KPBoardManager()
+    private let boardGalleryDIContiner: BoardGalleryDIContainer
+    private let boardDIContainer: BoardDIContainer
+    init() {
+        let appDIContainer = AppDIContainer()
+        self.boardGalleryDIContiner = appDIContainer.makeBoardGalleryDIContainer()
+        self.boardDIContainer = appDIContainer.makeBoardDIContainer()
+        dump(boardGalleryDIContiner)
+    }
     var body: some Scene {
         WindowGroup {
-            BoardGalleryView()
+            BoardGalleryView(boardGalleryUseCase: boardGalleryDIContiner.makeBoardGalleryUseCase())
         }
 
         WindowGroup("메인 뷰", id: "main") {

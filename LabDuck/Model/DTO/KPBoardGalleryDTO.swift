@@ -13,3 +13,9 @@ struct KPBoardGalleryDTO {
 }
 
 extension KPBoardGalleryDTO: Codable {}
+
+extension KPBoardGalleryDTO {
+    static var emptyData: Self {
+        KPBoardGalleryDTO(version: "0.1", boardsURLString: [])
+    }
+}
