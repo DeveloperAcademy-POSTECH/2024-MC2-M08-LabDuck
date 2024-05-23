@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-enum KPTagColor {
+enum KPTagColor: CaseIterable {
     case red
     case orange
     case yellow
