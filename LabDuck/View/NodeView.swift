@@ -40,6 +40,8 @@ struct NodeView: View {
     
     let columns: [GridItem] = Array(repeating: .init(.flexible(),spacing:7), count: 4)
     
+    @State private var selectedButtonIndex: Int? = nil
+    
     var body: some View {
         HStack {
             
@@ -58,17 +60,51 @@ struct NodeView: View {
                         //컬러 고르기
                         
                         if isEditing{
-                            HStack(spacing: 4){
-                                Rectangle().foregroundColor(.pink).frame(width: 16, height: 16).cornerRadius(3)
-                                Rectangle().foregroundColor(.pink).frame(width: 16, height: 16).cornerRadius(3)
-                                Rectangle().foregroundColor(.pink).frame(width: 16, height: 16).cornerRadius(3)
-                                Rectangle().foregroundColor(.pink).frame(width: 16, height: 16).cornerRadius(3)
-                                Rectangle().foregroundColor(.pink).frame(width: 16, height: 16).cornerRadius(3)
-                                Rectangle().foregroundColor(.pink).frame(width: 16, height: 16).cornerRadius(3)
-                                Rectangle().foregroundColor(.pink).frame(width: 16, height: 16).cornerRadius(3)
-                                Rectangle().foregroundColor(.pink).frame(width: 16, height: 16).cornerRadius(3)
+                            HStack(spacing:6) {
+                                ForEach(KPColorTheme.allCases, id: \.self) { colorTheme in
+                                    Button(action: {
+                                        node.colorTheme = colorTheme
+                                        //                                        selectedButtonIndex = index
+                                    }) {
+                                        ZStack{
+                                            RoundedRectangle(cornerRadius: 3)
+                                                .fill(colorTheme.backgroundColor)
+                                                .strokeBorder(.blue.opacity(node.colorTheme == colorTheme ? 1 : 0), lineWidth: 1)
+                                                .frame(width: 16, height: 16)
+                                            
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .resizable()
+                                                .frame(width: 10, height: 10)
+                                                .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/.opacity(node.colorTheme == colorTheme ? 1 : 0))
+                                            
+                                        }
+                                        
+                                        
+                                        
+                                    }.buttonStyle(BorderlessButtonStyle())
+                                }
                                 Spacer()
-                            }.frame(width: 200, height: 20)
+                                Button{
+                                    isEditing.toggle()
+                                }label:{
+                                    ZStack{
+                                        RoundedRectangle(cornerRadius: 3)
+                                            .fill(.gray.opacity(self.hovered ? 0.1: 0.0))
+                                            .strokeBorder(.gray.opacity(0.2), lineWidth: 1)
+                                            .frame(width: 22, height:22)
+                                        
+                                        Image(systemName: "checkmark")
+                                            .foregroundColor(.gray)
+                                            .onHover { hover in
+                                                print("Mouse hover: \(hover)")
+                                                self.hovered = hover
+                                            }
+                                    }
+                                }.buttonStyle(BorderlessButtonStyle())
+                                
+                            }
+                            .frame(width: 200, height: 20)
+                            .background(Color.clear)
                         }
                         
                         
@@ -80,29 +116,26 @@ struct NodeView: View {
                                 .scrollContentBackground(.hidden)
                                 .foregroundColor(.black)
                                 .font(.system(size: 17, weight: .bold))
-                                .frame(width:200)
-                            //
-                            //                        TextEditor(text: $node.unwrappedTitle)
-                            //                                        .frame(height: max(textViewHeight, 20)) // 최소 높이 설정
-                            //                                        .background(GeometryReader { geometry -> Color in
-                            //                                            DispatchQueue.main.async {
-                            //                                                // 내용에 따라 높이 업데이트
-                            //                                                let size = geometry.size
-                            //                                                if size.height != self.textViewHeight {
-                            //                                                    self.textViewHeight = size.height
-                            //                                                }
-                            //                                            }
-                            //                                            return Color.clear
-                            //                                        })
-                            //                                        .frame(width: 200) // 고정 가로 길이 설정
-                            //                                        .padding()
-                            //                                        .border(Color.gray)
-                            
+                                .frame(width:200, height: 50)
                         } else {
-                            Text(node.unwrappedTitle)
-                                .foregroundColor(.black)
-                                .font(.system(size:17, weight: .bold))
-                                .frame(width: 200,height: 40)
+                            ZStack{
+                                Text(node.unwrappedTitle)
+                                    .foregroundColor(.black)
+                                    .font(.system(size:17, weight: .bold))
+                                    .frame(width: 200,height: 40)
+                                Button{
+                                    isEditing.toggle()
+                                }label:{
+                                    Image(systemName: "square.and.pencil")
+                                        .foregroundColor(.gray)
+                                        .opacity(self.hovered ? 1.0 : 0.3)
+                                        .onHover { hover in
+                                            print("Mouse hover: \(hover)")
+                                            self.hovered = hover
+                                        }
+                                }.buttonStyle(BorderlessButtonStyle()).offset(x:100, y:-20)
+                                
+                            }
                         }
                         
                         
@@ -111,7 +144,7 @@ struct NodeView: View {
                         
                         if isEditing{
                             
-                            if isEditingForNote {
+                            if isEditingForNote||(node.unwrappedNote.isEmpty == false) {
                                 
                                 TextEditor(text: $node.unwrappedNote)
                                     .scrollContentBackground(.hidden)
@@ -119,7 +152,7 @@ struct NodeView: View {
                                     .border(Color.clear, width: 0)
                                     .foregroundColor(.black)
                                     .font(.system(size: 13))
-                                    .frame(width: 200)
+                                    .frame(width: 200, height: 70)
                             }else{
                                 Button{
                                     isEditingForNote.toggle()
@@ -130,7 +163,7 @@ struct NodeView: View {
                                         Spacer()
                                         
                                     }.buttonStyle(BorderlessButtonStyle()).frame(width: 200)
-                                }
+                                }.buttonStyle(BorderlessButtonStyle())
                             }
                             
                         } else {
@@ -146,7 +179,7 @@ struct NodeView: View {
                         //링크
                         
                         if isEditing{
-                            if isEditingForLink {
+                            if isEditingForLink||(node.unwrappedURL.isEmpty == false) {
                                 TextEditor(text: $node.unwrappedURL)
                                     .scrollContentBackground(.hidden)
                                     .background(Color.clear)
@@ -154,7 +187,7 @@ struct NodeView: View {
                                     .foregroundColor(.blue)
                                     .underline()
                                     .font(.system(size: 13))
-                                    .frame(width: 200)
+                                    .frame(width: 200, height: 30)
                             }else{
                                 Button{
                                     isEditingForLink.toggle()
@@ -165,7 +198,7 @@ struct NodeView: View {
                                         Spacer()
                                         
                                     }.buttonStyle(BorderlessButtonStyle()).frame(width: 200)
-                                }
+                                }.buttonStyle(BorderlessButtonStyle())
                             }
                             
                             
@@ -184,31 +217,41 @@ struct NodeView: View {
                         }
                     }
                     .padding(20)
-                    .background(.white)
+                    .background(node.colorTheme.backgroundColor)
                     .frame(width: 250)
                     
                     
                     //태그
-                    
-                    
-                    
                     
                     if isEditing{
                         HStack{
                             Button{
                                 isEditingForTag.toggle()
                             }label:{
+                                
                                 HStack{
                                     Image(systemName: "tag").foregroundColor(.gray)
                                     Text("태그 추가").foregroundColor(.gray)
                                 }
                             }
-                            Spacer()
+                            ScrollView(.horizontal){
+                                HStack{
+                                    ForEach(node.tags){ tag in
+                                        Text("#\(tag.name)")
+                                            .foregroundColor(.white)
+                                            .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
+                                            .background(Color.blue)
+                                            .cornerRadius(10)
+                                        
+                                    }
+                                    Spacer()
+                                }
+                            }
                         }.padding(10)
                             .frame(width: 250, height: 50)
                             .background(.gray.opacity(0.3))
                     }else{
-//                        ScrollView(.horizontal){
+                        ScrollView(.horizontal){
                             HStack{
                                 ForEach(node.tags){ tag in
                                     Text("#\(tag.name)")
@@ -220,17 +263,17 @@ struct NodeView: View {
                                 }
                                 Spacer()
                             }
-//                        }.scrollDisabled(true)
-                        .padding(10)
-                        .frame(width: 250, height: 50)
-                        .background(.gray.opacity(0.3))
+                        }.scrollDisabled(true)
+                            .padding(10)
+                            .frame(width: 250, height: 50)
+                            .background(.gray.opacity(0.3))
                         
                     }
-                            
-                            
-                        
                     
-
+                    
+                    
+                    
+                    
                     
                     
                     
@@ -239,34 +282,6 @@ struct NodeView: View {
                 .cornerRadius(10)
                 .shadow(color: .black.opacity(0.25), radius: 1.5, x: 0, y: 0)
                 .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 4)
-                
-                
-                //편집 버튼
-                if isEditing{
-                    Button{
-                        isEditing.toggle()
-                    }label:{
-                        Image(systemName: "checkmark")
-                            .foregroundColor(.gray)
-                            .opacity(self.hovered ? 1.0 : 0.3)
-                            .onHover { hover in
-                                print("Mouse hover: \(hover)")
-                                self.hovered = hover
-                            }
-                    }.buttonStyle(BorderlessButtonStyle()).offset(x:100,y:-100)
-                }else{
-                    Button{
-                        isEditing.toggle()
-                    }label:{
-                        Image(systemName: "square.and.pencil")
-                            .foregroundColor(.gray)
-                            .opacity(self.hovered ? 1.0 : 0.3)
-                            .onHover { hover in
-                                print("Mouse hover: \(hover)")
-                                self.hovered = hover
-                            }
-                    }.buttonStyle(BorderlessButtonStyle()).offset(x:100,y:-100)
-                }
                 
                 
                 //태그 팝업창
@@ -311,7 +326,7 @@ struct NodeView: View {
         }
         
     }
-
+    
     //입력한 텍스트(textForTags)가 nil이 아닐 경우 프리뷰로 값 저장함.
     private func addPreviewTag() {
         guard !textForTags.isEmpty else { return }
