@@ -71,55 +71,20 @@ struct BoardGallery: View {
             .padding(.top, 40)
         }
         .frame(minWidth: 800, minHeight: 600)
-        .sheet(isPresented: $showAlert) {
-            
-            VStack(spacing: 20) {
-                Text("\n")
-                Text("파일 삭제")
-                    .font(.title3)
-                    .bold()
-                
-                Text("이 파일을 삭제하시겠습니까?")
-                    .multilineTextAlignment(.center)
-                    .font(.system(size: 12))
-                
-                HStack {
-                    Button(action: {
-                        showAlert = false
-                    }) {
-                        Text("취소")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 7)
-                            .background(Color.gray.opacity(0.3))
-                            .foregroundColor(.black)
-                            .cornerRadius(8)
-                    }.buttonStyle(PlainButtonStyle())
-                    
-                    
-                    Button(action: {
-                        if let boardToDelete = selectedBoard
-                        {
-                            deleteBoard(board: boardToDelete)
-                        }
-                        showAlert = false
-                    }) {
-                        Text("삭제")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 7)
-                            .background(Color.red)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                    }.buttonStyle(PlainButtonStyle())
-                    
+
+        //여기로 하기
+            .confirmationDialog("정말 삭제하시겠습니까?", isPresented: $showAlert, titleVisibility: .visible) {
+                Button("네", role: .none)
+                {   print("yes")
+                    if let boardToDelete = selectedBoard {
+                        deleteBoard(board: boardToDelete)
+                    }
                 }
-                .padding()
-            }
-            .padding()
-            .frame(width: 280, height: 160)
-            .background(Color.white)
-            .cornerRadius(12)
-            .shadow(radius: 20)
-        }
+                Button("아니오", role: .cancel){}
+            }//.dialogSeverity(.critical). //기본 제공
+            .dialogIcon(Image(systemName: "exclamationmark.triangle.fill")) //sf 심볼
+
+
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
