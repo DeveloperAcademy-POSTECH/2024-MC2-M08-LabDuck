@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct KPNode: Identifiable, Equatable {
+struct KPNode: Identifiable, Equatable, Codable, Hashable {
     var id: UUID
     var title: String?
     var note: String?

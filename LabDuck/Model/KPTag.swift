@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct KPTag: Identifiable, Equatable {
+struct KPTag: Identifiable, Equatable, Codable, Hashable {
     var id: UUID
     var name: String
     var colorTheme: KPTagColor = KPTagColor.default

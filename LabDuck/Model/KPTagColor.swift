@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-enum KPTagColor: String {
+enum KPTagColor: String, Codable {
     case red
     case orange
     case yellow

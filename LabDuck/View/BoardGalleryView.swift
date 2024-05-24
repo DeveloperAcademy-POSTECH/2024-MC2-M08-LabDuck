@@ -2,12 +2,11 @@ import SwiftUI
 import AppKit
 
 struct BoardGalleryView: View {
-    let boardGalleryUseCase: BoardGalleryUseCase
-
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.openDocument) private var openDocument
+    @Environment(\.newDocument) private var newDocument
 
-    @State var boards: [KPBoard] = [.mockData2, .mockData, .mockData, .mockData, .mockData, .mockData, .mockData]
-    @State private var boardGallery: KPBoardGallery = .emptyData
+    @State private var documents: [KPBoardDocument] = []
 
     @State private var showAlert = false
     @State private var selectedBoard: KPBoard?
@@ -19,17 +18,6 @@ struct BoardGalleryView: View {
         GridItem(.adaptive(minimum: 240), spacing: 10)
     ]
 
-    var boardPreviews: [KPBoardPreview] {
-        self.boardGallery.boardsURL.map { url in
-            // 각 url별로 board 정보를 담아서 boardpreview에 뿌리기. 더블클릭하면 해당 url을 기반으로 새로운 window 띄우기
-        }
-        return []
-    }
-
-    init(boardGalleryUseCase: BoardGalleryUseCase) {
-        self.boardGalleryUseCase = boardGalleryUseCase
-    }
-
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -38,20 +26,24 @@ struct BoardGalleryView: View {
                     .fontWeight(.bold)
                     .padding(.leading, 40)
                 LazyVGrid(columns: columns) {
-                    ForEach($boards, id: \.id) { $board in
+                    ForEach($documents, id: \.self) { document in
                         VStack {
-                            BoardView(board: $board, isEditing: Binding(
-                                get: { editingBoardID == board.id },
+                            BoardView(board: document.board, isEditing: Binding(
+                                get: { editingBoardID == document.board.id },
                                 set: { isEditing in
                                     if !isEditing {
                                         editingBoardID = nil
                                     } else {
-                                        editingBoardID = board.id
+                                        editingBoardID = document.board.id
                                     }
                                 }
                             ))
-                                .onTapGesture(count: 1) {
-                                    openWindow(id: "main")
+                                .onTapGesture(count: 2) {
+                                    if let url = document.wrappedValue.url {
+                                        Task {
+                                            await openDocumentOnMainThread(url)
+                                        }
+                                    }
                                 }
                                 .contextMenu(ContextMenu(menuItems: {
                                     Button(action: {
@@ -60,17 +52,17 @@ struct BoardGalleryView: View {
                                         Text("파일 보기")
                                     }
                                     Button(action: {
-                                        editingBoardID = board.id
+                                        editingBoardID = document.board.id
                                     }) {
                                         Text("이름 바꾸기")
                                     }
                                     Button(action: {
-                                        duplicateBoard(board: board)
+                                        duplicateBoard(board: document.wrappedValue.board)
                                     }) {
                                         Text("파일 복제하기")
                                     }
                                     Button(action: {
-                                        selectedBoard = board
+                                        selectedBoard = document.wrappedValue.board
                                         showAlert = true
                                     }) {
                                         Text("파일 삭제하기")
@@ -99,7 +91,7 @@ struct BoardGalleryView: View {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
                     Button(action: {
-                        self.addBoard(.emptyData)
+                        newDocument(KPBoardDocument())
                     }, label: {
                         Text("새 보드")
                     })
@@ -125,7 +117,7 @@ struct BoardGalleryView: View {
                     var newBoard = KPBoard.emptyData
                     newBoard.addNodes(parsedNodes)
                     dump("newBoard : \(newBoard)")
-                    self.addBoard(newBoard)
+//                    self.addBoard(newBoard)
                 } catch {
                     print(error.localizedDescription)
                 }
@@ -134,18 +126,13 @@ struct BoardGalleryView: View {
                 print(failure)
             }
         }
-        .task {
-            if let gallery = await self.getBoardGallery() {
-                dump(gallery)
-            }
+        .onAppear {
+            loadRecentDocuments()
         }
-    }
-
-    private func getBoardGallery() async -> KPBoardGallery? {
-        guard case .success(let gallery) = await self.boardGalleryUseCase.readData() else {
-            return nil
+        .onReceive(NotificationCenter.default.publisher(for: .documentsChanged)) { _ in
+            print("documents changed!")
+            loadRecentDocuments()
         }
-        return gallery
     }
 
     @ViewBuilder
@@ -156,29 +143,44 @@ struct BoardGalleryView: View {
             Text("CSV에서 가져오기")
         })
     }
-    
+
     func duplicateBoard(board: KPBoard) {
-        let newBoard = KPBoard(title: board.title, nodes: board.nodes, edges: board.edges,
-                               texts: board.texts, modifiedDate: Date(), viewType: board.viewType)
-        boards.append(newBoard)
+//        let newBoard = KPBoard(title: board.title, nodes: board.nodes, edges: board.edges,
+//                               texts: board.texts, modifiedDate: Date(), viewType: board.viewType)
+//        boards.append(newBoard)
     }
-    
+
     func deleteBoard(board: KPBoard) {
-        if let index = boards.firstIndex(where: { $0.id == board.id }) {
-            boards.remove(at: index)
-        }
+//        if let index = boards.firstIndex(where: { $0.id == board.id }) {
+//            boards.remove(at: index)
+//        }
     }
 }
 
 extension BoardGalleryView {
-    private func addBoard(_ board: KPBoard) {
-        self.boards.append(board)
+    private func loadRecentDocuments() {
+        self.documents = Array(UserDefaultsCenter.shared.loadDocuments() ?? [])
+    }
+
+    private func fetchDocumentInfo(for url: URL, completion: @escaping (KPBoard) -> Void) {
+        if let contents = try? Data(contentsOf: url) {
+            let jsonDecoder = JSONDecoder()
+            if let object = try? jsonDecoder.decode(KPBoard.self, from: contents) {
+                completion(object)
+            }
+        }
+    }
+
+    @MainActor
+    private func openDocumentOnMainThread(_ url: URL) async {
+        do {
+            try await NSDocumentController.shared.openDocument(withContentsOf: url, display: true)
+        } catch {
+            print(error.localizedDescription)
+        }
     }
 }
 
 #Preview {
-    BoardGalleryView(boardGalleryUseCase: TestDIContainer().makeBoardGalleryUseCase())
+    BoardGalleryView()
 }
-
-
-

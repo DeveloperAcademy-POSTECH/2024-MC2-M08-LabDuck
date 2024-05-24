@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum KPColorTheme: Int {
+enum KPColorTheme: Int, Codable, Hashable {
     case `default`
     case red
     case orange

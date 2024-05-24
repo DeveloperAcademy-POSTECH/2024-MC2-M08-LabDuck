@@ -19,7 +19,16 @@ extension KPBoardGallery {
 }
 
 struct KPBoardPreview {
-    var title: String
-    var modifiedDate: Date
-    var previewImage: Data?
+    var board: KPBoard
+    var url: URL?
+}
+
+extension KPBoardPreview {
+    static var mockData: KPBoardPreview {
+        KPBoardPreview(board: .mockData)
+    }
+
+    static var mockData2: KPBoardPreview {
+        KPBoardPreview(board: .mockData2)
+    }
 }

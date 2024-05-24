@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct KPText: Identifiable, Equatable {
+struct KPText: Identifiable, Equatable, Codable, Hashable {
     var id: UUID
     var text: String?
     var position: CGPoint = .zero

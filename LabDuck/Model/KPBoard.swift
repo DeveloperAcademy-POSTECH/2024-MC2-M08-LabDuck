@@ -5,7 +5,7 @@
 //  Created by 정종인 on 5/13/24.
 //
 
-import Foundation
+import SwiftUI
 
 struct KPBoard: Identifiable {
     var id: UUID
@@ -17,7 +17,7 @@ struct KPBoard: Identifiable {
     var viewType: BoardViewType
     var previewImage: Data?
 
-    enum BoardViewType: String, CaseIterable {
+    enum BoardViewType: String, CaseIterable, Codable, Hashable {
         case graph = "Graph View"
         case table = "Table View"
     }
@@ -52,7 +52,7 @@ struct KPBoard: Identifiable {
     }
 }
 
-extension KPBoard: Equatable {}
+extension KPBoard: Equatable, Codable, Hashable {}
 
 extension KPBoard {
     static var mockData: KPBoard {

@@ -9,21 +9,40 @@ import SwiftUI
 
 @main
 struct LabDuckApp: App {
-    private let boardGalleryDIContiner: BoardGalleryDIContainer
-    private let boardDIContainer: BoardDIContainer
-    init() {
-        let appDIContainer = AppDIContainer()
-        self.boardGalleryDIContiner = appDIContainer.makeBoardGalleryDIContainer()
-        self.boardDIContainer = appDIContainer.makeBoardDIContainer()
-        dump(boardGalleryDIContiner)
-    }
     var body: some Scene {
-        WindowGroup {
-            BoardGalleryView(boardGalleryUseCase: boardGalleryDIContiner.makeBoardGalleryUseCase())
+        Window("Board Gallery", id: "BoardGallery") {
+            BoardGalleryView()
+        }
+        .defaultPosition(.center)
+        .defaultSize(width: 800, height: 400)
+        .keyboardShortcut("0", modifiers: [.command])
+
+        DocumentGroup(newDocument: KPBoardDocument()) { configuration in
+            var document: Binding<KPBoardDocument> {
+                let url = configuration.fileURL
+                let binding: Binding<KPBoardDocument> = configuration.$document
+                binding.wrappedValue.url = url
+                return binding
+            }
+            MainDocumentView(
+                document: configuration.$document
+            )
         }
 
-        WindowGroup("메인 뷰", id: "main") {
-            MainView()
-        }
+//        DocumentGroup(newDocument: { KPBoardDocument() }) { configuration in
+//            MainDocumentView()
+//                .environment(\.documentURL, configuration.fileURL)
+//        }
+    }
+}
+
+private struct DocumentURLKey: EnvironmentKey {
+    static let defaultValue: URL? = nil
+}
+
+extension EnvironmentValues {
+    var documentURL: URL? {
+        get { self[DocumentURLKey.self] }
+        set { self[DocumentURLKey.self] = newValue }
     }
 }
