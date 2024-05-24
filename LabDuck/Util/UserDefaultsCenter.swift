@@ -17,33 +17,32 @@ final class UserDefaultsCenter {
 
     private init() {}
 
-    public func loadDocuments() -> Set<KPBoardDocument>? {
+    public func loadDocuments() -> Set<URL> {
         if let savedData = userDefault.data(forKey: Keys.documents) {
             do {
-                let savedArray = try JSONDecoder().decode([KPBoardDocument].self, from: savedData)
-                let savedSet = Set(savedArray.filter { $0.fileName != nil })
+                let savedArray = try JSONDecoder().decode([URL].self, from: savedData)
+                let savedSet = Set(savedArray)
                 return savedSet
             } catch {
                 print("Failed to decode KPBoardDocument array: \(error)")
-                return nil
+                return []
             }
         } else {
-            return nil
+            return []
         }
     }
 
-    public func setDocument(_ document: KPBoardDocument, _ url: URL?) {
-        var document = document
-        document.url = url
-        if var savedSet = loadDocuments() {
-            savedSet.insert(document)
+    public func setDocument(_ url: URL?) {
+        var savedSet = loadDocuments()
+        if let url {
+            savedSet.insert(url)
             setDocuments(savedSet)
         } else {
-            setDocuments([document])
+            setDocuments(savedSet)
         }
     }
 
-    private func setDocuments(_ set: Set<KPBoardDocument>) {
+    private func setDocuments(_ set: Set<URL>) {
         do {
             let data = try JSONEncoder().encode(Array(set))
             userDefault.set(data, forKey: Keys.documents)

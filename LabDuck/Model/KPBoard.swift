@@ -58,6 +58,10 @@ struct KPBoard: Identifiable {
     public mutating func addNodes(_ nodes: [KPNode]) {
         self.nodes.append(contentsOf: nodes)
     }
+
+    public mutating func modified() {
+        self.modifiedDate = .now
+    }
 }
 
 extension KPBoard: Equatable, Codable, Hashable {}

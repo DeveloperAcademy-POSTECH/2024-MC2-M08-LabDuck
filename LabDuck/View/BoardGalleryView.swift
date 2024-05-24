@@ -1,13 +1,20 @@
 import SwiftUI
 import AppKit
 
+struct KPBoardPreview: Identifiable {
+    var id: UUID
+    var url: URL
+    var title: String
+    var modifiedDate: Date
+}
+
 struct BoardGalleryView: View {
     @Environment(\.newDocument) private var newDocument
 
-    @State private var documents: [KPBoardDocument] = []
+    @State private var previews: [KPBoardPreview] = []
 
     @State private var showAlert = false
-    @State private var selectedBoard: KPBoard?
+    @State private var selectedBoard: KPBoardPreview?
     @State private var editingBoardID: UUID?
 
     @State var showFileChooser = false
@@ -24,47 +31,43 @@ struct BoardGalleryView: View {
                     .fontWeight(.bold)
                     .padding(.leading, 40)
                 LazyVGrid(columns: columns) {
-                    ForEach($documents, id: \.self) { document in
+                    ForEach($previews) { preview in
                         VStack {
-                            BoardView(board: document.board, isEditing: Binding(
-                                get: { editingBoardID == document.board.id },
+                            BoardPreviewView(preview: preview, isEditing: Binding(
+                                get: { editingBoardID == preview.id },
                                 set: { isEditing in
                                     if !isEditing {
                                         editingBoardID = nil
                                     } else {
-                                        editingBoardID = document.board.id
+                                        editingBoardID = preview.id
                                     }
                                 }
                             ))
                                 .onTapGesture(count: 2) {
-                                    if let url = document.wrappedValue.url {
-                                        Task {
-                                            await openDocumentOnMainThread(url)
-                                        }
+                                    Task {
+                                        await openDocumentOnMainThread(preview.url.wrappedValue)
                                     }
                                 }
                                 .contextMenu(ContextMenu(menuItems: {
                                     Button(action: {
-                                        if let url = document.wrappedValue.url {
-                                            Task {
-                                                await openDocumentOnMainThread(url)
-                                            }
+                                        Task {
+                                            await openDocumentOnMainThread(preview.url.wrappedValue)
                                         }
                                     }) {
                                         Text("파일 보기")
                                     }
                                     Button(action: {
-                                        editingBoardID = document.board.id
+                                        editingBoardID = preview.id
                                     }) {
                                         Text("이름 바꾸기")
                                     }
                                     Button(action: {
-                                        duplicateBoard(board: document.wrappedValue.board)
+//                                        duplicateBoard(board: preview.board)
                                     }) {
                                         Text("파일 복제하기")
                                     }
                                     Button(action: {
-                                        selectedBoard = document.wrappedValue.board
+//                                        selectedBoard = preview.board
                                         showAlert = true
                                     }) {
                                         Text("파일 삭제하기")
@@ -84,7 +87,7 @@ struct BoardGalleryView: View {
                   message: Text("정말 삭제하시겠습니까?"),
                   primaryButton: .default(Text("네")) {
                     if let boardToDelete = selectedBoard {
-                        deleteBoard(board: boardToDelete)
+//                        deleteBoard(board: boardToDelete)
                     }
                 },
                   secondaryButton: .cancel(Text("아니오")))
@@ -93,7 +96,7 @@ struct BoardGalleryView: View {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
                     Button(action: {
-                        newDocument(KPBoardDocument())
+                        newDocument { KPBoardDocument() }
                     }, label: {
                         Text("새 보드")
                     })
@@ -119,9 +122,9 @@ struct BoardGalleryView: View {
                     var newBoard = KPBoard.emptyData
                     newBoard.addNodes(parsedNodes)
                     dump("newBoard : \(newBoard)")
-                    var newBoardDocument = KPBoardDocument()
+                    let newBoardDocument = KPBoardDocument()
                     newBoardDocument.board = newBoard
-                    newDocument(newBoardDocument)
+                    newDocument { newBoardDocument }
                 } catch {
                     print(error.localizedDescription)
                 }
@@ -163,20 +166,39 @@ struct BoardGalleryView: View {
 
 extension BoardGalleryView {
     private func loadRecentDocuments() {
-        self.documents = Array(UserDefaultsCenter.shared.loadDocuments() ?? [])
-    }
-
-    private func fetchDocumentInfo(for url: URL, completion: @escaping (KPBoard) -> Void) {
-        if let contents = try? Data(contentsOf: url) {
-            let jsonDecoder = JSONDecoder()
-            if let object = try? jsonDecoder.decode(KPBoard.self, from: contents) {
-                completion(object)
+        let urls = Array(UserDefaultsCenter.shared.loadDocuments())
+        print(urls)
+        let previews = urls.compactMap { url in
+            do {
+                let document = try documentFromFileURL(url)
+                let fileName = url.deletingPathExtension().lastPathComponent
+                return KPBoardPreview(id: document.board.id, url: url, title: fileName, modifiedDate: document.board.modifiedDate)
+            } catch {
+                print(error.localizedDescription)
+                return nil
             }
         }
+        self.previews = previews.sorted { $0.modifiedDate > $1.modifiedDate }
+    }
+
+    func documentFromFileURL(_ url: URL) throws -> KPBoardDocument {
+        guard url.isFileURL else {
+            throw CocoaError(.fileReadInvalidFileName)
+        }
+
+        let data = try Data(contentsOf: url)
+
+        let board = try JSONDecoder().decode(KPBoard.self, from: data)
+
+        let document = KPBoardDocument()
+        document.board = board
+
+        return document
     }
 
     @MainActor
     private func openDocumentOnMainThread(_ url: URL) async {
+        print(url)
         do {
             try await NSDocumentController.shared.openDocument(withContentsOf: url, display: true)
         } catch {

@@ -12,14 +12,16 @@ extension UTType {
     static let kpBoardDocument = UTType(exportedAs: "team.kapochip.LabDuck")
 }
 
-struct KPBoardDocument: FileDocument, Codable, Hashable {
-    var board: KPBoard
-    var url: URL?
-    var fileName: String? {
-        self.url?.deletingPathExtension().lastPathComponent
-    }
+final class KPBoardDocument: ReferenceFileDocument {
+    typealias Snapshot = KPBoard
+
+    @Published var board: KPBoard
 
     static var readableContentTypes: [UTType] { [.kpBoardDocument] }
+
+    func snapshot(contentType: UTType) throws -> KPBoard {
+        self.board
+    }
 
     init() {
         self.board = .emptyData
@@ -33,9 +35,29 @@ struct KPBoardDocument: FileDocument, Codable, Hashable {
         self.board = try JSONDecoder().decode(KPBoard.self, from: data)
     }
 
-    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+    func fileWrapper(snapshot: KPBoard, configuration: WriteConfiguration) throws -> FileWrapper {
         let data = try JSONEncoder().encode(board)
         let fileWrapper = FileWrapper(regularFileWithContents: data)
         return fileWrapper
+    }
+}
+
+extension KPBoardDocument {
+    private func getIndex(_ nodeID: KPNode.ID) -> Int? {
+        self.board.nodes.firstIndex { $0.id == nodeID }
+    }
+}
+
+extension KPBoardDocument {
+    func moveNode(_ nodeID: KPNode.ID, to position: CGPoint, undoManager: UndoManager? = nil) {
+        guard let index = getIndex(nodeID) else { return }
+
+        let originalPosition = self.board.nodes[index].position
+
+        self.board.nodes[index].position = position
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.moveNode(nodeID, to: originalPosition, undoManager: undoManager)
+        }
     }
 }

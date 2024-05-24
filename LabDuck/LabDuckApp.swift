@@ -17,9 +17,8 @@ struct LabDuckApp: App {
         .defaultSize(width: 800, height: 400)
         .keyboardShortcut("1", modifiers: [.command])
 
-        DocumentGroup(newDocument: KPBoardDocument()) { configuration in
+        DocumentGroup(newDocument: { KPBoardDocument() }) { configuration in
             MainDocumentView(
-                document: configuration.$document,
                 url: configuration.fileURL
             )
         }

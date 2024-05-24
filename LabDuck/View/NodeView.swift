@@ -345,7 +345,3 @@ extension NodeView: Equatable {
 #Preview {
     NodeView(node: .constant(.mockData), clickingOutput: .constant(false), judgeConnection: { _, _ in (UUID(), UUID()) }, addEdge: { _ in }, updatePreviewEdge: { _, _ in })
 }
-
-//#Preview {
-//    NodeView(node: .constant(.mockData), clickingOutput: <#Binding<Bool>#>, isEditingForTitle: isEditingForTitle, judgeConnection: { _, _ in (UUID(), UUID()) }, addEdge: { _ in }, updatePreviewEdge: { _, _ in })
-//}
