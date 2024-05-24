@@ -20,17 +20,29 @@ struct TableView: View {
     var body: some View {
         VStack{
             Table(of: KPNode.self, selection: $selection, sortOrder: $sortOrder) {
-                TableColumn("색", value: \.colorTheme.rawValue)
+                TableColumn("Color", value: \.colorTheme.rawValue)
                 { node in
-                    Rectangle()
-                        .frame(width: 18, height: 18)
-                        .cornerRadius(5)
-                        .foregroundColor(node.colorTheme.backgroundColor)
-                        .padding(4)
+                    ZStack {
+                        Rectangle()
+                            .frame(width: 18, height: 18)
+                            .cornerRadius(5)
+                            .foregroundColor(node.colorTheme.backgroundColor)
+                            .padding(4)
+                            .onTapGesture(count: 2) {
+                                editingNodeID = node.id
+                                isSheet = true
+                            }
+                        if node.colorTheme == KPColorTheme.default {
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(.black.opacity(0.1), lineWidth: 1)
+                                .frame(width: 18, height: 18)
+                                .padding(4)
+                        }
+                    }
                 }
                 .width(77)
                 
-                TableColumn("제목", value: \.unwrappedTitle) { node in
+                TableColumn("Title", value: \.unwrappedTitle) { node in
                     if let _ = node.title {
                         styledText(node.unwrappedTitle, node: node)
                     } else {
@@ -39,16 +51,17 @@ struct TableView: View {
                     }
                 }.width(min: 100)
                 
-                TableColumn("노트", value: \.unwrappedNote) { node in
+                TableColumn("Note", value: \.unwrappedNote) { node in
                     styledText(node.unwrappedNote, node: node)
                 }
                 
-                TableColumn("태그") { node in
+                TableColumn("Tags") { node in
                     ScrollView(.horizontal) {
                         HStack() {
                             ForEach(node.tags) { tag in
                                 Button(action: {
-                                    // 추후 tag를 눌렀을 때 기능 추가 가능하도록
+                                    editingNodeID = node.id
+                                    isSheet = true
                                 }) {
                                     Text("#\(tag.name)")
                                         .font(.system(size: 13.0))
@@ -66,7 +79,7 @@ struct TableView: View {
                     .scrollIndicators(.hidden)
                 }
                 
-                TableColumn("링크", value: \.unwrappedURL) { node in
+                TableColumn("URL", value: \.unwrappedURL) { node in
                     Link(destination: URL(string: node.url ?? " ")!, label: {
                         styledText(node.unwrappedURL, node: node)
                             .underline()
@@ -95,7 +108,7 @@ struct TableView: View {
             .searchable(text: $searchText)
             .inspector(isPresented: $isSheet) {
                 if let editingNodeID = editingNodeID, let editingNodeIndex = board.nodes.firstIndex(where: { $0.id == editingNodeID }) {
-                    EditSheetView(node: $board.nodes[editingNodeIndex], board: $board, findNodes: findNodes)
+                    EditSheetView(node: $board.nodes[editingNodeIndex], board: $board, isSheet: $isSheet,selection: $selection, findNodes: findNodes)
                         .inspectorColumnWidth(min: 320, ideal: 320, max: 900)
                 }
                 
@@ -166,6 +179,6 @@ struct TableView: View {
 
 
     
-    #Preview {
-        TableView(board: .constant(.mockData), searchText: .constant(""))
-    }
+#Preview {
+    TableView(board: .constant(.mockData), searchText: .constant(""))
+}
