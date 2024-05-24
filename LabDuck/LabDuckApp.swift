@@ -25,14 +25,3 @@ struct LabDuckApp: App {
         }
     }
 }
-
-private struct DocumentURLKey: EnvironmentKey {
-    static let defaultValue: URL? = nil
-}
-
-extension EnvironmentValues {
-    var documentURL: URL? {
-        get { self[DocumentURLKey.self] }
-        set { self[DocumentURLKey.self] = newValue }
-    }
-}

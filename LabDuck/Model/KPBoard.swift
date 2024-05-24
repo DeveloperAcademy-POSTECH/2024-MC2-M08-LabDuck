@@ -5,7 +5,7 @@
 //  Created by 정종인 on 5/13/24.
 //
 
-import SwiftUI
+import Foundation
 
 struct KPBoard: Identifiable {
     var id: UUID

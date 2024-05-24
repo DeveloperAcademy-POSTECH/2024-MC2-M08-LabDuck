@@ -2,8 +2,6 @@ import SwiftUI
 import AppKit
 
 struct BoardGalleryView: View {
-    @Environment(\.openWindow) private var openWindow
-    @Environment(\.openDocument) private var openDocument
     @Environment(\.newDocument) private var newDocument
 
     @State private var documents: [KPBoardDocument] = []
@@ -121,7 +119,9 @@ struct BoardGalleryView: View {
                     var newBoard = KPBoard.emptyData
                     newBoard.addNodes(parsedNodes)
                     dump("newBoard : \(newBoard)")
-//                    self.addBoard(newBoard)
+                    var newBoardDocument = KPBoardDocument()
+                    newBoardDocument.board = newBoard
+                    newDocument(newBoardDocument)
                 } catch {
                     print(error.localizedDescription)
                 }
