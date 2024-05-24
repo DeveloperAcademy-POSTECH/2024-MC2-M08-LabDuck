@@ -79,7 +79,7 @@ struct BoardGallery: View {
                 }
             }
             Button("아니오", role: .cancel){}
-        }.dialogIcon(Image(systemName: "exclamationmark.triangle.fill"))
+        }.dialogSeverity(.critical)
         
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
