@@ -71,61 +71,57 @@ struct BoardGallery: View {
             .padding(.top, 40)
         }
         .frame(minWidth: 800, minHeight: 600)
-
-        //여기로 하기
-            .confirmationDialog("정말 삭제하시겠습니까?", isPresented: $showAlert, titleVisibility: .visible) {
-                Button("네", role: .none)
-                {   print("yes")
-                    if let boardToDelete = selectedBoard {
-                        deleteBoard(board: boardToDelete)
-                    }
-                }
-                Button("아니오", role: .cancel){}
-            }//.dialogSeverity(.critical). //기본 제공
-            .dialogIcon(Image(systemName: "exclamationmark.triangle.fill")) //sf 심볼
-
-
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Menu {
-                    Button(action: {
-                        self.addBoard(.emptyData)
-                    }, label: {
-                        Text("새 보드")
-                    })
-                    CSVImportButton()
-                } label: {
-                    Image(systemName: "square.and.pencil")
+        .confirmationDialog("정말 삭제하시겠습니까?", isPresented: $showAlert, titleVisibility: .visible) {
+            Button("네", role: .none)
+            {   print("yes")
+                if let boardToDelete = selectedBoard {
+                    deleteBoard(board: boardToDelete)
                 }
             }
-        }
-        .fileImporter(isPresented: $showFileChooser, allowedContentTypes: [.init(filenameExtension: "csv")!]) { result in
-            switch result {
-            case .success(let file):
-                print(file)
-                let gotAccess = file.startAccessingSecurityScopedResource()
-                if !gotAccess { return }
-                do {
-                    let contents = try String(contentsOf: file, encoding: .utf8)
-                    print(contents)
-                    let dictionaryData = try CSVConvertManager.csvStringToDictionary(contents)
-                    let parsedNodes = dictionaryData.map { dictionary in
-                        CSVConvertManager.dictionaryToKPNode(dictionary)
+            Button("아니오", role: .cancel){}
+        }.dialogIcon(Image(systemName: "exclamationmark.triangle.fill"))
+        
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Menu {
+                        Button(action: {
+                            self.addBoard(.emptyData)
+                        }, label: {
+                            Text("새 보드")
+                        })
+                        CSVImportButton()
+                    } label: {
+                        Image(systemName: "square.and.pencil")
                     }
-                    var newBoard = KPBoard.emptyData
-                    newBoard.addNodes(parsedNodes)
-                    dump("newBoard : \(newBoard)")
-                    self.addBoard(newBoard)
-                } catch {
-                    print(error.localizedDescription)
                 }
-                file.stopAccessingSecurityScopedResource()
-            case .failure(let failure):
-                print(failure)
             }
-        }
+            .fileImporter(isPresented: $showFileChooser, allowedContentTypes: [.init(filenameExtension: "csv")!]) { result in
+                switch result {
+                case .success(let file):
+                    print(file)
+                    let gotAccess = file.startAccessingSecurityScopedResource()
+                    if !gotAccess { return }
+                    do {
+                        let contents = try String(contentsOf: file, encoding: .utf8)
+                        print(contents)
+                        let dictionaryData = try CSVConvertManager.csvStringToDictionary(contents)
+                        let parsedNodes = dictionaryData.map { dictionary in
+                            CSVConvertManager.dictionaryToKPNode(dictionary)
+                        }
+                        var newBoard = KPBoard.emptyData
+                        newBoard.addNodes(parsedNodes)
+                        dump("newBoard : \(newBoard)")
+                        self.addBoard(newBoard)
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                    file.stopAccessingSecurityScopedResource()
+                case .failure(let failure):
+                    print(failure)
+                }
+            }
     }
-
+    
     @ViewBuilder
     private func CSVImportButton() -> some View {
         Button(action: {

@@ -12,7 +12,7 @@ struct BoardView: View {
     @Binding var isEditing: Bool
     @State private var editingBoardID: UUID?
     @FocusState private var isFocused: Bool
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Image("test")
@@ -23,14 +23,14 @@ struct BoardView: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 if isEditing {
-                        TextField("새 이름 입력", text: $board.title)
-                            .onSubmit {
-                                editingBoardID = nil
-                                print("편집 종료")
-                                isEditing = false
-                            }
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .onAppear{isFocused = true}                    
+                    TextField("새 이름 입력", text: $board.title)
+                        .onSubmit {
+                            editingBoardID = nil
+                            print("편집 종료")
+                            isEditing = false
+                        }
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .onAppear{isFocused = true}
                 }
                 else{
                     Text(board.title)
