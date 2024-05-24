@@ -12,6 +12,7 @@ struct OutputPointView: View {
     var body: some View {
         Image(systemName: "arrow.right.circle.fill")
             .imageScale(.large)
+            .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
             .anchorPreference(
                 key: OutputPointPreferenceKey.self,
                 value: .bounds

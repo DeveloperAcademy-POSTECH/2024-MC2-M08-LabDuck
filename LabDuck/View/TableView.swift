@@ -13,6 +13,9 @@ struct TableView: View {
     @State private var expanded: Bool = true
     @State private var selection = Set<KPNode.ID>()
     @State private var sortOrder = [KeyPathComparator(\KPNode.title)]
+    @State private var isSheet: Bool = false
+    @State private var editingNode: KPNode = KPNode()
+    @State private var editingNodeID: KPNode.ID?
     
     var body: some View {
         VStack{
@@ -29,15 +32,15 @@ struct TableView: View {
                 
                 TableColumn("제목", value: \.unwrappedTitle) { node in
                     if let _ = node.title {
-                        styledText(node.unwrappedTitle)
+                        styledText(node.unwrappedTitle, node: node)
                     } else {
-                        styledText(node.unwrappedTitle)
+                        styledText(node.unwrappedTitle, node: node)
                             .foregroundColor(.secondary)
                     }
-                }
+                }.width(min: 100)
                 
                 TableColumn("노트", value: \.unwrappedNote) { node in
-                    styledText(node.unwrappedNote)
+                    styledText(node.unwrappedNote, node: node)
                 }
                 
                 TableColumn("태그") { node in
@@ -65,7 +68,7 @@ struct TableView: View {
                 
                 TableColumn("링크", value: \.unwrappedURL) { node in
                     Link(destination: URL(string: node.url ?? " ")!, label: {
-                        styledText(node.unwrappedURL)
+                        styledText(node.unwrappedURL, node: node)
                             .underline()
                     })
                 }
@@ -90,6 +93,14 @@ struct TableView: View {
             .onChange(of: selection) { _, newSelection in
                 updateSelection(newSelection: newSelection)}
             .searchable(text: $searchText)
+            .inspector(isPresented: $isSheet) {
+                if let editingNodeID = editingNodeID, let editingNodeIndex = board.nodes.firstIndex(where: { $0.id == editingNodeID }) {
+                    EditSheetView(node: $board.nodes[editingNodeIndex], board: $board, findNodes: findNodes)
+                        .inspectorColumnWidth(min: 320, ideal: 320, max: 900)
+                }
+                
+            }
+            
         }
     }
     
@@ -98,7 +109,7 @@ struct TableView: View {
         let sourceIDs = node.outputPoints.map { $0.id }
         
         let matchingSinkIDs = board.edges.filter { sourceIDs.contains($0.sourceID) }.map { $0.sinkID }
-
+        
         var nodeDict = [UUID: KPNode]()
         
         board.nodes.forEach { node in
@@ -141,15 +152,20 @@ struct TableView: View {
         }
     }
     
-    func styledText(_ text: String) -> some View {
+    func styledText(_ text: String, node: KPNode) -> some View {
         return Text(text)
             .font(.system(size: 13.0))
             .padding(EdgeInsets(top: 6, leading: 10, bottom: 6, trailing: 10))
             .lineLimit(1)
+            .onTapGesture(count: 2) {
+                editingNodeID = node.id
+                isSheet = true
+            }
     }
-
 }
 
-#Preview {
-    TableView(board: .constant(.mockData), searchText: .constant(""))
-}
+
+    
+    #Preview {
+        TableView(board: .constant(.mockData), searchText: .constant(""))
+    }
