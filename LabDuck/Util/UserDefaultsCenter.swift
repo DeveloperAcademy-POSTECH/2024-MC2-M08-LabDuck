@@ -22,6 +22,7 @@ final class UserDefaultsCenter {
             do {
                 let savedArray = try JSONDecoder().decode([KPBoardDocument].self, from: savedData)
                 let savedSet = Set(savedArray.filter { $0.fileName != nil })
+                print("savedSet count : ", savedSet.count)
                 return savedSet
             } catch {
                 print("Failed to decode KPBoardDocument array: \(error)")
@@ -41,7 +42,9 @@ final class UserDefaultsCenter {
         }
     }
 
-    public func setDocument(_ document: KPBoardDocument) {
+    public func setDocument(_ document: KPBoardDocument, _ url: URL?) {
+        var document = document
+        document.url = url
         if var savedSet = loadDocuments() {
             savedSet.insert(document)
             setDocuments(savedSet)

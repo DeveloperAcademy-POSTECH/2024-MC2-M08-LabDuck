@@ -9,10 +9,10 @@ import SwiftUI
 import Combine
 
 struct MainDocumentView: View {
-    @Binding var document: KPBoardDocument
-    init(document: Binding<KPBoardDocument>) {
+    @Binding private var document: KPBoardDocument
+    init(document: Binding<KPBoardDocument>, url: URL?) {
         self._document = document
-        UserDefaultsCenter.shared.setDocument(document.wrappedValue)
+        UserDefaultsCenter.shared.setDocument(self.document, url)
         NotificationCenter.default.sendDocumentsChanged()
     }
     var body: some View {

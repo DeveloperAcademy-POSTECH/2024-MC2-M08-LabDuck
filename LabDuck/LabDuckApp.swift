@@ -18,14 +18,9 @@ struct LabDuckApp: App {
         .keyboardShortcut("0", modifiers: [.command])
 
         DocumentGroup(newDocument: KPBoardDocument()) { configuration in
-            var document: Binding<KPBoardDocument> {
-                let url = configuration.fileURL
-                let binding: Binding<KPBoardDocument> = configuration.$document
-                binding.wrappedValue.url = url
-                return binding
-            }
             MainDocumentView(
-                document: configuration.$document
+                document: configuration.$document,
+                url: configuration.fileURL
             )
         }
 
