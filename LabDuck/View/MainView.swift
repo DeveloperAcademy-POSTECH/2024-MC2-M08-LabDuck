@@ -94,7 +94,7 @@ struct MainView: View {
         GeometryReader { proxy in
             VStack{
                 if board.viewType == .graph {
-                    GraphView(board: $board)
+                    GraphView(board: $board, searchText: $searchText)
                         .background(Rectangle().fill(Color.white).frame(width: 5000, height: 5000))
                         .offset(offsetValue)
                         .scaleEffect(scaleValue, anchor: .center)

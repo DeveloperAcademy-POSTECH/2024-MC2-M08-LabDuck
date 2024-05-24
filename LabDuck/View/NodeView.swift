@@ -31,6 +31,7 @@ struct NodeView: View {
     @State private var tags: [KPTag] = []
     //------
     @Binding var clickingOutput: Bool
+    @Binding var searchText: String
     
     var judgeConnection: (_ outputID: KPOutputPoint.ID, _ dragLocation: CGPoint) -> (KPOutputPoint.ID, KPInputPoint.ID)?
     var addEdge: (_ edge: KPEdge) -> ()

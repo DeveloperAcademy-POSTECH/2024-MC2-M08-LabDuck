@@ -93,13 +93,14 @@ struct EditSheetView: View {
     
     private var tagsAndUrlSections: some View {
         ZStack {
-            VStack {
+            VStack(alignment: .leading) {
                 tagsSection
                 urlSection
+                Spacer()
             }
             if isEditingForTag {
                 TagPopupView(isEditingForTag: $isEditingForTag, node: $node)
-                    .transition(.scale)
+                    .transition(.slide)
                     .zIndex(1)
             }
         }
@@ -185,6 +186,10 @@ struct EditSheetView: View {
         .frame(height: 40)
         .background(Color.white)
         .cornerRadius(6)
+        .overlay(
+            RoundedRectangle(cornerRadius: 6)
+                .stroke(.black.opacity(0.1), lineWidth: 1)
+        )
     }
     
     private var colorSelectionView: some View {
