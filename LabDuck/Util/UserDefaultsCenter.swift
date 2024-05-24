@@ -22,7 +22,6 @@ final class UserDefaultsCenter {
             do {
                 let savedArray = try JSONDecoder().decode([KPBoardDocument].self, from: savedData)
                 let savedSet = Set(savedArray.filter { $0.fileName != nil })
-                print("savedSet count : ", savedSet.count)
                 return savedSet
             } catch {
                 print("Failed to decode KPBoardDocument array: \(error)")
@@ -30,15 +29,6 @@ final class UserDefaultsCenter {
             }
         } else {
             return nil
-        }
-    }
-
-    public func setDocuments(_ set: Set<KPBoardDocument>) {
-        do {
-            let data = try JSONEncoder().encode(Array(set))
-            userDefault.set(data, forKey: Keys.documents)
-        } catch {
-            print("Failed to encode KPBoardDocument set: \(error)")
         }
     }
 
@@ -50,6 +40,15 @@ final class UserDefaultsCenter {
             setDocuments(savedSet)
         } else {
             setDocuments([document])
+        }
+    }
+
+    private func setDocuments(_ set: Set<KPBoardDocument>) {
+        do {
+            let data = try JSONEncoder().encode(Array(set))
+            userDefault.set(data, forKey: Keys.documents)
+        } catch {
+            print("Failed to encode KPBoardDocument set: \(error)")
         }
     }
 }

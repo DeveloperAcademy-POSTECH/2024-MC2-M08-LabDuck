@@ -47,7 +47,11 @@ struct BoardGalleryView: View {
                                 }
                                 .contextMenu(ContextMenu(menuItems: {
                                     Button(action: {
-                                        openWindow(id: "main")
+                                        if let url = document.wrappedValue.url {
+                                            Task {
+                                                await openDocumentOnMainThread(url)
+                                            }
+                                        }
                                     }) {
                                         Text("파일 보기")
                                     }

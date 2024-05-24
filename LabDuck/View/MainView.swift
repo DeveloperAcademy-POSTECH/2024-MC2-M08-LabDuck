@@ -24,7 +24,7 @@ struct MainView: View {
     @Binding var board: KPBoard
 
     // MARK: - Zoom
-    @State private var zoom = 5.0
+    @State private var zoom = 1.0
     @State private var updatingZoom: Double = 1.0
     
     private let minZoom = 0.5
