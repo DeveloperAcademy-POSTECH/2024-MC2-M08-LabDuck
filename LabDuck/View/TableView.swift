@@ -156,7 +156,7 @@ struct TableView: View {
         } else {
             return board.nodes.filter { node in
                 let titleMatch = node.unwrappedTitle.lowercased().contains(searchText.lowercased())
-                let tagsMatch = node.tags.map { $0.name.lowercased() }.contains { $0.contains(searchText.lowercased()) }
+                let tagsMatch = node.tags.map { ("#" + $0.name).lowercased() }.contains { $0.contains(searchText.lowercased()) }
                 let urlMatch = node.unwrappedURL.lowercased().contains(searchText.lowercased())
                 let noteMatch = node.unwrappedNote.lowercased().contains(searchText.lowercased())
                 

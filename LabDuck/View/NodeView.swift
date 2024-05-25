@@ -57,9 +57,7 @@ struct NodeView: View {
             ZStack{
                 VStack(spacing: 0){
                     VStack(alignment: .leading, spacing: 10) {
-                        
                         //컬러 고르기
-                        
                         if isEditing{
                             HStack(spacing:6) {
                                 ForEach(KPColorTheme.allCases, id: \.self) { colorTheme in
@@ -79,9 +77,6 @@ struct NodeView: View {
                                                 .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/.opacity(node.colorTheme == colorTheme ? 1 : 0))
                                             
                                         }
-                                        
-                                        
-                                        
                                     }.buttonStyle(BorderlessButtonStyle())
                                 }
                                 Spacer()
@@ -107,11 +102,7 @@ struct NodeView: View {
                             .frame(width: 200, height: 20)
                             .background(Color.clear)
                         }
-                        
-                        
-                        
                         //제목
-                        
                         if isEditing{
                             TextEditor(text: $node.unwrappedTitle)
                                 .scrollContentBackground(.hidden)
@@ -120,10 +111,11 @@ struct NodeView: View {
                                 .frame(width:200, height: 50)
                         } else {
                             ZStack{
-                                Text(node.unwrappedTitle)
+                                highlightText(fullText: node.unwrappedTitle, searchText: searchText)
                                     .foregroundColor(.black)
                                     .font(.system(size:17, weight: .bold))
                                     .frame(width: 200,height: 40)
+                                
                                 Button{
                                     isEditing.toggle()
                                 }label:{
@@ -135,16 +127,10 @@ struct NodeView: View {
                                             self.hovered = hover
                                         }
                                 }.buttonStyle(BorderlessButtonStyle()).offset(x:100, y:-20)
-                                
                             }
                         }
-                        
-                        
-                        
                         //노트
-                        
                         if isEditing{
-                            
                             if isEditingForNote||(node.unwrappedNote.isEmpty == false) {
                                 
                                 TextEditor(text: $node.unwrappedNote)
@@ -166,19 +152,15 @@ struct NodeView: View {
                                     }.buttonStyle(BorderlessButtonStyle()).frame(width: 200)
                                 }.buttonStyle(BorderlessButtonStyle())
                             }
-                            
                         } else {
-                            Text(node.unwrappedNote)
+                            highlightText(fullText: node.unwrappedNote, searchText: searchText)
                                 .foregroundColor(.black)
                                 .font(.system(size: 13, weight: .regular))
                                 .frame(width:200,height: 50)
                         }
-                        
                         Divider().background(.gray)
                         
-                        
                         //링크
-                        
                         if isEditing{
                             if isEditingForLink||(node.unwrappedURL.isEmpty == false) {
                                 TextEditor(text: $node.unwrappedURL)
@@ -207,7 +189,7 @@ struct NodeView: View {
                             Group {
                                 if let url = URL(string: node.unwrappedURL) {
                                     Link(destination: url) {
-                                        Text("\(node.unwrappedURL)")
+                                        highlightText(fullText: node.unwrappedURL, searchText: searchText)
                                             .foregroundColor(.blue)
                                             .underline()
                                             .font(.system(size: 13, weight: .regular))
@@ -221,9 +203,7 @@ struct NodeView: View {
                     .background(node.colorTheme.backgroundColor)
                     .frame(width: 250)
                     
-                    
                     //태그
-                    
                     if isEditing{
                         HStack{
                             Button{
@@ -255,7 +235,7 @@ struct NodeView: View {
                         ScrollView(.horizontal){
                             HStack{
                                 ForEach(node.tags){ tag in
-                                    Text("#\(tag.name)")
+                                    highlightText(fullText: "#\(tag.name)", searchText: searchText)
                                         .foregroundColor(.white)
                                         .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
                                         .background(Color.blue)
@@ -270,19 +250,12 @@ struct NodeView: View {
                             .background(.gray.opacity(0.3))
                         
                     }
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
                 }
                 .background(.white)
                 .cornerRadius(10)
                 .shadow(color: .black.opacity(0.25), radius: 1.5, x: 0, y: 0)
                 .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 4)
+                .opacity((searchText == "" || nodeContainsSearchText()) ? 1 : 0.3)
                 
                 
                 //태그 팝업창
@@ -291,7 +264,6 @@ struct NodeView: View {
                         .transition(.scale)
                         .zIndex(1)
                 }
-                
             }
             
             //아웃풋 포인트
@@ -311,8 +283,6 @@ struct NodeView: View {
                                     if let dragLocation {
                                         if let (outputID, inputID) = self.judgeConnection(with: dragLocation) {
                                             addEdge(KPEdge(sourceID: outputID, sinkID: inputID))
-                                            
-                                            
                                         }
                                         
                                     }
@@ -350,9 +320,46 @@ struct NodeView: View {
             return nil
         }
     }
+    
+    // MARK: - search&higlight
+    func highlightText(fullText: String, searchText: String) -> Text {
+        guard !searchText.isEmpty else {
+            return Text(fullText)
+        }
+        
+        let lowercasedFullText = fullText.lowercased()
+        let lowercasedSearchText = searchText.lowercased()
+        
+        let parts = lowercasedFullText.components(separatedBy: lowercasedSearchText)
+        
+        var result = Text("")
+        
+        var lastIndex = fullText.startIndex
+        
+        for (index, part) in parts.enumerated() {
+            if index > 0 {
+                if let range = fullText.range(of: searchText, options: .caseInsensitive, range: lastIndex..<fullText.endIndex) {
+                    result = result + Text(fullText[range]).bold().foregroundColor(.red)
+                    lastIndex = range.upperBound
+                }
+            }
+            if let range = lowercasedFullText.range(of: part, range: lastIndex..<lowercasedFullText.endIndex) {
+                result = result + Text(fullText[range])
+                lastIndex = range.upperBound
+            }
+        }
+        
+        return result
+    }
+    
+    // MARK: - 노드의 상태 관리
+    private func nodeContainsSearchText() -> Bool {
+        let lowercasedSearchText = searchText.lowercased()
+        let titleContains = node.unwrappedTitle.lowercased().contains(lowercasedSearchText)
+        let noteContains = node.unwrappedNote.lowercased().contains(lowercasedSearchText)
+        let urlContains = node.unwrappedURL.lowercased().contains(lowercasedSearchText)
+        let tagsContain = node.tags.contains { ("#" + $0.name).lowercased().contains(lowercasedSearchText) }
+        
+        return titleContains || noteContains || urlContains || tagsContain
+    }
 }
-
-
-//#Preview {
-//    NodeView(node: .constant(.mockData), clickingOutput: <#Binding<Bool>#>, isEditingForTitle: isEditingForTitle, judgeConnection: { _, _ in (UUID(), UUID()) }, addEdge: { _ in }, updatePreviewEdge: { _, _ in })
-//}

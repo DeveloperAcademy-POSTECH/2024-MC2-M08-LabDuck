@@ -95,7 +95,7 @@ struct MainView: View {
             VStack{
                 if board.viewType == .graph {
                     GraphView(board: $board, searchText: $searchText)
-                        .background(Rectangle().fill(Color.white).frame(width: 5000, height: 5000))
+                        .background(Rectangle().frame(width: 6000, height: 5000).foregroundColor(searchText.isEmpty ? Color.white : Color.black.opacity(0.3)))
                         .offset(offsetValue)
                         .scaleEffect(scaleValue, anchor: .center)
                         .searchable(text: $searchText)
