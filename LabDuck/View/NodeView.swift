@@ -25,6 +25,7 @@ struct NodeView: View {
     @State private var isEditingForTag: Bool = false
     @State private var isEditing: Bool = false
     @State private var hovered: Bool = false
+    @State private var trashcanHovered: Bool = false
     @State private var hoveredForClosingTagView: Bool = false
 
     @State private var textForTags: String = ""
@@ -72,18 +73,34 @@ struct NodeView: View {
 //                }
             }
             .overlay(alignment: .topTrailing) {
-                Button {
-                    isEditing.toggle()
-                } label: {
-                    Image(systemName: isEditing ? "checkmark" : "square.and.pencil")
-                        .frame(width: 32, height: 32)
-                }
-                .buttonStyle(.borderless)
-                .foregroundColor(.gray)
-                .background(.gray.opacity(self.hovered ? 0.1 : 0.0))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .onHover { hover in
-                    self.hovered = hover
+                HStack(spacing: 8) {
+                    Button {
+                        isEditing.toggle()
+                    } label: {
+                        Image(systemName: isEditing ? "checkmark" : "square.and.pencil")
+                            .frame(width: 32, height: 32)
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundColor(.gray)
+                    .background(.gray.opacity(self.hovered ? 0.1 : 0.0))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .onHover { hover in
+                        self.hovered = hover
+                    }
+
+                    Button {
+                        document.removeNode(node.id, undoManager: undoManager, animation: .default)
+                    } label: {
+                        Image(systemName: "trash")
+                            .frame(width: 32, height: 32)
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundColor(.gray)
+                    .background(.gray.opacity(self.trashcanHovered ? 0.1 : 0.0))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .onHover { hover in
+                        self.trashcanHovered = hover
+                    }
                 }
             }
             .frame(minWidth: 50, maxWidth: node.size.width, minHeight: 50, maxHeight: .infinity)
