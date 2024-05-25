@@ -170,22 +170,24 @@ struct NodeView: View {
         var lastIndex = fullText.startIndex
         
         for (index, part) in parts.enumerated() {
-            if index > 0 {
+            // Append non-highlighted part
+            if let range = fullText.range(of: part, range: lastIndex..<fullText.endIndex) {
+                result = result + Text(fullText[range])
+                lastIndex = range.upperBound
+            }
+            
+            if index < parts.count - 1 {
                 if let range = fullText.range(of: searchText, options: .caseInsensitive, range: lastIndex..<fullText.endIndex) {
                     result = result + Text(fullText[range]).bold().foregroundColor(.red)
                     lastIndex = range.upperBound
                 }
-            }
-            if let range = lowercasedFullText.range(of: part, range: lastIndex..<lowercasedFullText.endIndex) {
-                result = result + Text(fullText[range])
-                lastIndex = range.upperBound
             }
         }
         
         return result
     }
     
-    // MARK: - 노드의 상태 관리
+    // MARK: - 노드음영여부 관리
     private func nodeContainsSearchText() -> Bool {
         let lowercasedSearchText = searchText.lowercased()
         let titleContains = node.unwrappedTitle.lowercased().contains(lowercasedSearchText)
