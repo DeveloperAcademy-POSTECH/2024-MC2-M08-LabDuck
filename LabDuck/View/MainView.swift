@@ -20,6 +20,8 @@ struct MainDocumentView: View {
 }
 
 struct MainView: View {
+    @EnvironmentObject var document: KPBoardDocument
+    @Environment(\.undoManager) var undoManager
     @Binding var board: KPBoard
 
     // MARK: - Zoom
@@ -157,7 +159,8 @@ struct MainView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: {
                         let center = calculateCenterCoordinate(.zero)
-                        board.nodes.append(KPNode(position: CGPoint(x: center.x, y: center.y)))
+                        let newNode = KPNode(position: CGPoint(x: center.x, y: center.y))
+                        document.addNode(newNode, undoManager: undoManager, animation: .default)
                     }, label: {
                         Image(systemName: "plus.rectangle")
                     })

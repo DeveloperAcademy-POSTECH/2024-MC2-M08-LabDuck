@@ -51,7 +51,7 @@ extension KPBoardDocument {
     }
 }
 
-// MARK: - 노드
+// MARK: - 노드 세부 사항
 extension KPBoardDocument {
     // 전체 노드 
     // 최상위 뷰에서 이를 사용하지 않는 이유는?
@@ -60,6 +60,7 @@ extension KPBoardDocument {
     // 3. 로직을 여기로 몰아넣고 Modified 시간을 같이 관리하기 위해서
     // 4. NodeView의 node를 @State가 아닌 그냥 일반 변수로 관리하고 싶어서. (성능 향상을 위해)
     // (5. 공식 예제가 이렇게 해서)
+    // 6. 노드가 삭제될 때 이걸 undo 하려면 삭제되는 과정을 다시 되풀이 하는게 아니라 한번에 다 보여져야 함.
     func updateNode(node: KPNode, undoManager: UndoManager?) {
         let nodeID = node.id
         guard let index = getIndex(nodeID) else { return }
@@ -280,6 +281,41 @@ extension KPBoardDocument {
 
         undoManager?.registerUndo(withTarget: self) { doc in
             doc.replaceEdges(oldEdges, undoManager: undoManager, animation: animation)
+        }
+    }
+}
+
+// MARK: - 보드
+extension KPBoardDocument {
+    func addNode(_ node: KPNode, undoManager: UndoManager?, animation: Animation? = .default) {
+        self.board.nodes.append(node)
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.removeNode(node.id, undoManager: undoManager, animation: animation)
+        }
+    }
+
+    func removeNode(_ nodeID: KPNode.ID, undoManager: UndoManager?, animation: Animation? = .default) {
+        guard let nodeIndex = getIndex(nodeID) else { return }
+        let originalNode = self.board.nodes[nodeIndex]
+        let incomingEdges = self.board.edges.filter { edge in
+            originalNode.inputPoints.contains { inputPoint in
+                inputPoint.id == edge.sinkID
+            }
+        }
+        let outgoingEdges = self.board.edges.filter { edge in
+            originalNode.outputPoints.contains { outputPoint in
+                outputPoint.id == edge.sourceID
+            }
+        }
+        incomingEdges.forEach { self.board.removeEdge($0.id) }
+        outgoingEdges.forEach { self.board.removeEdge($0.id) }
+        self.board.nodes.removeAll { $0.id == nodeID }
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.addNode(originalNode, undoManager: undoManager)
+            incomingEdges.forEach { doc.addEdge(edge: $0, undoManager: undoManager) }
+            outgoingEdges.forEach { doc.addEdge(edge: $0, undoManager: undoManager) }
         }
     }
 }
