@@ -54,7 +54,7 @@ struct GraphView: View {
                     updatePreviewEdge: self.updatePreviewEdge(from:to:)
                 )
                 .draggable(offset: node.position) { offset in
-                    document.moveNode(node.wrappedValue.id, to: offset, undoManager: undoManager)
+                    document.updateNode(node.wrappedValue.id, position: offset, undoManager: undoManager)
                 }
             }
             if let previewEdge {
@@ -127,10 +127,6 @@ struct GraphView: View {
         }
     }
 }
-
-//#Preview {
-//    GraphView(board: .constant(.mockData), isEditingForTitle: isEditingForTitle)
-//}
 
 // MARK: - read preferences : 각 지점의 아이디와 위치를 가져오기 위한 메소드들
 extension GraphView {
