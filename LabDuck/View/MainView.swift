@@ -52,8 +52,6 @@ struct MainView: View {
         )
     }
 
-    @State private var subs = Set<AnyCancellable>()
-
     // MARK: - Search
     @State private var searchText: String = ""
 
@@ -115,8 +113,13 @@ struct MainView: View {
                         .searchText(searchText)
                         .gesture(magnifyGesture(proxy.size.width, proxy.size.height))
                         .gesture(dragGesture)
-                        .onAppear {
-                            trackScrollWheel()
+                        .onReceive(trackWheelScrollPublisher) { event in
+                            if let event {
+                                self.dragOffset.width += ( event.deltaX ) * 3.5
+                                self.dragOffset.height += ( event.deltaY ) * 3.5
+                                self.dragOffset.width = min(max(self.dragOffset.width, -1000), 1000)
+                                self.dragOffset.height = min(max(self.dragOffset.height, -1000), 1000)
+                            }
                         }
                 } else {
                     TableView(board: $board, searchText: $searchText)
@@ -171,21 +174,10 @@ struct MainView: View {
         }
     }
 
-    // MARK: - TrackScrollWheel
-    private func trackScrollWheel() {
-        NSApp.publisher(for: \.currentEvent)
-            .filter { event in event?.type == .scrollWheel }
-            .sink { (event: NSEvent?) in
-                if let event {
-                    self.dragOffset.width += ( event.deltaX ) * 3.5
-                    self.dragOffset.height += ( event.deltaY ) * 3.5
-                    self.dragOffset.width = min(max(self.dragOffset.width, -1000), 1000)
-                    self.dragOffset.height = min(max(self.dragOffset.height, -1000), 1000)
-                }
-            }
-            .store(in: &subs)
-    }
-    
+    var trackWheelScrollPublisher = NSApp.publisher(for: \.currentEvent)
+        .eraseToAnyPublisher()
+        .filter { event in event?.type == .scrollWheel }
+
     private func calculateCenterCoordinate(_ size: CGSize) -> CGPoint {
         let scaledWidth = size.width * scaleValue
         let scaledHeight = size.height * scaleValue
