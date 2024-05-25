@@ -19,9 +19,6 @@ struct NodeView: View {
 
     @State private var dragLocation: CGPoint?
     @State private var currentOutputPoint: KPOutputPoint.ID?
-    @State private var isEditingForTitle: Bool = false
-    @State private var isEditingForNote: Bool = false
-    @State private var isEditingForLink: Bool = false
     @State private var isEditingForTag: Bool = false
     @State private var isEditing: Bool = false
     @State private var hovered: Bool = false
@@ -228,7 +225,7 @@ extension NodeView {
             if !isEditing {
                 HighlightText(fullText: node.unwrappedTitle, searchText: searchText)
             } else {
-                TextField("title", text: $tempNodeTitle, axis: .vertical)
+                TextField("Untitled", text: $tempNodeTitle, axis: .vertical)
                     .onAppear {
                         tempNodeTitle = self.node.unwrappedTitle
                     }
@@ -239,30 +236,24 @@ extension NodeView {
             .font(.title)
             .bold()
             .textFieldStyle(.plain)
-            .multilineTextAlignment(.center)
+            .multilineTextAlignment(.leading)
     }
 
+    @ViewBuilder
     private func NoteTextEditor() -> some View {
-        @ViewBuilder var TextView: some View {
-            if !isEditing {
-                HighlightText(fullText: node.unwrappedNote, searchText: searchText)
-            } else {
-                TextField("note", text: $tempNodeNote, axis: .vertical)
-                    .onAppear {
-                        tempNodeNote = self.node.unwrappedNote
-                    }
-            }
-        }
-        @ViewBuilder var ResultView: some View {
-            if isEditingForNote || !node.unwrappedNote.isEmpty {
-                TextView
-                    .scrollContentBackground(.hidden)
-                    .foregroundColor(.black)
-                    .textFieldStyle(.plain)
-                    .multilineTextAlignment(.center)
-            } else {
+        if isEditing {
+            TextField("note", text: $tempNodeNote, axis: .vertical)
+                .scrollContentBackground(.hidden)
+                .foregroundColor(.black)
+                .textFieldStyle(.plain)
+                .multilineTextAlignment(.leading)
+                .onAppear {
+                    tempNodeNote = self.node.unwrappedNote
+                }
+        } else {
+            if node.unwrappedNote.isEmpty {
                 Button {
-                    isEditingForNote.toggle()
+                    isEditing = true
                 } label: {
                     HStack {
                         Image(systemName: "note.text").foregroundColor(.gray)
@@ -271,53 +262,50 @@ extension NodeView {
                     }
                 }
                 .buttonStyle(.borderless)
+            } else {
+                HighlightText(fullText: node.unwrappedNote, searchText: searchText)
+                    .scrollContentBackground(.hidden)
+                    .foregroundColor(.black)
+                    .textFieldStyle(.plain)
+                    .multilineTextAlignment(.leading)
             }
         }
-        return ResultView
     }
 
+    @ViewBuilder
     private func LinkTextField() -> some View {
-        @ViewBuilder var TextView: some View {
-            if !isEditing {
-                if let url = URL(string: node.unwrappedURL) {
-                    Link(destination: url) {
-                        HighlightText(fullText: node.unwrappedURL, searchText: searchText)
-                            .foregroundColor(.blue)
-                            .underline()
-                            .font(.system(size: 13, weight: .regular))
-                    }
+        if isEditing {
+            TextField("link", text: $tempNodeURL, axis: .vertical)
+                .scrollContentBackground(.hidden)
+                .foregroundColor(.blue)
+                .underline()
+                .textFieldStyle(.plain)
+                .multilineTextAlignment(.leading)
+                .onAppear {
+                    tempNodeURL = self.node.unwrappedURL
                 }
-            } else {
-                TextField("link", text: $tempNodeURL, axis: .vertical)
-                    .onAppear {
-                        tempNodeURL = self.node.unwrappedURL
-                    }
-            }
-        }
-        @ViewBuilder var ResultView: some View {
-            if isEditingForLink||(node.unwrappedURL.isEmpty == false) {
-                TextView
-                    .scrollContentBackground(.hidden)
-                    .foregroundColor(.blue)
-                    .underline()
-                    .textFieldStyle(.plain)
-                    .multilineTextAlignment(.center)
-            } else {
-                Button{
-                    isEditingForLink.toggle()
-                }label:{
+        } else {
+            if let url = URL(string: node.unwrappedURL) {
+                Link(destination: url) {
+                    HighlightText(fullText: node.unwrappedURL, searchText: searchText)
+                        .foregroundColor(.blue)
+                        .underline()
+                        .multilineTextAlignment(.leading)
+                        .font(.system(size: 13, weight: .regular))
+                }
+            } else if node.unwrappedURL.isEmpty {
+                Button {
+                    isEditing = true
+                } label: {
                     HStack{
                         Image(systemName: "note.text").foregroundColor(.gray)
                         Text("링크 추가").foregroundColor(.gray)
                         Spacer()
-
                     }
-                    .buttonStyle(.borderless)
                 }
                 .buttonStyle(.borderless)
             }
         }
-        return ResultView
     }
 
     @ViewBuilder
@@ -418,5 +406,6 @@ extension NodeView: Equatable {
 }
 
 #Preview {
-    NodeView(node: .mockData2, clickingOutput: .constant(false), judgeConnection: { _, _ in (UUID(), UUID()) }, updatePreviewEdge: { _, _ in })
+    NodeView(node: .mockData, clickingOutput: .constant(false), judgeConnection: { _, _ in (UUID(), UUID()) }, updatePreviewEdge: { _, _ in })
+        .environmentObject(KPBoardDocument())
 }
