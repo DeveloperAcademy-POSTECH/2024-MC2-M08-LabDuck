@@ -35,7 +35,6 @@ struct NodeView: View {
     @Environment(\.searchText) private var searchText
     
     var judgeConnection: (_ outputID: KPOutputPoint.ID, _ dragLocation: CGPoint) -> (KPOutputPoint.ID, KPInputPoint.ID)?
-    var addEdge: (_ edge: KPEdge) -> ()
     
     var updatePreviewEdge: (_ sourceID: KPOutputPoint.ID, _ dragPoint: CGPoint?) -> ()
 
@@ -398,8 +397,7 @@ extension NodeView {
                             .onEnded { value in
                                 if let dragLocation {
                                     if let (outputID, inputID) = self.judgeConnection(with: dragLocation) {
-                                        addEdge(KPEdge(sourceID: outputID, sinkID: inputID))
-
+                                        self.document.addEdge(edge: KPEdge(sourceID: outputID, sinkID: inputID), undoManager: undoManager)
 
                                     }
                                 }
@@ -421,5 +419,5 @@ extension NodeView: Equatable {
 }
 
 #Preview {
-    NodeView(node: .mockData2, clickingOutput: .constant(false), judgeConnection: { _, _ in (UUID(), UUID()) }, addEdge: { _ in }, updatePreviewEdge: { _, _ in })
+    NodeView(node: .mockData2, clickingOutput: .constant(false), judgeConnection: { _, _ in (UUID(), UUID()) }, updatePreviewEdge: { _, _ in })
 }

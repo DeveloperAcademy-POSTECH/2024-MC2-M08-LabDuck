@@ -48,7 +48,6 @@ struct GraphView: View {
                     node: node,
                     clickingOutput: $clickingOutput,
                     judgeConnection: self.judgeConnection(outputID:dragLocation:),
-                    addEdge: self.addEdge(edge:),
                     updatePreviewEdge: self.updatePreviewEdge(from:to:)
                 )
                 .searchText(searchText)
@@ -171,12 +170,6 @@ extension GraphView {
         return (outputItem.0, inputItem.0)
     }
     
-    private func addEdge(
-        edge: KPEdge
-    ) {
-        self.document.addEdge(edge: edge, undoManager: undoManager)
-    }
-    
     private func updatePreviewEdge(
         from sourceID: KPOutputPoint.ID,
         to dragPoint: CGPoint?
@@ -186,12 +179,5 @@ extension GraphView {
         } else {
             self.previewEdge = nil
         }
-    }
-}
-
-// MARK: - Delete key를 받기 위함
-extension GraphView {
-    private func trackDeleteCommand(_ perform: @escaping () -> ()) {
-
     }
 }
