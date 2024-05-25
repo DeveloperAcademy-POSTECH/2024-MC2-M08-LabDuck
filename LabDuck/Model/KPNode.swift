@@ -33,13 +33,12 @@ struct KPNode: Identifiable {
         self.colorTheme = colorTheme
         self.position = position
         self.size = size
-        self.inputPoints = inputPoints.map({ inputPoint in
+        self.inputPoints = inputPoints.isEmpty ? (0..<3).map { _ in KPInputPoint(ownerNode: self.id) } : inputPoints.map { inputPoint in
             KPInputPoint(id: inputPoint.id, name: inputPoint.name, ownerNode: self.id)
-        })
-
-        self.outputPoints = outputPoints.map({ outputPoint in
+        }
+        self.outputPoints = outputPoints.isEmpty ? (0..<3).map { _ in KPOutputPoint(ownerNode: self.id) } : outputPoints.map { outputPoint in
             KPOutputPoint(id: outputPoint.id, name: outputPoint.name, ownerNode: self.id)
-        })
+        }
     }
 }
 

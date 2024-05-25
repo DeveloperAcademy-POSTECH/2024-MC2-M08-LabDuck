@@ -10,7 +10,7 @@ import Combine
 
 struct GraphView: View {
     @Binding var board: KPBoard
-    @Binding var searchText :String
+    @Environment(\.searchText) private var searchText: String
     
     // MARK: Edges
     @State private var inputPointRects: [KPInputPoint.ID : CGRect] = [:]
@@ -41,12 +41,12 @@ struct GraphView: View {
             ForEach(self.$board.nodes) { node in
                 NodeView(
                     node: node, clickingOutput: $clickingOutput, /*isEditingForTitle: $isEditingForTitle,*/
-                    searchText: $searchText,
                     judgeConnection: self.judgeConnection(outputID:dragLocation:),
                     addEdge: self.addEdge(edge:),
                     updatePreviewEdge: self.updatePreviewEdge(from:to:)
                 )
                 .draggable(offset: node.position)
+                .searchText(searchText)
             }
             if let previewEdge {
                 PathBetween(previewEdge.0, previewEdge.1)

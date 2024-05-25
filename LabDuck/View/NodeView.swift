@@ -31,7 +31,7 @@ struct NodeView: View {
     @State private var tags: [KPTag] = []
     //------
     @Binding var clickingOutput: Bool
-    @Binding var searchText: String
+    @Environment(\.searchText) private var searchText
     
     var judgeConnection: (_ outputID: KPOutputPoint.ID, _ dragLocation: CGPoint) -> (KPOutputPoint.ID, KPInputPoint.ID)?
     var addEdge: (_ edge: KPEdge) -> ()
@@ -111,7 +111,7 @@ struct NodeView: View {
                                 .frame(width:200, height: 50)
                         } else {
                             ZStack{
-                                highlightText(fullText: node.unwrappedTitle, searchText: searchText)
+                                HighlightText(fullText: node.unwrappedTitle, searchText: searchText)
                                     .foregroundColor(.black)
                                     .font(.system(size:17, weight: .bold))
                                     .frame(width: 200,height: 40)
@@ -153,7 +153,7 @@ struct NodeView: View {
                                 }.buttonStyle(BorderlessButtonStyle())
                             }
                         } else {
-                            highlightText(fullText: node.unwrappedNote, searchText: searchText)
+                            HighlightText(fullText: node.unwrappedNote, searchText: searchText)
                                 .foregroundColor(.black)
                                 .font(.system(size: 13, weight: .regular))
                                 .frame(width:200,height: 50)
@@ -183,13 +183,12 @@ struct NodeView: View {
                                     }.buttonStyle(BorderlessButtonStyle()).frame(width: 200)
                                 }.buttonStyle(BorderlessButtonStyle())
                             }
-                            
-                            
+                                         
                         } else {
                             Group {
                                 if let url = URL(string: node.unwrappedURL) {
                                     Link(destination: url) {
-                                        highlightText(fullText: node.unwrappedURL, searchText: searchText)
+                                        HighlightText(fullText: node.unwrappedURL, searchText: searchText)
                                             .foregroundColor(.blue)
                                             .underline()
                                             .font(.system(size: 13, weight: .regular))
@@ -235,7 +234,7 @@ struct NodeView: View {
                         ScrollView(.horizontal){
                             HStack{
                                 ForEach(node.tags){ tag in
-                                    highlightText(fullText: "#\(tag.name)", searchText: searchText)
+                                    HighlightText(fullText: "#\(tag.name)", searchText: searchText)
                                         .foregroundColor(.white)
                                         .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
                                         .background(Color.blue)
@@ -322,7 +321,7 @@ struct NodeView: View {
     }
     
     // MARK: - search&higlight
-    func highlightText(fullText: String, searchText: String) -> Text {
+    func HighlightText(fullText: String, searchText: String) -> Text {
         guard !searchText.isEmpty else {
             return Text(fullText)
         }
