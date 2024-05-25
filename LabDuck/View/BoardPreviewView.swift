@@ -12,7 +12,7 @@ struct BoardPreviewView: View {
     @Binding var isEditing: Bool
     @State private var editingBoardID: UUID?
     @FocusState private var isFocused: Bool
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Image("test")
