@@ -57,6 +57,7 @@ struct GraphView: View {
                     .stroke(lineWidth: 2)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .backgroundPreferenceValue(InputPointPreferenceKey.self) { values in
             GeometryReader { proxy in
                 self.readPreferenceValues(from: values, in: proxy)
