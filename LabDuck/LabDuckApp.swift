@@ -10,12 +10,17 @@ import SwiftUI
 @main
 struct LabDuckApp: App {
     var body: some Scene {
-        WindowGroup {
-            BoardGallery()
+        Window("Board Gallery", id: "BoardGallery") {
+            BoardGalleryView()
         }
+        .defaultPosition(.center)
+        .defaultSize(width: 800, height: 400)
+        .keyboardShortcut("1", modifiers: [.command])
 
-        WindowGroup("메인 뷰", id: "main") {
-            MainView()
+        DocumentGroup(newDocument: { KPBoardDocument() }) { configuration in
+            MainDocumentView(
+                url: configuration.fileURL
+            )
         }
     }
 }

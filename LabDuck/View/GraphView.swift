@@ -9,6 +9,8 @@ import SwiftUI
 import Combine
 
 struct GraphView: View {
+    @EnvironmentObject var document: KPBoardDocument
+    @Environment(\.undoManager) var undoManager
     @Binding var board: KPBoard
    
 
@@ -51,7 +53,9 @@ struct GraphView: View {
                     addEdge: self.addEdge(edge:),
                     updatePreviewEdge: self.updatePreviewEdge(from:to:)
                 )
-                .draggable(offset: node.position)
+                .draggable(offset: node.position) { offset in
+                    document.moveNode(node.wrappedValue.id, to: offset, undoManager: undoManager)
+                }
             }
             if let previewEdge {
                 PathBetween(previewEdge.0, previewEdge.1)

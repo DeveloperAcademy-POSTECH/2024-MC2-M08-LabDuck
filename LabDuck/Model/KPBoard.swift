@@ -17,13 +17,13 @@ struct KPBoard: Identifiable {
     var viewType: BoardViewType
     var previewImage: Data?
 
-    enum BoardViewType: String, CaseIterable {
+    enum BoardViewType: String, CaseIterable, Codable, Hashable {
         case graph = "Graph View"
         case table = "Table View"
     }
 
-    init(title: String, nodes: [KPNode], edges: [KPEdge], texts: [KPText], modifiedDate: Date, viewType: BoardViewType, previewImage: Data? = nil) {
-        self.id = UUID()
+    init(id: UUID = UUID(), title: String, nodes: [KPNode], edges: [KPEdge], texts: [KPText], modifiedDate: Date, viewType: BoardViewType, previewImage: Data? = nil) {
+        self.id = id
         self.title = title
         self.nodes = nodes
         self.edges = edges
@@ -58,7 +58,13 @@ struct KPBoard: Identifiable {
     public mutating func addNodes(_ nodes: [KPNode]) {
         self.nodes.append(contentsOf: nodes)
     }
+
+    public mutating func modified() {
+        self.modifiedDate = .now
+    }
 }
+
+extension KPBoard: Equatable, Codable, Hashable {}
 
 extension KPBoard {
     static var mockData: KPBoard {

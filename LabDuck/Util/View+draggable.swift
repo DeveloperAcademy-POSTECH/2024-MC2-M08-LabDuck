@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension View {
-    func draggable(offset: Binding<CGPoint>) -> some View {
-        return modifier(DraggableViewModifier(offset: offset))
+    func draggable(offset: Binding<CGPoint>, onEnded: ((_ offset: CGPoint) -> Void)? = nil) -> some View {
+        return modifier(DraggableViewModifier(offset: offset, onEnded: onEnded))
     }
 }

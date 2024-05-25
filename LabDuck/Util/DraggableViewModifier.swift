@@ -9,14 +9,25 @@ import SwiftUI
 
 struct DraggableViewModifier: ViewModifier {
     @Binding var offset: CGPoint
+    @GestureState private var gestureOffset: CGSize = .zero
+    var onEnded: ((_ offset: CGPoint) -> Void)? = nil
     func body(content: Content) -> some View {
-        content.gesture(DragGesture(minimumDistance: 0)
-                .onChanged { value in
-                    print(value)
-                    self.offset.x += value.location.x - value.startLocation.x
-                    self.offset.y += value.location.y - value.startLocation.y
-                })
-            .offset(x: offset.x, y: offset.y)
+        content
+            .offset(x: offset.x + gestureOffset.width, y: offset.y + gestureOffset.height)
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .updating($gestureOffset) { value, gestureState, _ in
+                        gestureState = value.translation
+                    }
+                    .onEnded { value in
+                        onEnded?(
+                            CGPoint(
+                                x: self.offset.x + value.translation.width,
+                                y: self.offset.y + value.translation.height
+                            )
+                        )
+                    }
+            )
     }
     
 
