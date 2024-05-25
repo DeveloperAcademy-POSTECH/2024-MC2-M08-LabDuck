@@ -8,11 +8,22 @@
 import SwiftUI
 import Combine
 
+struct MainDocumentView: View {
+    @EnvironmentObject var document: KPBoardDocument
+    init(url: URL?) {
+        UserDefaultsCenter.shared.setDocument(url)
+        NotificationCenter.default.sendDocumentsChanged()
+    }
+    var body: some View {
+        MainView(board: $document.board)
+    }
+}
+
 struct MainView: View {
-    @State private var board: KPBoard = .mockData
-    
+    @Binding var board: KPBoard
+
     // MARK: - Zoom
-    @State private var zoom = 5.0
+    @State private var zoom = 1.0
     @State private var updatingZoom: Double = 1.0
     
     private let minZoom = 0.5
@@ -181,6 +192,12 @@ struct MainView: View {
     }
 }
 
+extension MainView: Equatable {
+    static func == (lhs: MainView, rhs: MainView) -> Bool {
+        lhs.board == rhs.board
+    }
+}
+
 #Preview {
-    MainView()
+    MainView(board: .constant(.mockData))
 }

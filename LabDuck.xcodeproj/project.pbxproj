@@ -30,14 +30,20 @@
 		6F050B4B2BF5F795003D54BD /* CGPoint+distance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F050B4A2BF5F795003D54BD /* CGPoint+distance.swift */; };
 		6F62DDFE2BFD7FB900A7239E /* CSVConvertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F62DDFD2BFD7FB900A7239E /* CSVConvertManager.swift */; };
 		6F62DE012BFD7FD100A7239E /* SwiftCSV in Frameworks */ = {isa = PBXBuildFile; productRef = 6F62DE002BFD7FD100A7239E /* SwiftCSV */; };
+		6F63245C2BFF7A68007091A7 /* KPBoardDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F63245B2BFF7A68007091A7 /* KPBoardDocument.swift */; };
+		6F63245E2C00681B007091A7 /* UserDefaultsCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F63245D2C00681B007091A7 /* UserDefaultsCenter.swift */; };
+		6F6324602C0069E0007091A7 /* CoreGraphics+Hashable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F63245F2C0069E0007091A7 /* CoreGraphics+Hashable.swift */; };
+		6F6324622C006D19007091A7 /* NotificationCenter+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6324612C006D19007091A7 /* NotificationCenter+.swift */; };
 		6F9D09C92BEDC29500159BFC /* LabDuckApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9D09C82BEDC29500159BFC /* LabDuckApp.swift */; };
 		6F9D09CD2BEDC29700159BFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F9D09CC2BEDC29700159BFC /* Assets.xcassets */; };
 		6F9D09D02BEDC29700159BFC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F9D09CF2BEDC29700159BFC /* Preview Assets.xcassets */; };
 		6FA98D722BFAF5CF00F7D19E /* MainViewPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FA98D712BFAF5CF00F7D19E /* MainViewPreference.swift */; };
+		BD33D8A52BFF7BD500B86A09 /* EditSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD33D8A42BFF7BD500B86A09 /* EditSheetView.swift */; };
+		BD33D8A72BFF80C900B86A09 /* TagPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD33D8A62BFF80C900B86A09 /* TagPopupView.swift */; };
 		BD57969D2BF1F2AC0023A92C /* TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD57969C2BF1F2AC0023A92C /* TableView.swift */; };
 		BDFE71A82BF87B8400D68E04 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFE71A72BF87B8400D68E04 /* Color+Hex.swift */; };
 		BDFE71AA2BF889A400D68E04 /* KPTagColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFE71A92BF889A400D68E04 /* KPTagColor.swift */; };
-		F669EF522BF86493001E99EF /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F669EF512BF86493001E99EF /* BoardView.swift */; };
+		F669EF522BF86493001E99EF /* BoardPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F669EF512BF86493001E99EF /* BoardPreviewView.swift */; };
 		F669EF542BF88096001E99EF /* BoardGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F669EF532BF88096001E99EF /* BoardGalleryView.swift */; };
 /* End PBXBuildFile section */
 
@@ -64,6 +70,10 @@
 		6F050B442BF37D4B003D54BD /* CGRect+center.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+center.swift"; sourceTree = "<group>"; };
 		6F050B4A2BF5F795003D54BD /* CGPoint+distance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+distance.swift"; sourceTree = "<group>"; };
 		6F62DDFD2BFD7FB900A7239E /* CSVConvertManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSVConvertManager.swift; sourceTree = "<group>"; };
+		6F63245B2BFF7A68007091A7 /* KPBoardDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KPBoardDocument.swift; sourceTree = "<group>"; };
+		6F63245D2C00681B007091A7 /* UserDefaultsCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsCenter.swift; sourceTree = "<group>"; };
+		6F63245F2C0069E0007091A7 /* CoreGraphics+Hashable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreGraphics+Hashable.swift"; sourceTree = "<group>"; };
+		6F6324612C006D19007091A7 /* NotificationCenter+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationCenter+.swift"; sourceTree = "<group>"; };
 		6F9D09C52BEDC29500159BFC /* LabDuck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LabDuck.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F9D09C82BEDC29500159BFC /* LabDuckApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabDuckApp.swift; sourceTree = "<group>"; };
 		6F9D09CC2BEDC29700159BFC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -71,10 +81,12 @@
 		6F9D09D12BEDC29700159BFC /* LabDuck.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LabDuck.entitlements; sourceTree = "<group>"; };
 		6FA98D702BFADD6F00F7D19E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		6FA98D712BFAF5CF00F7D19E /* MainViewPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewPreference.swift; sourceTree = "<group>"; };
+		BD33D8A42BFF7BD500B86A09 /* EditSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSheetView.swift; sourceTree = "<group>"; };
+		BD33D8A62BFF80C900B86A09 /* TagPopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagPopupView.swift; sourceTree = "<group>"; };
 		BD57969C2BF1F2AC0023A92C /* TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableView.swift; sourceTree = "<group>"; wrapsLines = 1; };
 		BDFE71A72BF87B8400D68E04 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		BDFE71A92BF889A400D68E04 /* KPTagColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KPTagColor.swift; sourceTree = "<group>"; };
-		F669EF512BF86493001E99EF /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
+		F669EF512BF86493001E99EF /* BoardPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardPreviewView.swift; sourceTree = "<group>"; };
 		F669EF532BF88096001E99EF /* BoardGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardGalleryView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -99,8 +111,10 @@
 				BD57969C2BF1F2AC0023A92C /* TableView.swift */,
 				6F050B392BF302B1003D54BD /* InputPointView.swift */,
 				6F050B3B2BF302F5003D54BD /* OutputPointView.swift */,
-				F669EF512BF86493001E99EF /* BoardView.swift */,
+				F669EF512BF86493001E99EF /* BoardPreviewView.swift */,
 				F669EF532BF88096001E99EF /* BoardGalleryView.swift */,
+				BD33D8A42BFF7BD500B86A09 /* EditSheetView.swift */,
+				BD33D8A62BFF80C900B86A09 /* TagPopupView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -108,6 +122,7 @@
 		6F050B1B2BF1AA61003D54BD /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				6F63245B2BFF7A68007091A7 /* KPBoardDocument.swift */,
 				6F050B2B2BF1BD4B003D54BD /* KPBoard.swift */,
 				6F050B232BF1AC30003D54BD /* KPNode.swift */,
 				6F050B2D2BF1BDBF003D54BD /* KPTag.swift */,
@@ -133,6 +148,9 @@
 				6F050B4A2BF5F795003D54BD /* CGPoint+distance.swift */,
 				6F050B442BF37D4B003D54BD /* CGRect+center.swift */,
 				BDFE71A72BF87B8400D68E04 /* Color+Hex.swift */,
+				6F63245F2C0069E0007091A7 /* CoreGraphics+Hashable.swift */,
+				6F63245D2C00681B007091A7 /* UserDefaultsCenter.swift */,
+				6F6324612C006D19007091A7 /* NotificationCenter+.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -273,22 +291,28 @@
 				F669EF542BF88096001E99EF /* BoardGalleryView.swift in Sources */,
 				6F050B362BF1BE14003D54BD /* KPOutputPoint.swift in Sources */,
 				6F050B432BF348A0003D54BD /* CGPoint+Operators.swift in Sources */,
+				6F63245E2C00681B007091A7 /* UserDefaultsCenter.swift in Sources */,
 				6F050B452BF37D4B003D54BD /* CGRect+center.swift in Sources */,
 				6F050B1D2BF1AAA3003D54BD /* MainView.swift in Sources */,
 				6F9D09C92BEDC29500159BFC /* LabDuckApp.swift in Sources */,
 				6F050B3A2BF302B1003D54BD /* InputPointView.swift in Sources */,
+				BD33D8A52BFF7BD500B86A09 /* EditSheetView.swift in Sources */,
+				6F63245C2BFF7A68007091A7 /* KPBoardDocument.swift in Sources */,
 				6F050B242BF1AC30003D54BD /* KPNode.swift in Sources */,
 				6F050B382BF1BEEF003D54BD /* KPText.swift in Sources */,
 				6F050B302BF1BDDD003D54BD /* KPColorTheme.swift in Sources */,
 				6F050B282BF1ACA0003D54BD /* DraggableViewModifier.swift in Sources */,
 				BDFE71A82BF87B8400D68E04 /* Color+Hex.swift in Sources */,
+				BD33D8A72BFF80C900B86A09 /* TagPopupView.swift in Sources */,
+				6F6324602C0069E0007091A7 /* CoreGraphics+Hashable.swift in Sources */,
 				6F050B3C2BF302F5003D54BD /* OutputPointView.swift in Sources */,
 				BDFE71AA2BF889A400D68E04 /* KPTagColor.swift in Sources */,
 				6F050B222BF1AC08003D54BD /* GraphView.swift in Sources */,
 				6F050B2C2BF1BD4B003D54BD /* KPBoard.swift in Sources */,
 				BD57969D2BF1F2AC0023A92C /* TableView.swift in Sources */,
-				F669EF522BF86493001E99EF /* BoardView.swift in Sources */,
+				F669EF522BF86493001E99EF /* BoardPreviewView.swift in Sources */,
 				6F050B2E2BF1BDBF003D54BD /* KPTag.swift in Sources */,
+				6F6324622C006D19007091A7 /* NotificationCenter+.swift in Sources */,
 				6FA98D722BFAF5CF00F7D19E /* MainViewPreference.swift in Sources */,
 				6F050B322BF1BDF4003D54BD /* KPEdge.swift in Sources */,
 			);
@@ -434,6 +458,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -467,6 +492,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",

@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct KPText: Identifiable {
+struct KPText: Identifiable, Equatable, Codable, Hashable {
     var id: UUID
     var text: String?
     var position: CGPoint = .zero
     var size: CGSize
 
-    init(text: String? = nil, position: CGPoint, size: CGSize = CGSize(width: 200, height: 200)) {
-        self.id = UUID()
+    init(id: UUID = UUID(), text: String? = nil, position: CGPoint, size: CGSize = CGSize(width: 200, height: 200)) {
+        self.id = id
         self.text = text
         self.position = position
         self.size = size

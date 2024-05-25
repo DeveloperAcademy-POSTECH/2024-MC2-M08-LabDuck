@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct KPNode: Identifiable {
+struct KPNode: Identifiable, Equatable, Codable, Hashable {
     var id: UUID
     var title: String?
     var note: String?
@@ -24,7 +24,7 @@ struct KPNode: Identifiable {
     var inputPoints: [KPInputPoint] = []
     var outputPoints: [KPOutputPoint] = []
 
-    init(title: String? = nil, note: String? = nil, url: String? = nil, tags: [KPTag] = [], colorTheme: KPColorTheme = .default, position: CGPoint = .zero, size: CGSize = CGSize(width: 400, height: 400), inputPoints: [KPInputPoint] = [], outputPoints: [KPOutputPoint] = []) {
+    init(id: UUID = UUID(), title: String? = nil, note: String? = nil, url: String? = nil, tags: [KPTag] = [], colorTheme: KPColorTheme = .default, position: CGPoint = .zero, size: CGSize = CGSize(width: 400, height: 400), inputPoints: [KPInputPoint] = [], outputPoints: [KPOutputPoint] = []) {
         self.id = UUID()
         self.title = title
         self.note = note
@@ -82,7 +82,7 @@ extension Array where Element == KPNode {
             title: "Thrilled by Your Progress! Large Language Models (GPT-4) No Longer Struggle to Pass Assessments in Higher Education Programming Courses",
             note: "Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯",
             url: "https://arxiv.org/pdf/2306.10073.pdf",
-            tags: [KPTag.mockData, KPTag.mockData1],
+            tags: [KPTag.mockData, KPTag.mockData1, KPTag.mockData2, KPTag.mockData2, KPTag.mockData2],
             colorTheme: .blue,
             position: .init(x: 50, y: 20),
             inputPoints: .mockData,

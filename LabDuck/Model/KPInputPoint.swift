@@ -7,15 +7,17 @@
 
 import Foundation
 
-struct KPInputPoint: Identifiable {
+struct KPInputPoint: Identifiable, Equatable, Codable, Hashable {
     var id: UUID
     var name: String?
     var ownerNode: KPNode.ID?
+    var isLinked: Bool
 
-    init(id: ID = UUID(), name: String? = nil, ownerNode: KPNode.ID? = nil) {
+    init(id: ID = UUID(), name: String? = nil, ownerNode: KPNode.ID? = nil, isLinked: Bool = false) {
         self.id = id
         self.name = name
         self.ownerNode = ownerNode
+        self.isLinked = isLinked
     }
 }
 

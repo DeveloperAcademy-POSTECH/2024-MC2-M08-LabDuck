@@ -17,13 +17,13 @@ struct KPBoard: Identifiable {
     var viewType: BoardViewType
     var previewImage: Data?
 
-    enum BoardViewType: String, CaseIterable {
+    enum BoardViewType: String, CaseIterable, Codable, Hashable {
         case graph = "Graph View"
         case table = "Table View"
     }
 
-    init(title: String, nodes: [KPNode], edges: [KPEdge], texts: [KPText], modifiedDate: Date, viewType: BoardViewType, previewImage: Data? = nil) {
-        self.id = UUID()
+    init(id: UUID = UUID(), title: String, nodes: [KPNode], edges: [KPEdge], texts: [KPText], modifiedDate: Date, viewType: BoardViewType, previewImage: Data? = nil) {
+        self.id = id
         self.title = title
         self.nodes = nodes
         self.edges = edges
@@ -35,6 +35,14 @@ struct KPBoard: Identifiable {
 
     public mutating func addEdge(_ edge: KPEdge) {
         self.edges.append(edge)
+        
+        self.nodes.enumerated().forEach { nodeIndex, node in
+            node.inputPoints.enumerated().forEach { inputPointIndex, inputPoint in
+                if inputPoint.id == edge.sinkID {
+                    self.nodes[nodeIndex].inputPoints[inputPointIndex].isLinked = true
+                }
+            }
+        }
     }
 
     public mutating func removeEdge(_ edgeID: KPEdge.ID) {
@@ -50,7 +58,13 @@ struct KPBoard: Identifiable {
     public mutating func addNodes(_ nodes: [KPNode]) {
         self.nodes.append(contentsOf: nodes)
     }
+
+    public mutating func modified() {
+        self.modifiedDate = .now
+    }
 }
+
+extension KPBoard: Equatable, Codable, Hashable {}
 
 extension KPBoard {
     static var mockData: KPBoard {

@@ -9,7 +9,10 @@ import SwiftUI
 import Combine
 
 struct GraphView: View {
+    @EnvironmentObject var document: KPBoardDocument
+    @Environment(\.undoManager) var undoManager
     @Binding var board: KPBoard
+   
 
     // MARK: Edges
     @State private var inputPointRects: [KPInputPoint.ID : CGRect] = [:]
@@ -18,6 +21,10 @@ struct GraphView: View {
     @State private var previewEdge: (CGPoint, CGPoint)? = nil
     @State private var hoveredEdgeID: KPEdge.ID? = nil
     @State private var selectedEdgeID: KPEdge.ID? = nil
+    
+    @State private var clickingOutput: Bool = false
+
+//    @State var isEditingForTitle: Bool = false
 
     // MARK: Combine
     @State var cancellabes = Set<AnyCancellable>()
@@ -25,6 +32,10 @@ struct GraphView: View {
     var body: some View {
         ZStack {
             Color.white
+                .contentShape(Rectangle()) // 클릭 이벤트를 감지할 수 있도록 설정
+//                .onTapGesture {
+//                        isEditingForTitle.toggle()
+//                }
             ForEach(board.edges) { edge in
                 if let sourcePoint = outputPointRects[edge.sourceID]?.center,
                    let sinkPoint = inputPointRects[edge.sinkID]?.center {
@@ -35,13 +46,16 @@ struct GraphView: View {
                 }
             }
             ForEach(self.$board.nodes) { node in
+
                 NodeView(
-                    node: node,
+                    node: node, clickingOutput: $clickingOutput, /*isEditingForTitle: $isEditingForTitle,*/
                     judgeConnection: self.judgeConnection(outputID:dragLocation:),
                     addEdge: self.addEdge(edge:),
                     updatePreviewEdge: self.updatePreviewEdge(from:to:)
                 )
-                .draggable(offset: node.position)
+                .draggable(offset: node.position) { offset in
+                    document.moveNode(node.wrappedValue.id, to: offset, undoManager: undoManager)
+                }
             }
             if let previewEdge {
                 PathBetween(previewEdge.0, previewEdge.1)
@@ -114,9 +128,9 @@ struct GraphView: View {
     }
 }
 
-#Preview {
-    GraphView(board: .constant(.mockData))
-}
+//#Preview {
+//    GraphView(board: .constant(.mockData), isEditingForTitle: isEditingForTitle)
+//}
 
 // MARK: - read preferences : 각 지점의 아이디와 위치를 가져오기 위한 메소드들
 extension GraphView {
@@ -143,6 +157,7 @@ extension GraphView {
 
 // MARK: - Callback Defenition : 하위 뷰에서 read preferences로 읽어온 데이터를 활용하기 위해 전달하는 클로저.
 extension GraphView {
+    
     private func judgeConnection(
         outputID: KPOutputPoint.ID,
         dragLocation: CGPoint
@@ -167,6 +182,7 @@ extension GraphView {
 
         // MARK: 디버그용 출력 문장들, 추후 삭제 등에 이 코드가 필요할 것 같음
         self.board.nodes.forEach { node in
+            
             node.outputPoints.forEach { outputPoint in
                 if outputPoint.id == edge.sourceID {
                     print("outputPoint 정보 : \(outputPoint.name ?? "")")
@@ -182,9 +198,12 @@ extension GraphView {
             node.inputPoints.forEach { inputPoint in
                 if inputPoint.id == edge.sinkID {
                     print("inputPoint 정보 : \(inputPoint.name ?? "")")
+                    
+                    
                     if let ownerNodeID = inputPoint.ownerNode {
                         self.board.nodes.forEach { node in
                             if node.id == ownerNodeID {
+                                
                                 print("<- 그의 부모는 \(node.title ?? "") 입니다.")
                             }
                         }
@@ -205,6 +224,8 @@ extension GraphView {
         }
     }
 }
+
+
 
 // MARK: - Delete key를 받기 위한
 extension GraphView {

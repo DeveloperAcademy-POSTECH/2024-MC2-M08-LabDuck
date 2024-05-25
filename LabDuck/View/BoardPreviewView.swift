@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct BoardView: View {
-    @Binding var board: KPBoard
+struct BoardPreviewView: View {
+    @Binding var preview: KPBoardPreview
     @Binding var isEditing: Bool
     @State private var editingBoardID: UUID?
     @FocusState private var isFocused: Bool
@@ -23,24 +23,24 @@ struct BoardView: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 if isEditing {
-                    TextField("새 이름 입력", text: $board.title)
-                        .onSubmit {
-                            editingBoardID = nil
-                            print("편집 종료")
-                            isEditing = false
-                        }
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .onAppear{isFocused = true}
+                        TextField("새 이름 입력", text: $preview.title)
+                            .onSubmit {
+                                editingBoardID = nil
+                                print("편집 종료")
+                                isEditing = false
+                            }
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .onAppear{isFocused = true}                    
                 }
                 else{
-                    Text(board.title)
+                    Text(preview.title)
                         .font(.title3)
                         .bold()
                         .onTapGesture {
                             isEditing = true
                         }
                 }
-                Text(formattedDate(from: board.modifiedDate))
+                Text(formattedDate(from: preview.modifiedDate))
                     .font(.caption)
             }
             .foregroundColor(Color.black)
@@ -72,7 +72,3 @@ struct BoardView: View {
         return timeFormatter.string(from: date)
     }
 }
-
-//#Preview {
-//    BoardView(board: .constant(.mockData))
-//}
