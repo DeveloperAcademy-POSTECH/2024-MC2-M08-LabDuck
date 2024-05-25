@@ -115,7 +115,7 @@ extension KPBoardDocument {
         }
     }
 
-    // URL
+    // tags
     func updateNode(_ nodeID: KPNode.ID, tags: [KPTag], undoManager: UndoManager?) {
         guard let index = getIndex(nodeID) else { return }
 

@@ -342,7 +342,6 @@ extension NodeView {
                                 .padding(8)
                                 .background(Color.blue)
                                 .cornerRadius(10)
-
                         }
                         Spacer()
                     }
