@@ -48,7 +48,8 @@ struct GraphView: View {
             ForEach(self.$board.nodes) { node in
 
                 NodeView(
-                    node: node, clickingOutput: $clickingOutput, /*isEditingForTitle: $isEditingForTitle,*/
+                    node: node,
+                    clickingOutput: $clickingOutput,
                     judgeConnection: self.judgeConnection(outputID:dragLocation:),
                     addEdge: self.addEdge(edge:),
                     updatePreviewEdge: self.updatePreviewEdge(from:to:)

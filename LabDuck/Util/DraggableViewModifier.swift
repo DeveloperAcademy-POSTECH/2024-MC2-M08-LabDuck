@@ -29,6 +29,4 @@ struct DraggableViewModifier: ViewModifier {
                     }
             )
     }
-    
-
 }

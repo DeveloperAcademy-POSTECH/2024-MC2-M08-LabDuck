@@ -53,6 +53,22 @@ extension KPBoardDocument {
 
 // MARK: - 노드
 extension KPBoardDocument {
+    // 전체 노드 (최상위 뷰에서 이를 사용하지 않는 이유는 성능 문제가 있기 때문)
+    func updateNode(node: KPNode, undoManager: UndoManager? = nil) {
+        let nodeID = node.id
+        guard let index = getIndex(nodeID) else { return }
+
+        let original = self.board.nodes[index]
+
+        guard self.board.nodes[index] != node else { return }
+
+        self.board.nodes[index] = node
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.updateNode(node: original, undoManager: undoManager)
+        }
+    }
+
     // Title
     func updateNode(_ nodeID: KPNode.ID, title: String?, undoManager: UndoManager? = nil) {
         guard let index = getIndex(nodeID) else { return }

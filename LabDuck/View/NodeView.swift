@@ -6,12 +6,17 @@
 //
 
 import SwiftUI
+import Combine
 
 struct NodeView: View {
     @EnvironmentObject var document: KPBoardDocument
     @Environment(\.undoManager) var undoManager
 
     @Binding var node: KPNode
+    @State private var tempNodeTitle: String = ""
+    @State private var tempNodeNote: String = ""
+    @State private var tempNodeURL: String = ""
+
     @State private var dragLocation: CGPoint?
     @State private var currentOutputPoint: KPOutputPoint.ID?
     @State private var isEditingForTitle: Bool = false
@@ -31,8 +36,6 @@ struct NodeView: View {
     var addEdge: (_ edge: KPEdge) -> ()
     
     var updatePreviewEdge: (_ sourceID: KPOutputPoint.ID, _ dragPoint: CGPoint?) -> ()
-    
-    let columns: [GridItem] = Array(repeating: .init(.flexible(),spacing:7), count: 4)
 
     var body: some View {
         HStack {
@@ -86,6 +89,29 @@ struct NodeView: View {
             .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 4)
 
             OutputPointsView()
+        }
+        .onChange(of: isEditing) { oldValue, newValue in
+            if oldValue && !newValue {
+                self.node.title = tempNodeTitle
+                self.node.note = tempNodeNote
+                self.node.url = tempNodeURL
+                document.updateNode(node: self.node, undoManager: undoManager)
+            }
+        }
+        .onChange(of: self.tempNodeTitle) { _, newValue in
+            if abs(self.node.unwrappedTitle.count - newValue.count) > 2 {
+                document.updateNode(node.id, title: newValue, undoManager: undoManager)
+            }
+        }
+        .onChange(of: self.tempNodeNote) { oldValue, newValue in
+            if abs(self.node.unwrappedNote.count - newValue.count) > 2 {
+                document.updateNode(node.id, note: newValue, undoManager: undoManager)
+            }
+        }
+        .onChange(of: self.tempNodeURL) { oldValue, newValue in
+            if abs(self.node.unwrappedURL.count - newValue.count) > 2 {
+                document.updateNode(node.id, url: newValue, undoManager: undoManager)
+            }
         }
     }
     
@@ -141,7 +167,10 @@ extension NodeView {
             if !isEditing {
                 Text(node.unwrappedTitle)
             } else {
-                TextField("title", text: $node.unwrappedTitle, axis: .vertical)
+                TextField("title", text: $tempNodeTitle, axis: .vertical)
+                    .onAppear {
+                        tempNodeTitle = self.node.unwrappedTitle
+                    }
             }
         }
         return TextView
@@ -157,7 +186,10 @@ extension NodeView {
             if !isEditing {
                 Text(node.unwrappedNote)
             } else {
-                TextField("note", text: $node.unwrappedNote, axis: .vertical)
+                TextField("note", text: $tempNodeNote, axis: .vertical)
+                    .onAppear {
+                        tempNodeNote = self.node.unwrappedNote
+                    }
             }
         }
         @ViewBuilder var ResultView: some View {
@@ -195,7 +227,10 @@ extension NodeView {
                     }
                 }
             } else {
-                TextField("link", text: $node.unwrappedURL, axis: .vertical)
+                TextField("link", text: $tempNodeURL, axis: .vertical)
+                    .onAppear {
+                        tempNodeURL = self.node.unwrappedURL
+                    }
             }
         }
         @ViewBuilder var ResultView: some View {
@@ -286,8 +321,6 @@ extension NodeView {
 
     @ViewBuilder
     private func OutputPointsView() -> some View {
-
-        //아웃풋 포인트
         VStack(spacing: 20){
             ForEach(node.outputPoints) { outputPoint in
                 OutputPointView(outputPoint: outputPoint)
