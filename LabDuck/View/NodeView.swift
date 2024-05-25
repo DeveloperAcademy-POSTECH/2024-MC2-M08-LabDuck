@@ -12,7 +12,7 @@ struct NodeView: View {
     @EnvironmentObject var document: KPBoardDocument
     @Environment(\.undoManager) var undoManager
 
-    @Binding var node: KPNode
+    var node: KPNode
     @State private var tempNodeTitle: String = ""
     @State private var tempNodeNote: String = ""
     @State private var tempNodeURL: String = ""
@@ -63,11 +63,11 @@ struct NodeView: View {
                 .cornerRadius(10)
 
                 //태그 팝업창
-                if isEditingForTag {
-                    TagPopupView(isEditingForTag: $isEditingForTag, node: $node)
-                        .transition(.scale)
-                        .zIndex(1)
-                }
+//                if isEditingForTag {
+//                    TagPopupView(isEditingForTag: $isEditingForTag, node: $node)
+//                        .transition(.scale)
+//                        .zIndex(1)
+//                }
             }
             .overlay(alignment: .topTrailing) {
                 Button {
@@ -92,10 +92,11 @@ struct NodeView: View {
         }
         .onChange(of: isEditing) { oldValue, newValue in
             if oldValue && !newValue {
-                self.node.title = tempNodeTitle
-                self.node.note = tempNodeNote
-                self.node.url = tempNodeURL
-                document.updateNode(node: self.node, undoManager: undoManager)
+                var newNode = node
+                newNode.title = tempNodeTitle
+                newNode.note = tempNodeNote
+                newNode.url = tempNodeURL
+                document.updateNode(node: newNode, undoManager: undoManager)
             }
         }
         .onChange(of: self.tempNodeTitle) { _, newValue in
@@ -123,12 +124,12 @@ struct NodeView: View {
     }
     
     //KPNode에 새 태그 정보 추가
-    private func createTag() {
-        guard let previewTag = previewTag else { return }
-        node.tags.append(previewTag)
-        self.previewTag = nil
-        self.textForTags = ""
-    }
+//    private func createTag() {
+//        guard let previewTag = previewTag else { return }
+//        node.tags.append(previewTag)
+//        self.previewTag = nil
+//        self.textForTags = ""
+//    }
     
     private func judgeConnection(with location: CGPoint) -> (KPOutputPoint.ID, KPInputPoint.ID)? {
         if let currentOutputPoint {
@@ -359,5 +360,5 @@ extension NodeView: Equatable {
 }
 
 #Preview {
-    NodeView(node: .constant(.mockData2), clickingOutput: .constant(false), judgeConnection: { _, _ in (UUID(), UUID()) }, addEdge: { _ in }, updatePreviewEdge: { _, _ in })
+    NodeView(node: .mockData2, clickingOutput: .constant(false), judgeConnection: { _, _ in (UUID(), UUID()) }, addEdge: { _ in }, updatePreviewEdge: { _, _ in })
 }

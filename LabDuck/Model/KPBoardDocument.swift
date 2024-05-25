@@ -53,7 +53,13 @@ extension KPBoardDocument {
 
 // MARK: - 노드
 extension KPBoardDocument {
-    // 전체 노드 (최상위 뷰에서 이를 사용하지 않는 이유는 성능 문제가 있기 때문)
+    // 전체 노드 
+    // 최상위 뷰에서 이를 사용하지 않는 이유는?
+    // 1. 노드를 undo / redo 하는 기준을 커스텀 하기 위해서
+    // 2. 성능 문제
+    // 3. 로직을 여기로 몰아넣고 Modified 시간을 같이 관리하기 위해서
+    // 4. NodeView의 node를 @State가 아닌 그냥 일반 변수로 관리하고 싶어서. (성능 향상을 위해)
+    // (5. 공식 예제가 이렇게 해서)
     func updateNode(node: KPNode, undoManager: UndoManager? = nil) {
         let nodeID = node.id
         guard let index = getIndex(nodeID) else { return }

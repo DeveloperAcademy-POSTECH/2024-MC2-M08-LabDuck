@@ -48,7 +48,7 @@ struct GraphView: View {
             ForEach(self.$board.nodes) { node in
 
                 NodeView(
-                    node: node,
+                    node: node.wrappedValue,
                     clickingOutput: $clickingOutput,
                     judgeConnection: self.judgeConnection(outputID:dragLocation:),
                     addEdge: self.addEdge(edge:),
