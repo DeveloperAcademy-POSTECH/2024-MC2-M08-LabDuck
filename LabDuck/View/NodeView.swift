@@ -170,7 +170,6 @@ struct NodeView: View {
         var lastIndex = fullText.startIndex
         
         for (index, part) in parts.enumerated() {
-            // Append non-highlighted part
             if let range = fullText.range(of: part, range: lastIndex..<fullText.endIndex) {
                 result = result + Text(fullText[range])
                 lastIndex = range.upperBound
