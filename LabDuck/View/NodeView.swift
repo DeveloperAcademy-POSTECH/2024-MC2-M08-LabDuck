@@ -64,7 +64,6 @@ struct NodeView: View {
                                 ForEach(KPColorTheme.allCases, id: \.self) { colorTheme in
                                     Button(action: {
                                         node.colorTheme = colorTheme
-                                        //                                        selectedButtonIndex = index
                                     }) {
                                         ZStack{
                                             RoundedRectangle(cornerRadius: 3)
@@ -239,8 +238,8 @@ struct NodeView: View {
                                     ForEach(node.tags){ tag in
                                         Text("#\(tag.name)")
                                             .foregroundColor(.white)
-                                            .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
-                                            .background(Color.blue)
+                                            .padding(EdgeInsets(top: 6, leading: 8, bottom: 6, trailing: 8))
+                                            .background(tag.colorTheme.backgroundColor)
                                             .cornerRadius(10)
                                         
                                     }
@@ -256,8 +255,8 @@ struct NodeView: View {
                                 ForEach(node.tags){ tag in
                                     Text("#\(tag.name)")
                                         .foregroundColor(.white)
-                                        .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
-                                        .background(Color.blue)
+                                        .padding(EdgeInsets(top: 6, leading: 8, bottom: 6, trailing: 8))
+                                        .background(tag.colorTheme.backgroundColor)
                                         .cornerRadius(10)
                                     
                                 }
@@ -352,6 +351,6 @@ struct NodeView: View {
 }
 
 
-//#Preview {
-//    NodeView(node: .constant(.mockData), clickingOutput: <#Binding<Bool>#>, isEditingForTitle: isEditingForTitle, judgeConnection: { _, _ in (UUID(), UUID()) }, addEdge: { _ in }, updatePreviewEdge: { _, _ in })
-//}
+#Preview {
+    NodeView(node: .constant(.mockData), clickingOutput: .constant(false), judgeConnection: { _, _ in (UUID(), UUID()) }, addEdge: { _ in }, updatePreviewEdge: { _, _ in })
+}

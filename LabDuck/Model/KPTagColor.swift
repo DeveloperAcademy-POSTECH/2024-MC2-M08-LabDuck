@@ -46,3 +46,9 @@ enum KPTagColor: CaseIterable {
     }
 }
 
+extension KPTagColor {
+    static func random() -> KPTagColor {
+        return KPTagColor.allCases.randomElement()!
+    }
+}
+
