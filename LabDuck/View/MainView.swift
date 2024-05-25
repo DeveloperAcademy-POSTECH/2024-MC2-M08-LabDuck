@@ -105,7 +105,7 @@ struct MainView: View {
         GeometryReader { proxy in
             ZStack{
                 if board.viewType == .graph {
-                    GraphView(board: $board)
+                    GraphView(board: board)
                         .background(Rectangle().frame(width: 6000, height: 5000).foregroundColor(searchText.isEmpty ? Color.white : Color.black.opacity(0.3)))
                         .offset(offsetValue)
                         .scaleEffect(scaleValue, anchor: .center)

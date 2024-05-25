@@ -11,7 +11,7 @@ import Combine
 struct GraphView: View {
     @EnvironmentObject var document: KPBoardDocument
     @Environment(\.undoManager) var undoManager
-    @Binding var board: KPBoard
+    var board: KPBoard
     @Environment(\.searchText) private var searchText: String
     
     // MARK: Edges
@@ -43,27 +43,24 @@ struct GraphView: View {
                     PathShapes(sourcePoint, sinkPoint, edge.id)
                 }
             }
-            ForEach(self.$board.nodes) { node in
+            ForEach(self.board.nodes) { node in
                 NodeView(
-                    node: node.wrappedValue,
+                    node: node,
                     clickingOutput: $clickingOutput,
                     judgeConnection: self.judgeConnection(outputID:dragLocation:),
                     addEdge: self.addEdge(edge:),
                     updatePreviewEdge: self.updatePreviewEdge(from:to:)
                 )
                 .searchText(searchText)
-                .offset(x: node.wrappedValue.position.x, y: node.wrappedValue.position.y)
+                .offset(x: node.position.x, y: node.position.y)
                 .draggable(onEnded: { offset in
-                    let newPosition = node.wrappedValue.position + offset
-                    document.updateNode(node.wrappedValue.id, position: newPosition, undoManager: undoManager)
+                    let newPosition = node.position + offset
+                    document.updateNode(node.id, position: newPosition, undoManager: undoManager)
                 })
-//                .draggable(offset: node.position) { offset in
-//                    document.updateNode(node.wrappedValue.id, position: offset, undoManager: undoManager)
-//                }
             }
             if let previewEdge {
                 PathBetween(previewEdge.0, previewEdge.1)
-                    .stroke(lineWidth: 2)
+                    .stroke(.black, lineWidth: 2)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
