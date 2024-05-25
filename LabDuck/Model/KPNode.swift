@@ -71,7 +71,28 @@ extension KPNode {
 
 extension KPNode {
     static var mockData: KPNode {
-        .init(title: "title1", position: .init(x: 50, y: 20), inputPoints: .mockData, outputPoints: .mockData)
+        KPNode(
+            title: "title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1",
+            note: "note1note1note1note1note1note1note1note1note1note1note1note1note1note1note1",
+            url: "https://www.naver.com",
+            tags: [.mockData, .mockData1, .mockData2],
+            colorTheme: .blue,
+            position: .init(x: 50, y: 20),
+            inputPoints: .mockData,
+            outputPoints: .mockData
+        )
+    }
+    static var mockData2: KPNode {
+        KPNode(
+            title: "title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1",
+            note: "",
+            url: "",
+            tags: [.mockData, .mockData1, .mockData2],
+            colorTheme: .blue,
+            position: .init(x: 50, y: 20),
+            inputPoints: .mockData,
+            outputPoints: .mockData
+        )
     }
 }
 

@@ -11,7 +11,7 @@ import Combine
 struct GraphView: View {
     @EnvironmentObject var document: KPBoardDocument
     @Environment(\.undoManager) var undoManager
-    @Binding var board: KPBoard
+    var board: KPBoard
     @Environment(\.searchText) private var searchText: String
     
     // MARK: Edges
@@ -25,10 +25,13 @@ struct GraphView: View {
     @State private var clickingOutput: Bool = false
     
     //    @State var isEditingForTitle: Bool = false
-    
-    // MARK: Combine
-    @State var cancellabes = Set<AnyCancellable>()
-    
+
+    var deleteKeyPublisher = NSApp.publisher(for: \.currentEvent)
+        .eraseToAnyPublisher()
+        .filter { event in
+            event?.type == .keyUp && (event?.keyCode == 51 || event?.keyCode == 117)
+        }
+
     var body: some View {
         ZStack {
             ForEach(board.edges) { edge in
@@ -40,21 +43,23 @@ struct GraphView: View {
                     PathShapes(sourcePoint, sinkPoint, edge.id)
                 }
             }
-            ForEach(self.$board.nodes) { node in
+            ForEach(self.board.nodes) { node in
                 NodeView(
-                    node: node, clickingOutput: $clickingOutput, /*isEditingForTitle: $isEditingForTitle,*/
+                    node: node,
+                    clickingOutput: $clickingOutput,
                     judgeConnection: self.judgeConnection(outputID:dragLocation:),
-                    addEdge: self.addEdge(edge:),
                     updatePreviewEdge: self.updatePreviewEdge(from:to:)
                 )
                 .searchText(searchText)
-                .draggable(offset: node.position) { offset in
-                    document.moveNode(node.wrappedValue.id, to: offset, undoManager: undoManager)
-                }
+                .offset(x: node.position.x, y: node.position.y)
+                .draggable(onEnded: { offset in
+                    let newPosition = node.position + offset
+                    document.updateNode(node.id, position: newPosition, undoManager: undoManager)
+                })
             }
             if let previewEdge {
                 PathBetween(previewEdge.0, previewEdge.1)
-                    .stroke(lineWidth: 2)
+                    .stroke(.black, lineWidth: 2)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -76,13 +81,11 @@ struct GraphView: View {
                     }
                 }
         )
-        .onAppear {
-            trackDeleteCommand {
-                if let selectedEdgeID {
-                    self.board.removeEdge(selectedEdgeID)
-                }
-                selectedEdgeID = nil
+        .onReceive(deleteKeyPublisher) { received in
+            if let selectedEdgeID {
+                self.document.removeEdge(selectedEdgeID, undoManager: undoManager)
             }
+            selectedEdgeID = nil
         }
     }
     
@@ -123,10 +126,6 @@ struct GraphView: View {
         }
     }
 }
-
-//#Preview {
-//    GraphView(board: .constant(.mockData), isEditingForTitle: isEditingForTitle)
-//}
 
 // MARK: - read preferences : 각 지점의 아이디와 위치를 가져오기 위한 메소드들
 extension GraphView {
@@ -171,44 +170,6 @@ extension GraphView {
         return (outputItem.0, inputItem.0)
     }
     
-    private func addEdge(
-        edge: KPEdge
-    ) {
-        self.board.addEdge(edge)
-        
-        // MARK: 디버그용 출력 문장들, 추후 삭제 등에 이 코드가 필요할 것 같음
-        self.board.nodes.forEach { node in
-            
-            node.outputPoints.forEach { outputPoint in
-                if outputPoint.id == edge.sourceID {
-                    print("outputPoint 정보 : \(outputPoint.name ?? "")")
-                    if let ownerNodeID = outputPoint.ownerNode {
-                        self.board.nodes.forEach { node in
-                            if node.id == ownerNodeID {
-                                print("<- 그의 부모는 \(node.title ?? "") 입니다.")
-                            }
-                        }
-                    }
-                }
-            }
-            node.inputPoints.forEach { inputPoint in
-                if inputPoint.id == edge.sinkID {
-                    print("inputPoint 정보 : \(inputPoint.name ?? "")")
-                    
-                    
-                    if let ownerNodeID = inputPoint.ownerNode {
-                        self.board.nodes.forEach { node in
-                            if node.id == ownerNodeID {
-                                
-                                print("<- 그의 부모는 \(node.title ?? "") 입니다.")
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
     private func updatePreviewEdge(
         from sourceID: KPOutputPoint.ID,
         to dragPoint: CGPoint?
@@ -218,21 +179,5 @@ extension GraphView {
         } else {
             self.previewEdge = nil
         }
-    }
-}
-
-
-
-// MARK: - Delete key를 받기 위한
-extension GraphView {
-    private func trackDeleteCommand(_ perform: @escaping () -> ()) {
-        NSApp.publisher(for: \.currentEvent)
-            .filter { event in
-                event?.type == .keyUp && (event?.keyCode == 51 || event?.keyCode == 117)
-            }
-            .sink { (event: NSEvent?) in
-                perform()
-            }
-            .store(in: &cancellabes)
     }
 }

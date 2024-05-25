@@ -46,18 +46,276 @@ extension KPBoardDocument {
     private func getIndex(_ nodeID: KPNode.ID) -> Int? {
         self.board.nodes.firstIndex { $0.id == nodeID }
     }
+    private func getInputPointIndex(_ nodeIndex: Int, _ inputPointID: KPInputPoint.ID) -> Int? {
+        self.board.nodes[nodeIndex].inputPoints.firstIndex { $0.id == inputPointID }
+    }
 }
 
+// MARK: - 노드 세부 사항
 extension KPBoardDocument {
-    func moveNode(_ nodeID: KPNode.ID, to position: CGPoint, undoManager: UndoManager? = nil) {
+    // 전체 노드 
+    // 최상위 뷰에서 이를 사용하지 않는 이유는?
+    // 1. 노드를 undo / redo 하는 기준을 커스텀 하기 위해서
+    // 2. 성능 문제
+    // 3. 로직을 여기로 몰아넣고 Modified 시간을 같이 관리하기 위해서
+    // 4. NodeView의 node를 @State가 아닌 그냥 일반 변수로 관리하고 싶어서. (성능 향상을 위해)
+    // (5. 공식 예제가 이렇게 해서)
+    // 6. 노드가 삭제될 때 이걸 undo 하려면 삭제되는 과정을 다시 되풀이 하는게 아니라 한번에 다 보여져야 함.
+    func updateNode(node: KPNode, undoManager: UndoManager?) {
+        let nodeID = node.id
         guard let index = getIndex(nodeID) else { return }
 
-        let originalPosition = self.board.nodes[index].position
+        let original = self.board.nodes[index]
+
+        guard self.board.nodes[index] != node else { return }
+
+        self.board.nodes[index] = node
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.updateNode(node: original, undoManager: undoManager)
+        }
+    }
+
+    // Title
+    func updateNode(_ nodeID: KPNode.ID, title: String?, undoManager: UndoManager?) {
+        guard let index = getIndex(nodeID) else { return }
+
+        let original = self.board.nodes[index].title
+
+        self.board.nodes[index].title = title
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.updateNode(nodeID, title: original, undoManager: undoManager)
+        }
+    }
+
+    // Note
+    func updateNode(_ nodeID: KPNode.ID, note: String?, undoManager: UndoManager?) {
+        guard let index = getIndex(nodeID) else { return }
+
+        let original = self.board.nodes[index].note
+
+        self.board.nodes[index].note = note
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.updateNode(nodeID, note: original, undoManager: undoManager)
+        }
+    }
+
+    // URL
+    func updateNode(_ nodeID: KPNode.ID, url: String?, undoManager: UndoManager?) {
+        guard let index = getIndex(nodeID) else { return }
+
+        let original = self.board.nodes[index].url
+
+        self.board.nodes[index].url = url
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.updateNode(nodeID, url: original, undoManager: undoManager)
+        }
+    }
+
+    // tags
+    func updateNode(_ nodeID: KPNode.ID, tags: [KPTag], undoManager: UndoManager?) {
+        guard let index = getIndex(nodeID) else { return }
+
+        let original = self.board.nodes[index].tags
+
+        self.board.nodes[index].tags = tags
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.updateNode(nodeID, tags: original, undoManager: undoManager)
+        }
+    }
+
+    // ColorTheme
+    func updateNode(_ nodeID: KPNode.ID, colorTheme: KPColorTheme, undoManager: UndoManager?) {
+        guard let index = getIndex(nodeID) else { return }
+
+        let original = self.board.nodes[index].colorTheme
+
+        self.board.nodes[index].colorTheme = colorTheme
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.updateNode(nodeID, colorTheme: original, undoManager: undoManager)
+        }
+    }
+
+    // Position
+    func updateNode(_ nodeID: KPNode.ID, position: CGPoint, undoManager: UndoManager?) {
+        guard let index = getIndex(nodeID) else { return }
+
+        let original = self.board.nodes[index].position
 
         self.board.nodes[index].position = position
 
         undoManager?.registerUndo(withTarget: self) { doc in
-            doc.moveNode(nodeID, to: originalPosition, undoManager: undoManager)
+            doc.updateNode(nodeID, position: original, undoManager: undoManager)
+        }
+    }
+
+    // Size
+    func updateNode(_ nodeID: KPNode.ID, size: CGSize, undoManager: UndoManager?) {
+        guard let index = getIndex(nodeID) else { return }
+
+        let original = self.board.nodes[index].size
+
+        self.board.nodes[index].size = size
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.updateNode(nodeID, size: original, undoManager: undoManager)
+        }
+    }
+
+    // add InputPoint
+    func addInputPoint(_ nodeID: KPNode.ID, inputPoint: KPInputPoint, undoManager: UndoManager?) {
+        guard let index = getIndex(nodeID) else { return }
+
+        self.board.nodes[index].inputPoints.append(inputPoint)
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.deleteInputPoint(nodeID, inputPointID: inputPoint.id, undoManager: undoManager)
+        }
+    }
+
+    // delete InputPoint
+    func deleteInputPoint(_ nodeID: KPNode.ID, inputPointID: KPInputPoint.ID, undoManager: UndoManager?) {
+        guard let nodeIndex = getIndex(nodeID) else { return }
+        guard let inputPointIndex = getInputPointIndex(nodeIndex, inputPointID) else { return }
+
+        let originalInputPoint = self.board.nodes[nodeIndex].inputPoints[inputPointIndex]
+
+        self.board.nodes[nodeIndex].inputPoints.remove(at: inputPointIndex)
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.addInputPoint(nodeID, inputPoint: originalInputPoint, undoManager: undoManager)
+        }
+    }
+
+    // add OutputPoint
+    // TODO: - Edge 관련 로직 추가되어야 함
+    func addOutputPoint(_ nodeID: KPNode.ID, outputPoint: KPOutputPoint, undoManager: UndoManager?) {
+        guard let index = getIndex(nodeID) else { return }
+
+        self.board.nodes[index].outputPoints.append(outputPoint)
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.deleteOutputPoint(nodeID, outputPointID: outputPoint.id, undoManager: undoManager)
+        }
+    }
+
+    // delete OutputPoint
+    // TODO: - Edge 관련 로직 추가되어야 함
+    func deleteOutputPoint(_ nodeID: KPNode.ID, outputPointID: KPOutputPoint.ID, undoManager: UndoManager?) {
+        guard let nodeIndex = getIndex(nodeID) else { return }
+        guard let outputPointIndex = getInputPointIndex(nodeIndex, outputPointID) else { return }
+
+        let originalOutputPoint = self.board.nodes[nodeIndex].outputPoints[outputPointIndex]
+
+        self.board.nodes[nodeIndex].outputPoints.remove(at: outputPointIndex)
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.addOutputPoint(nodeID, outputPoint: originalOutputPoint, undoManager: undoManager)
+        }
+    }
+}
+
+// MARK: - 엣지
+extension KPBoardDocument {
+    func addEdge(edge: KPEdge, undoManager: UndoManager?) {
+        self.board.addEdge(edge)
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.removeEdge(edge.id, undoManager: undoManager)
+        }
+
+        // MARK: 디버그용 출력 문장들, 추후 삭제 등에 이 코드가 필요할 것 같음
+        self.board.nodes.forEach { node in
+
+            node.outputPoints.forEach { outputPoint in
+                if outputPoint.id == edge.sourceID {
+                    print("outputPoint 정보 : \(outputPoint.name ?? "")")
+                    if let ownerNodeID = outputPoint.ownerNode {
+                        self.board.nodes.forEach { node in
+                            if node.id == ownerNodeID {
+                                print("<- 그의 부모는 \(node.title ?? "") 입니다.")
+                            }
+                        }
+                    }
+                }
+            }
+            node.inputPoints.forEach { inputPoint in
+                if inputPoint.id == edge.sinkID {
+                    print("inputPoint 정보 : \(inputPoint.name ?? "")")
+
+
+                    if let ownerNodeID = inputPoint.ownerNode {
+                        self.board.nodes.forEach { node in
+                            if node.id == ownerNodeID {
+
+                                print("<- 그의 부모는 \(node.title ?? "") 입니다.")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    func removeEdge(_ edgeID: KPEdge.ID, undoManager: UndoManager?) {
+        let oldEdges = self.board.edges
+
+        withAnimation {
+            self.board.removeEdge(edgeID)
+        }
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.replaceEdges(oldEdges, undoManager: undoManager)
+        }
+    }
+
+    func replaceEdges(_ edges: [KPEdge], undoManager: UndoManager?, animation: Animation? = .default) {
+        let oldEdges = self.board.edges
+
+        self.board.edges = edges
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.replaceEdges(oldEdges, undoManager: undoManager, animation: animation)
+        }
+    }
+}
+
+// MARK: - 보드
+extension KPBoardDocument {
+    func addNode(_ node: KPNode, undoManager: UndoManager?, animation: Animation? = .default) {
+        self.board.nodes.append(node)
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.removeNode(node.id, undoManager: undoManager, animation: animation)
+        }
+    }
+
+    func removeNode(_ nodeID: KPNode.ID, undoManager: UndoManager?, animation: Animation? = .default) {
+        guard let nodeIndex = getIndex(nodeID) else { return }
+        let originalNode = self.board.nodes[nodeIndex]
+        let incomingEdges = self.board.edges.filter { edge in
+            originalNode.inputPoints.contains { inputPoint in
+                inputPoint.id == edge.sinkID
+            }
+        }
+        let outgoingEdges = self.board.edges.filter { edge in
+            originalNode.outputPoints.contains { outputPoint in
+                outputPoint.id == edge.sourceID
+            }
+        }
+        incomingEdges.forEach { self.board.removeEdge($0.id) }
+        outgoingEdges.forEach { self.board.removeEdge($0.id) }
+        self.board.nodes.removeAll { $0.id == nodeID }
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.addNode(originalNode, undoManager: undoManager)
+            incomingEdges.forEach { doc.addEdge(edge: $0, undoManager: undoManager) }
+            outgoingEdges.forEach { doc.addEdge(edge: $0, undoManager: undoManager) }
         }
     }
 }

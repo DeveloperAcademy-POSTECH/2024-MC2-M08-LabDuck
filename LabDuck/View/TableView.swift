@@ -80,7 +80,7 @@ struct TableView: View {
                 }
                 
                 TableColumn("URL", value: \.unwrappedURL) { node in
-                    Link(destination: URL(string: node.url ?? " ")!, label: {
+                    Link(destination: URL(string: node.unwrappedURL) ?? URL(string: "https://mosu.blog")!, label: {
                         styledText(node.unwrappedURL, node: node)
                             .underline()
                     })
