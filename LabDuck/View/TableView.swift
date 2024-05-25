@@ -117,6 +117,7 @@ struct TableView: View {
         }
     }
     
+    
     // MARK: - 노드의 ouputPoint에 대한 inputPoint들을 찾아 해당 노드들 리턴
     func findNodes(matching node: KPNode) -> [KPNode] {
         let sourceIDs = node.outputPoints.map { $0.id }
@@ -156,7 +157,7 @@ struct TableView: View {
         } else {
             return board.nodes.filter { node in
                 let titleMatch = node.unwrappedTitle.lowercased().contains(searchText.lowercased())
-                let tagsMatch = node.tags.map { $0.name.lowercased() }.contains { $0.contains(searchText.lowercased()) }
+                let tagsMatch = node.tags.map { ("#" + $0.name).lowercased() }.contains { $0.contains(searchText.lowercased()) }
                 let urlMatch = node.unwrappedURL.lowercased().contains(searchText.lowercased())
                 let noteMatch = node.unwrappedNote.lowercased().contains(searchText.lowercased())
                 

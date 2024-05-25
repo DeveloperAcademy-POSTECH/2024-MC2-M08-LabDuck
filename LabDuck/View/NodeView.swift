@@ -31,6 +31,7 @@ struct NodeView: View {
     @State private var previewTag: KPTag?
 
     @Binding var clickingOutput: Bool
+    @Environment(\.searchText) private var searchText
     
     var judgeConnection: (_ outputID: KPOutputPoint.ID, _ dragLocation: CGPoint) -> (KPOutputPoint.ID, KPInputPoint.ID)?
     var addEdge: (_ edge: KPEdge) -> ()
@@ -62,6 +63,7 @@ struct NodeView: View {
                 }
                 .cornerRadius(10)
 
+                .opacity((searchText == "" || nodeContainsSearchText()) ? 1 : 0.3)
                 //태그 팝업창
 //                if isEditingForTag {
 //                    TagPopupView(isEditingForTag: $isEditingForTag, node: $node)
@@ -138,6 +140,48 @@ struct NodeView: View {
             return nil
         }
     }
+    
+    // MARK: - search&higlight
+    func HighlightText(fullText: String, searchText: String) -> Text {
+        guard !searchText.isEmpty else {
+            return Text(fullText)
+        }
+        
+        let lowercasedFullText = fullText.lowercased()
+        let lowercasedSearchText = searchText.lowercased()
+        
+        let parts = lowercasedFullText.components(separatedBy: lowercasedSearchText)
+        
+        var result = Text("")
+        
+        var lastIndex = fullText.startIndex
+        
+        for (index, part) in parts.enumerated() {
+            if index > 0 {
+                if let range = fullText.range(of: searchText, options: .caseInsensitive, range: lastIndex..<fullText.endIndex) {
+                    result = result + Text(fullText[range]).bold().foregroundColor(.red)
+                    lastIndex = range.upperBound
+                }
+            }
+            if let range = lowercasedFullText.range(of: part, range: lastIndex..<lowercasedFullText.endIndex) {
+                result = result + Text(fullText[range])
+                lastIndex = range.upperBound
+            }
+        }
+        
+        return result
+    }
+    
+    // MARK: - 노드의 상태 관리
+    private func nodeContainsSearchText() -> Bool {
+        let lowercasedSearchText = searchText.lowercased()
+        let titleContains = node.unwrappedTitle.lowercased().contains(lowercasedSearchText)
+        let noteContains = node.unwrappedNote.lowercased().contains(lowercasedSearchText)
+        let urlContains = node.unwrappedURL.lowercased().contains(lowercasedSearchText)
+        let tagsContain = node.tags.contains { ("#" + $0.name).lowercased().contains(lowercasedSearchText) }
+        
+        return titleContains || noteContains || urlContains || tagsContain
+    }
 }
 
 // MARK: - Components
@@ -166,7 +210,7 @@ extension NodeView {
     private func TitleTextField() -> some View {
         @ViewBuilder var TextView: some View {
             if !isEditing {
-                Text(node.unwrappedTitle)
+                HighlightText(fullText: node.unwrappedTitle, searchText: searchText)
             } else {
                 TextField("title", text: $tempNodeTitle, axis: .vertical)
                     .onAppear {
@@ -185,7 +229,7 @@ extension NodeView {
     private func NoteTextEditor() -> some View {
         @ViewBuilder var TextView: some View {
             if !isEditing {
-                Text(node.unwrappedNote)
+                HighlightText(fullText: node.unwrappedNote, searchText: searchText)
             } else {
                 TextField("note", text: $tempNodeNote, axis: .vertical)
                     .onAppear {
@@ -221,7 +265,7 @@ extension NodeView {
             if !isEditing {
                 if let url = URL(string: node.unwrappedURL) {
                     Link(destination: url) {
-                        Text("\(node.unwrappedURL)")
+                        HighlightText(fullText: node.unwrappedTitle, searchText: searchText)
                             .foregroundColor(.blue)
                             .underline()
                             .font(.system(size: 13, weight: .regular))
@@ -277,7 +321,7 @@ extension NodeView {
                 ScrollView(.horizontal) {
                     HStack{
                         ForEach(node.tags) { tag in
-                            Text("#\(tag.name)")
+                            HighlightText(fullText: "#\(tag.name)", searchText: searchText)
                                 .foregroundColor(.white)
                                 .padding(8)
                                 .background(Color.blue)
@@ -294,7 +338,7 @@ extension NodeView {
             ScrollView(.horizontal){
                 HStack{
                     ForEach(node.tags){ tag in
-                        Text("#\(tag.name)")
+                        HighlightText(fullText: "#\(tag.name)", searchText: searchText)
                             .foregroundColor(.white)
                             .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
                             .background(Color.blue)

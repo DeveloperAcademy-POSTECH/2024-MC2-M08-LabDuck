@@ -12,29 +12,25 @@ struct GraphView: View {
     @EnvironmentObject var document: KPBoardDocument
     @Environment(\.undoManager) var undoManager
     @Binding var board: KPBoard
-
+    @Environment(\.searchText) private var searchText: String
+    
     // MARK: Edges
     @State private var inputPointRects: [KPInputPoint.ID : CGRect] = [:]
     @State private var outputPointRects: [KPOutputPoint.ID : CGRect] = [:]
-
+    
     @State private var previewEdge: (CGPoint, CGPoint)? = nil
     @State private var hoveredEdgeID: KPEdge.ID? = nil
     @State private var selectedEdgeID: KPEdge.ID? = nil
     
     @State private var clickingOutput: Bool = false
-
-//    @State var isEditingForTitle: Bool = false
-
+    
+    //    @State var isEditingForTitle: Bool = false
+    
     // MARK: Combine
     @State var cancellabes = Set<AnyCancellable>()
-
+    
     var body: some View {
         ZStack {
-            Color.white
-                .contentShape(Rectangle()) // 클릭 이벤트를 감지할 수 있도록 설정
-//                .onTapGesture {
-//                        isEditingForTitle.toggle()
-//                }
             ForEach(board.edges) { edge in
                 if let sourcePoint = outputPointRects[edge.sourceID]?.center,
                    let sinkPoint = inputPointRects[edge.sinkID]?.center {
@@ -52,6 +48,7 @@ struct GraphView: View {
                     addEdge: self.addEdge(edge:),
                     updatePreviewEdge: self.updatePreviewEdge(from:to:)
                 )
+                .searchText(searchText)
                 .draggable(offset: node.position) { offset in
                     document.updateNode(node.wrappedValue.id, position: offset, undoManager: undoManager)
                 }
@@ -61,6 +58,7 @@ struct GraphView: View {
                     .stroke(lineWidth: 2)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .backgroundPreferenceValue(InputPointPreferenceKey.self) { values in
             GeometryReader { proxy in
                 self.readPreferenceValues(from: values, in: proxy)
@@ -88,7 +86,7 @@ struct GraphView: View {
             }
         }
     }
-
+    
     @ViewBuilder
     private func PathBetween(_ sourcePoint: CGPoint, _ sinkPoint: CGPoint) -> Path {
         let midPoint = (sourcePoint + sinkPoint) / 2
@@ -99,7 +97,7 @@ struct GraphView: View {
             path.addCurve(to: sinkPoint, control1: control1, control2: control2)
         }
     }
-
+    
     @ViewBuilder
     private func PathShapes(_ sourcePoint: CGPoint, _ sinkPoint: CGPoint, _ edgeID: KPEdge.ID) -> some View {
         let pathShapeSide = 10.0 // 선을 이루는 shape들의 width, height, 간격은 모두 10.0으로 설정합니다.
@@ -138,7 +136,7 @@ extension GraphView {
         return Rectangle()
             .fill(Color.clear)
     }
-
+    
     private func readPreferenceValues(from values: [OutputPointPreference], in proxy: GeometryProxy) -> some View {
         DispatchQueue.main.async {
             values.forEach { preference in
@@ -160,22 +158,22 @@ extension GraphView {
         guard let outputItem = self.outputPointRects.first(where: { id, _ in
             id == outputID
         }) else { return nil }
-
+        
         let calculatedPoint = outputItem.1.origin + dragLocation
-
+        
         guard let inputItem = self.inputPointRects.first(where: { _, rect in
             CGRectContainsPoint(rect, calculatedPoint)
         }) else { return nil }
-
+        
         return (outputItem.0, inputItem.0)
     }
-
+    
     private func addEdge(
         edge: KPEdge
     ) {
         self.document.addEdge(edge: edge, undoManager: undoManager)
     }
-
+    
     private func updatePreviewEdge(
         from sourceID: KPOutputPoint.ID,
         to dragPoint: CGPoint?
