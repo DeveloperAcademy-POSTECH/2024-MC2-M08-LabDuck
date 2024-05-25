@@ -25,10 +25,13 @@ struct GraphView: View {
     @State private var clickingOutput: Bool = false
     
     //    @State var isEditingForTitle: Bool = false
-    
-    // MARK: Combine
-    @State var cancellabes = Set<AnyCancellable>()
-    
+
+    var deleteKeyPublisher = NSApp.publisher(for: \.currentEvent)
+        .eraseToAnyPublisher()
+        .filter { event in
+            event?.type == .keyUp && (event?.keyCode == 51 || event?.keyCode == 117)
+        }
+
     var body: some View {
         ZStack {
             ForEach(board.edges) { edge in
@@ -49,9 +52,14 @@ struct GraphView: View {
                     updatePreviewEdge: self.updatePreviewEdge(from:to:)
                 )
                 .searchText(searchText)
-                .draggable(offset: node.position) { offset in
-                    document.updateNode(node.wrappedValue.id, position: offset, undoManager: undoManager)
-                }
+                .offset(x: node.wrappedValue.position.x, y: node.wrappedValue.position.y)
+                .draggable(onEnded: { offset in
+                    let newPosition = node.wrappedValue.position + offset
+                    document.updateNode(node.wrappedValue.id, position: newPosition, undoManager: undoManager)
+                })
+//                .draggable(offset: node.position) { offset in
+//                    document.updateNode(node.wrappedValue.id, position: offset, undoManager: undoManager)
+//                }
             }
             if let previewEdge {
                 PathBetween(previewEdge.0, previewEdge.1)
@@ -77,13 +85,11 @@ struct GraphView: View {
                     }
                 }
         )
-        .onAppear {
-            trackDeleteCommand {
-                if let selectedEdgeID {
-                    self.document.removeEdge(selectedEdgeID, undoManager: undoManager)
-                }
-                selectedEdgeID = nil
+        .onReceive(deleteKeyPublisher) { received in
+            if let selectedEdgeID {
+                self.document.removeEdge(selectedEdgeID, undoManager: undoManager)
             }
+            selectedEdgeID = nil
         }
     }
     
@@ -189,13 +195,6 @@ extension GraphView {
 // MARK: - Delete key를 받기 위함
 extension GraphView {
     private func trackDeleteCommand(_ perform: @escaping () -> ()) {
-        NSApp.publisher(for: \.currentEvent)
-            .filter { event in
-                event?.type == .keyUp && (event?.keyCode == 51 || event?.keyCode == 117)
-            }
-            .sink { (event: NSEvent?) in
-                perform()
-            }
-            .store(in: &cancellabes)
+
     }
 }
