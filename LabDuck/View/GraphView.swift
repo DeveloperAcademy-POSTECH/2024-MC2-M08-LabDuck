@@ -29,6 +29,16 @@ struct GraphView: View {
     // MARK: Combine
     @State var cancellabes = Set<AnyCancellable>()
 
+    
+    
+    
+//    
+//    private func deleteNode(_ node: KPNode) {
+//
+//        document.deleteNode(node)
+//    }
+//    
+    
     var body: some View {
         ZStack {
             Color.white
@@ -51,7 +61,18 @@ struct GraphView: View {
                     node: node, clickingOutput: $clickingOutput, /*isEditingForTitle: $isEditingForTitle,*/
                     judgeConnection: self.judgeConnection(outputID:dragLocation:),
                     addEdge: self.addEdge(edge:),
-                    updatePreviewEdge: self.updatePreviewEdge(from:to:)
+                    updatePreviewEdge: self.updatePreviewEdge(from:to:),
+                    deleteNode: {
+                        board.nodes.removeAll { $0.id == node.id }
+                        
+                        for outputPoint in node.outputPoints {
+                            board.edges.removeAll { $0.id == outputPoint.id }
+                        }
+                        
+                        for inputPoint in node.inputPoints {
+                            board.edges.removeAll { $0.id == inputPoint.id }
+                        }
+                    }
                 )
                 .draggable(offset: node.position) { offset in
                     document.moveNode(node.wrappedValue.id, to: offset, undoManager: undoManager)
@@ -213,6 +234,9 @@ extension GraphView {
         }
     }
 
+    func deletenode(_ node: KPNode){}
+
+    
     private func updatePreviewEdge(
         from sourceID: KPOutputPoint.ID,
         to dragPoint: CGPoint?

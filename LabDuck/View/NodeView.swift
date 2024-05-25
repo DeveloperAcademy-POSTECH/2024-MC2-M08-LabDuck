@@ -18,6 +18,8 @@ struct NodeView: View {
     @State private var isEditingForTag: Bool = false
     @State private var isEditing: Bool = false
     @State private var hovered: Bool = false
+    @State private var hovered2: Bool = false
+
     @State private var hoveredForClosingTagView: Bool = false
     
     @State private var isScrollDisabled: Bool = false
@@ -35,12 +37,13 @@ struct NodeView: View {
     var judgeConnection: (_ outputID: KPOutputPoint.ID, _ dragLocation: CGPoint) -> (KPOutputPoint.ID, KPInputPoint.ID)?
     var addEdge: (_ edge: KPEdge) -> ()
     
-    
     var updatePreviewEdge: (_ sourceID: KPOutputPoint.ID, _ dragPoint: CGPoint?) -> ()
     
     let columns: [GridItem] = Array(repeating: .init(.flexible(),spacing:7), count: 4)
     
     @State private var selectedButtonIndex: Int? = nil
+    
+    var deleteNode:() -> Void //add
     
     var body: some View {
         HStack {
@@ -283,7 +286,52 @@ struct NodeView: View {
                 .shadow(color: .black.opacity(0.25), radius: 1.5, x: 0, y: 0)
                 .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 4)
                 
-                
+                //편집 버튼
+                if isEditing{
+                    Button{
+                        isEditing.toggle()
+                    }label:{
+                        Image(systemName: "checkmark")
+                            .foregroundColor(.gray)
+                            .opacity(self.hovered ? 1.0 : 0.3)
+                            .onHover { hover in
+                                print("Mouse hover: \(hover)")
+                                self.hovered = hover
+                            }
+                    }.buttonStyle(BorderlessButtonStyle()).offset(x:100,y:-100)
+                }else{
+                    HStack{
+                        Button{
+                            isEditing.toggle()
+                        }label:{
+                            Image(systemName: "square.and.pencil")
+                                .foregroundColor(.gray)
+                                .opacity(self.hovered ? 1.0 : 0.3)
+                                .onHover { hover in
+                                    print("Mouse hover: \(hover)")
+                                    self.hovered = hover
+                                }
+                        }.buttonStyle(BorderlessButtonStyle()).offset(x:100,y:-100)
+                        
+                        Button{
+                            
+                            print("삭제 구현")
+                            print(node.id)
+                            deleteNode()
+                            print("*******")
+                        }label:{
+                            Image(systemName: "trash")
+                                .foregroundColor(.gray)
+                                .opacity(self.hovered2 ? 1.0 : 0.3)
+                                .onHover { hover in
+                                    print("Mouse hover2: \(hover)")
+                                    self.hovered2 = hover
+                                }
+                        }.buttonStyle(BorderlessButtonStyle()).offset(x:100,y:-80)
+ 
+                    }
+                }
+
                 //태그 팝업창
                 if isEditingForTag {
                     TagPopupView(isEditingForTag: $isEditingForTag, node: $node)
@@ -356,7 +404,7 @@ extension NodeView: Equatable {
         lhs.node == rhs.node
     }
 }
-
-#Preview {
-    NodeView(node: .constant(.mockData), clickingOutput: .constant(false), judgeConnection: { _, _ in (UUID(), UUID()) }, addEdge: { _ in }, updatePreviewEdge: { _, _ in })
-}
+//
+//#Preview {
+//    NodeView(node: .constant(.mockData), clickingOutput: .constant(false), judgeConnection: { _, _ in (UUID(), UUID()) }, addEdge: { _ in }, updatePreviewEdge: { _, _ in })
+//}
