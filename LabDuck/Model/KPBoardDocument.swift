@@ -121,7 +121,9 @@ extension KPBoardDocument {
 
         let original = self.board.nodes[index].tags
 
-        self.board.nodes[index].tags = tags
+        withAnimation {
+            self.board.nodes[index].tags = tags
+        }
 
         undoManager?.registerUndo(withTarget: self) { doc in
             doc.updateNode(nodeID, tags: original, undoManager: undoManager)
@@ -134,7 +136,9 @@ extension KPBoardDocument {
 
         let original = self.board.nodes[index].colorTheme
 
-        self.board.nodes[index].colorTheme = colorTheme
+        withAnimation {
+            self.board.nodes[index].colorTheme = colorTheme
+        }
 
         undoManager?.registerUndo(withTarget: self) { doc in
             doc.updateNode(nodeID, colorTheme: original, undoManager: undoManager)
@@ -171,10 +175,14 @@ extension KPBoardDocument {
     func addInputPoint(_ nodeID: KPNode.ID, inputPoint: KPInputPoint, undoManager: UndoManager?) {
         guard let index = getIndex(nodeID) else { return }
 
-        self.board.nodes[index].inputPoints.append(inputPoint)
+        withAnimation {
+            self.board.nodes[index].inputPoints.append(inputPoint)
+        }
 
         undoManager?.registerUndo(withTarget: self) { doc in
-            doc.deleteInputPoint(nodeID, inputPointID: inputPoint.id, undoManager: undoManager)
+            withAnimation {
+                doc.deleteInputPoint(nodeID, inputPointID: inputPoint.id, undoManager: undoManager)
+            }
         }
     }
 
@@ -185,10 +193,14 @@ extension KPBoardDocument {
 
         let originalInputPoint = self.board.nodes[nodeIndex].inputPoints[inputPointIndex]
 
-        self.board.nodes[nodeIndex].inputPoints.remove(at: inputPointIndex)
+        withAnimation {
+            self.board.nodes[nodeIndex].inputPoints.remove(at: inputPointIndex)
+        }
 
         undoManager?.registerUndo(withTarget: self) { doc in
-            doc.addInputPoint(nodeID, inputPoint: originalInputPoint, undoManager: undoManager)
+            withAnimation {
+                doc.addInputPoint(nodeID, inputPoint: originalInputPoint, undoManager: undoManager)
+            }
         }
     }
 
@@ -197,10 +209,14 @@ extension KPBoardDocument {
     func addOutputPoint(_ nodeID: KPNode.ID, outputPoint: KPOutputPoint, undoManager: UndoManager?) {
         guard let index = getIndex(nodeID) else { return }
 
-        self.board.nodes[index].outputPoints.append(outputPoint)
+        withAnimation {
+            self.board.nodes[index].outputPoints.append(outputPoint)
+        }
 
         undoManager?.registerUndo(withTarget: self) { doc in
-            doc.deleteOutputPoint(nodeID, outputPointID: outputPoint.id, undoManager: undoManager)
+            withAnimation {
+                doc.deleteOutputPoint(nodeID, outputPointID: outputPoint.id, undoManager: undoManager)
+            }
         }
     }
 
@@ -212,10 +228,14 @@ extension KPBoardDocument {
 
         let originalOutputPoint = self.board.nodes[nodeIndex].outputPoints[outputPointIndex]
 
-        self.board.nodes[nodeIndex].outputPoints.remove(at: outputPointIndex)
+        withAnimation {
+            self.board.nodes[nodeIndex].outputPoints.remove(at: outputPointIndex)
+        }
 
         undoManager?.registerUndo(withTarget: self) { doc in
-            doc.addOutputPoint(nodeID, outputPoint: originalOutputPoint, undoManager: undoManager)
+            withAnimation {
+                doc.addOutputPoint(nodeID, outputPoint: originalOutputPoint, undoManager: undoManager)
+            }
         }
     }
 }
@@ -288,10 +308,14 @@ extension KPBoardDocument {
 // MARK: - 보드
 extension KPBoardDocument {
     func addNode(_ node: KPNode, undoManager: UndoManager?, animation: Animation? = .default) {
-        self.board.nodes.append(node)
+        withAnimation(animation) {
+            self.board.nodes.append(node)
+        }
 
         undoManager?.registerUndo(withTarget: self) { doc in
-            doc.removeNode(node.id, undoManager: undoManager, animation: animation)
+            withAnimation(animation) {
+                doc.removeNode(node.id, undoManager: undoManager, animation: animation)
+            }
         }
     }
 
@@ -308,14 +332,18 @@ extension KPBoardDocument {
                 outputPoint.id == edge.sourceID
             }
         }
-        incomingEdges.forEach { self.board.removeEdge($0.id) }
-        outgoingEdges.forEach { self.board.removeEdge($0.id) }
-        self.board.nodes.removeAll { $0.id == nodeID }
+        withAnimation(animation) {
+            incomingEdges.forEach { self.board.removeEdge($0.id) }
+            outgoingEdges.forEach { self.board.removeEdge($0.id) }
+            self.board.nodes.removeAll { $0.id == nodeID }
+        }
 
         undoManager?.registerUndo(withTarget: self) { doc in
-            doc.addNode(originalNode, undoManager: undoManager)
-            incomingEdges.forEach { doc.addEdge(edge: $0, undoManager: undoManager) }
-            outgoingEdges.forEach { doc.addEdge(edge: $0, undoManager: undoManager) }
+            withAnimation(animation) {
+                doc.addNode(originalNode, undoManager: undoManager)
+                incomingEdges.forEach { doc.addEdge(edge: $0, undoManager: undoManager) }
+                outgoingEdges.forEach { doc.addEdge(edge: $0, undoManager: undoManager) }
+            }
         }
     }
 }
