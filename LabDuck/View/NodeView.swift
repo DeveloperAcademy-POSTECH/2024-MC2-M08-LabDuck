@@ -9,7 +9,6 @@ import SwiftUI
 
 struct NodeView: View {
     @Binding var node: KPNode
-    //    @Binding var inputPoints: KPInputPoint
     @State private var dragLocation: CGPoint?
     @State private var currentOutputPoint: KPOutputPoint.ID?
     @State private var isEditingForTitle: Bool = false
@@ -19,12 +18,12 @@ struct NodeView: View {
     @State private var isEditing: Bool = false
     @State private var hovered: Bool = false
     @State private var hoveredForClosingTagView: Bool = false
+    @Binding var uniqueTags: [KPTag]
     
     @State private var isScrollDisabled: Bool = false
     
     @State private var textViewHeight: CGFloat = 20
     
-    //    @Binding var backgroundColor: KPColorTheme
     //------
     @State private var textForTags: String = ""
     @State private var previewTag: KPTag?
@@ -38,9 +37,9 @@ struct NodeView: View {
     
     var updatePreviewEdge: (_ sourceID: KPOutputPoint.ID, _ dragPoint: CGPoint?) -> ()
     
-    let columns: [GridItem] = Array(repeating: .init(.flexible(),spacing:7), count: 4)
-    
     @State private var selectedButtonIndex: Int? = nil
+    
+    
     
     var body: some View {
         HStack {
@@ -64,7 +63,6 @@ struct NodeView: View {
                                 ForEach(KPColorTheme.allCases, id: \.self) { colorTheme in
                                     Button(action: {
                                         node.colorTheme = colorTheme
-                                        //                                        selectedButtonIndex = index
                                     }) {
                                         ZStack{
                                             RoundedRectangle(cornerRadius: 3)
@@ -239,8 +237,8 @@ struct NodeView: View {
                                     ForEach(node.tags){ tag in
                                         Text("#\(tag.name)")
                                             .foregroundColor(.white)
-                                            .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
-                                            .background(Color.blue)
+                                            .padding(EdgeInsets(top: 6, leading: 8, bottom: 6, trailing: 8))
+                                            .background(tag.colorTheme.backgroundColor)
                                             .cornerRadius(10)
                                         
                                     }
@@ -256,8 +254,8 @@ struct NodeView: View {
                                 ForEach(node.tags){ tag in
                                     Text("#\(tag.name)")
                                         .foregroundColor(.white)
-                                        .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
-                                        .background(Color.blue)
+                                        .padding(EdgeInsets(top: 6, leading: 8, bottom: 6, trailing: 8))
+                                        .background(tag.colorTheme.backgroundColor)
                                         .cornerRadius(10)
                                     
                                 }
@@ -268,14 +266,7 @@ struct NodeView: View {
                             .frame(width: 250, height: 50)
                             .background(.gray.opacity(0.3))
                         
-                    }
-                    
-                    
-                    
-                    
-                    
-                    
-                    
+                    } 
                     
                 }
                 .background(.white)
@@ -286,7 +277,7 @@ struct NodeView: View {
                 
                 //태그 팝업창
                 if isEditingForTag {
-                    TagPopupView(isEditingForTag: $isEditingForTag, node: $node)
+                    TagPopupView(isEditingForTag: $isEditingForTag, node: $node, uniqueTags: $uniqueTags)
                         .transition(.scale)
                         .zIndex(1)
                 }
@@ -357,6 +348,6 @@ extension NodeView: Equatable {
     }
 }
 
-#Preview {
-    NodeView(node: .constant(.mockData), clickingOutput: .constant(false), judgeConnection: { _, _ in (UUID(), UUID()) }, addEdge: { _ in }, updatePreviewEdge: { _, _ in })
-}
+//#Preview {
+//    NodeView(node: .constant(.mockData), clickingOutput: .constant(false), judgeConnection: { _, _ in (UUID(), UUID()) }, addEdge: { _ in }, updatePreviewEdge: { _, _ in })
+//}

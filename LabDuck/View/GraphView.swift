@@ -12,7 +12,7 @@ struct GraphView: View {
     @EnvironmentObject var document: KPBoardDocument
     @Environment(\.undoManager) var undoManager
     @Binding var board: KPBoard
-   
+    
 
     // MARK: Edges
     @State private var inputPointRects: [KPInputPoint.ID : CGRect] = [:]
@@ -24,18 +24,16 @@ struct GraphView: View {
     
     @State private var clickingOutput: Bool = false
 
-//    @State var isEditingForTitle: Bool = false
-
     // MARK: Combine
     @State var cancellabes = Set<AnyCancellable>()
+    
+    @State private var uniqueTags: [KPTag] = []
 
     var body: some View {
         ZStack {
             Color.white
-                .contentShape(Rectangle()) // 클릭 이벤트를 감지할 수 있도록 설정
-//                .onTapGesture {
-//                        isEditingForTitle.toggle()
-//                }
+                .contentShape(Rectangle())
+            
             ForEach(board.edges) { edge in
                 if let sourcePoint = outputPointRects[edge.sourceID]?.center,
                    let sinkPoint = inputPointRects[edge.sinkID]?.center {
@@ -48,7 +46,7 @@ struct GraphView: View {
             ForEach(self.$board.nodes) { node in
 
                 NodeView(
-                    node: node, clickingOutput: $clickingOutput, /*isEditingForTitle: $isEditingForTitle,*/
+                    node: node, uniqueTags: $uniqueTags, clickingOutput: $clickingOutput,
                     judgeConnection: self.judgeConnection(outputID:dragLocation:),
                     addEdge: self.addEdge(edge:),
                     updatePreviewEdge: self.updatePreviewEdge(from:to:)
@@ -87,6 +85,7 @@ struct GraphView: View {
                 }
                 selectedEdgeID = nil
             }
+            uniqueTags = board.nodes.flatMap { $0.tags }.removingDuplicates()
         }
     }
 

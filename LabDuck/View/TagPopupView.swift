@@ -14,6 +14,8 @@ struct TagPopupView: View {
     @State private var textForTags: String = ""
     @State private var previewTag: KPTag?
     
+    @Binding var uniqueTags: [KPTag]
+    
     var body: some View {
         VStack (alignment:.leading,spacing: 0){
             //            ZStack{
@@ -46,61 +48,94 @@ struct TagPopupView: View {
             
             
             VStack(alignment: .leading, spacing: 10){
-                Text("선택된 태그").foregroundColor(.gray).font(.system(size:13)).padding(10)
-            
-            
-            Text("태그 선택 또는 생성").foregroundColor(.gray).font(.system(size:13)).padding(10)
-                
-                HStack(spacing: 20){
-                    
-                    //태그 생성 버튼
-                    Button{
-                        createTag()
+                if previewTag != nil {
+                    HStack(spacing: 20){
                         
-                    }label: {
-                        Text("생성").foregroundColor(.black)
-                    }.buttonStyle(BorderlessButtonStyle())
-                        .padding(.top, 5)
-                    
-                    //태그 프리뷰
-                    if previewTag != nil {
+                        
+                        //태그 생성 버튼
+                        Button{
+                            createTag()
+                            
+                        }label: {
+                            Text("생성").foregroundColor(.black)
+                        }.buttonStyle(BorderlessButtonStyle())
+                            .padding(.top, 5)
+                        
+                        
+                        
+                        //태그 프리뷰
+                        
                         Text("#\(textForTags)")
                             .padding(8)
-                            .background(.blue)
+                            .background(previewTag!.colorTheme.backgroundColor)
                             .cornerRadius(6)
                             .foregroundColor(.white)
                             .padding(.top, 5)
                         
-                    }
-                    Spacer()
-                    
-                }.background(Color.gray)
-                    .frame(width: 234, height: 40)
-                    .cornerRadius(6)
-                    .padding(10)
-            
+                        
+                        Spacer()
+                        
+                    }.background(Color.gray)
+                        .frame(width: 234, height: 40)
+                        .cornerRadius(6)
+                        .padding(10)
+                }
+                
+                Text("선택된 태그").foregroundColor(.gray).font(.system(size:7)).padding(10)
                 
                 //태그 뷰의 태그 출력
                 VStack(alignment: .leading, spacing: 10) {
                     ForEach(node.tags) { tag in
-                        Text("#\(tag.name)")
-                            .foregroundColor(.white)
-                            .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
-                            .background(Color.blue)
-                            .cornerRadius(6)
+                        HStack{
+                            Text("#\(tag.name)")
+                                .foregroundColor(.white)
+                                .padding(EdgeInsets(top: 6, leading: 8, bottom: 6, trailing: 8))
+                                .background(tag.colorTheme.backgroundColor)
+                                .cornerRadius(6)
+                            Spacer()
+                            Button{
+                                deleteTag(tag)
+                            }label: {
+                                Image(systemName: "trash").foregroundColor(.gray)
+                            }.buttonStyle(BorderlessButtonStyle())
+                            
+                        }
                     }
                 }
+                
+                Text("태그 선택 또는 생성").foregroundColor(.gray).font(.system(size:7)).padding(10)
+                // 중복 제거된 태그 표시
+                ForEach(uniqueTags) { tag in
+                    HStack{
+                        Text("#\(tag.name)")
+                            .foregroundColor(.white)
+                            .padding(EdgeInsets(top: 6, leading: 8, bottom: 6, trailing: 8))
+                            .background(tag.colorTheme.backgroundColor)
+                            .cornerRadius(6)
+                        Spacer()
+                        Button{
+                            deleteTag(tag)
+                        }label: {
+                            Image(systemName: "trash").foregroundColor(.gray)
+                        }.buttonStyle(BorderlessButtonStyle())
+                    }
+                }
+                
             }
             .frame(width:250)
             .background(Color.white)
         }
         .cornerRadius(6)
         .shadow(radius: 10)
+        .onAppear {
+                    // 뷰가 나타날 때 중복 제거
+                    node.tags = node.tags.removingDuplicates()
+                }
     }
     
     private func addPreviewTag() {
         guard !textForTags.isEmpty else { return }
-        let newTagForPreview = KPTag(id: UUID(), name: textForTags, colorTheme: KPTagColor.blue)
+        let newTagForPreview = KPTag(id: UUID(), name: textForTags, colorTheme: KPTagColor.random())
         previewTag = newTagForPreview
     }
     
@@ -109,5 +144,10 @@ struct TagPopupView: View {
         node.tags.append(previewTag)
         self.previewTag = nil
         self.textForTags = ""
+    }
+    private func deleteTag(_ tag: KPTag) {
+        if let index = node.tags.firstIndex(where: { $0.id == tag.id }) {
+            node.tags.remove(at: index)
+        }
     }
 }
