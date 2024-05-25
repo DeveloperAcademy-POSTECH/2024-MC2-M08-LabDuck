@@ -103,13 +103,14 @@ struct MainView: View {
     // MARK: - Body
     var body: some View {
         GeometryReader { proxy in
-            VStack{
+            ZStack{
                 if board.viewType == .graph {
                     GraphView(board: $board)
-                        .background(Rectangle().fill(Color.white).frame(width: 5000, height: 5000))
+                        .background(Rectangle().frame(width: 6000, height: 5000).foregroundColor(searchText.isEmpty ? Color.white : Color.black.opacity(0.3)))
                         .offset(offsetValue)
                         .scaleEffect(scaleValue, anchor: .center)
                         .searchable(text: $searchText)
+                        .searchText(searchText)
                         .gesture(magnifyGesture(proxy.size.width, proxy.size.height))
                         .gesture(dragGesture)
                         .onAppear {
