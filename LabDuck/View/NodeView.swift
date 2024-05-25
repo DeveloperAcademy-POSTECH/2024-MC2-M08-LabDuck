@@ -281,7 +281,7 @@ extension NodeView {
             if !isEditing {
                 if let url = URL(string: node.unwrappedURL) {
                     Link(destination: url) {
-                        HighlightText(fullText: node.unwrappedTitle, searchText: searchText)
+                        HighlightText(fullText: node.unwrappedURL, searchText: searchText)
                             .foregroundColor(.blue)
                             .underline()
                             .font(.system(size: 13, weight: .regular))
@@ -312,9 +312,9 @@ extension NodeView {
                         Spacer()
 
                     }
-                    .buttonStyle(BorderlessButtonStyle())
+                    .buttonStyle(.borderless)
                 }
-                .buttonStyle(BorderlessButtonStyle())
+                .buttonStyle(.borderless)
             }
         }
         return ResultView
