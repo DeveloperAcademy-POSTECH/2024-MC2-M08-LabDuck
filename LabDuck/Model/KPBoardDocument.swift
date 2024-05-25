@@ -48,6 +48,7 @@ extension KPBoardDocument {
     }
 }
 
+// MARK: - 노드
 extension KPBoardDocument {
     func moveNode(_ nodeID: KPNode.ID, to position: CGPoint, undoManager: UndoManager? = nil) {
         guard let index = getIndex(nodeID) else { return }
@@ -58,6 +59,19 @@ extension KPBoardDocument {
 
         undoManager?.registerUndo(withTarget: self) { doc in
             doc.moveNode(nodeID, to: originalPosition, undoManager: undoManager)
+        }
+    }
+
+    func updateNode(to node: KPNode, undoManager: UndoManager? = nil) {
+        let nodeID = node.id
+        guard let index = getIndex(nodeID) else { return }
+
+        let originalNode = self.board.nodes[index]
+
+        self.board.nodes[index] = node
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.updateNode(to: originalNode, undoManager: undoManager)
         }
     }
 }

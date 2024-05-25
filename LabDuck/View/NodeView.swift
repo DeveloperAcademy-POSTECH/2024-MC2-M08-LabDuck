@@ -9,7 +9,6 @@ import SwiftUI
 
 struct NodeView: View {
     @Binding var node: KPNode
-    //    @Binding var inputPoints: KPInputPoint
     @State private var dragLocation: CGPoint?
     @State private var currentOutputPoint: KPOutputPoint.ID?
     @State private var isEditingForTitle: Bool = false
@@ -23,18 +22,15 @@ struct NodeView: View {
     @State private var isScrollDisabled: Bool = false
     
     @State private var textViewHeight: CGFloat = 20
-    
-    //    @Binding var backgroundColor: KPColorTheme
-    //------
+
     @State private var textForTags: String = ""
     @State private var previewTag: KPTag?
     @State private var tags: [KPTag] = []
-    //------
+
     @Binding var clickingOutput: Bool
     
     var judgeConnection: (_ outputID: KPOutputPoint.ID, _ dragLocation: CGPoint) -> (KPOutputPoint.ID, KPInputPoint.ID)?
     var addEdge: (_ edge: KPEdge) -> ()
-    
     
     var updatePreviewEdge: (_ sourceID: KPOutputPoint.ID, _ dragPoint: CGPoint?) -> ()
     
@@ -45,11 +41,9 @@ struct NodeView: View {
     var body: some View {
         HStack {
             
-            //인풋 포인트 관리
-            
+            //인풋 포인트
             VStack(spacing: 20){
                 ForEach(node.inputPoints) { inputPoint in
-                    
                     InputPointView(inputPoint: inputPoint).opacity(inputPoint.isLinked ? 1.0 : (clickingOutput ? 0.2 : 0.0))
                 }
             }
@@ -64,7 +58,6 @@ struct NodeView: View {
                                 ForEach(KPColorTheme.allCases, id: \.self) { colorTheme in
                                     Button(action: {
                                         node.colorTheme = colorTheme
-                                        //                                        selectedButtonIndex = index
                                     }) {
                                         ZStack{
                                             RoundedRectangle(cornerRadius: 3)
