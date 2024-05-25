@@ -12,7 +12,6 @@ struct GraphView: View {
     @EnvironmentObject var document: KPBoardDocument
     @Environment(\.undoManager) var undoManager
     @Binding var board: KPBoard
-   
 
     // MARK: Edges
     @State private var inputPointRects: [KPInputPoint.ID : CGRect] = [:]
@@ -46,7 +45,6 @@ struct GraphView: View {
                 }
             }
             ForEach(self.$board.nodes) { node in
-
                 NodeView(
                     node: node.wrappedValue,
                     clickingOutput: $clickingOutput,
@@ -84,7 +82,7 @@ struct GraphView: View {
         .onAppear {
             trackDeleteCommand {
                 if let selectedEdgeID {
-                    self.board.removeEdge(selectedEdgeID)
+                    self.document.removeEdge(selectedEdgeID, undoManager: undoManager)
                 }
                 selectedEdgeID = nil
             }
@@ -175,39 +173,7 @@ extension GraphView {
     private func addEdge(
         edge: KPEdge
     ) {
-        self.board.addEdge(edge)
-
-        // MARK: 디버그용 출력 문장들, 추후 삭제 등에 이 코드가 필요할 것 같음
-        self.board.nodes.forEach { node in
-            
-            node.outputPoints.forEach { outputPoint in
-                if outputPoint.id == edge.sourceID {
-                    print("outputPoint 정보 : \(outputPoint.name ?? "")")
-                    if let ownerNodeID = outputPoint.ownerNode {
-                        self.board.nodes.forEach { node in
-                            if node.id == ownerNodeID {
-                                print("<- 그의 부모는 \(node.title ?? "") 입니다.")
-                            }
-                        }
-                    }
-                }
-            }
-            node.inputPoints.forEach { inputPoint in
-                if inputPoint.id == edge.sinkID {
-                    print("inputPoint 정보 : \(inputPoint.name ?? "")")
-                    
-                    
-                    if let ownerNodeID = inputPoint.ownerNode {
-                        self.board.nodes.forEach { node in
-                            if node.id == ownerNodeID {
-                                
-                                print("<- 그의 부모는 \(node.title ?? "") 입니다.")
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        self.document.addEdge(edge: edge, undoManager: undoManager)
     }
 
     private func updatePreviewEdge(
@@ -222,9 +188,7 @@ extension GraphView {
     }
 }
 
-
-
-// MARK: - Delete key를 받기 위한
+// MARK: - Delete key를 받기 위함
 extension GraphView {
     private func trackDeleteCommand(_ perform: @escaping () -> ()) {
         NSApp.publisher(for: \.currentEvent)

@@ -147,7 +147,7 @@ extension NodeView {
         HStack(spacing: 6) {
             ForEach(KPColorTheme.allCases, id: \.self) { colorTheme in
                 Button {
-                    document.updateNode(node.id, colorTheme: colorTheme)
+                    document.updateNode(node.id, colorTheme: colorTheme, undoManager: undoManager)
                 } label: {
                     Image(systemName: "checkmark.circle.fill")
                         .resizable()

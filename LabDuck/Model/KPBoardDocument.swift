@@ -60,7 +60,7 @@ extension KPBoardDocument {
     // 3. 로직을 여기로 몰아넣고 Modified 시간을 같이 관리하기 위해서
     // 4. NodeView의 node를 @State가 아닌 그냥 일반 변수로 관리하고 싶어서. (성능 향상을 위해)
     // (5. 공식 예제가 이렇게 해서)
-    func updateNode(node: KPNode, undoManager: UndoManager? = nil) {
+    func updateNode(node: KPNode, undoManager: UndoManager?) {
         let nodeID = node.id
         guard let index = getIndex(nodeID) else { return }
 
@@ -76,7 +76,7 @@ extension KPBoardDocument {
     }
 
     // Title
-    func updateNode(_ nodeID: KPNode.ID, title: String?, undoManager: UndoManager? = nil) {
+    func updateNode(_ nodeID: KPNode.ID, title: String?, undoManager: UndoManager?) {
         guard let index = getIndex(nodeID) else { return }
 
         let original = self.board.nodes[index].title
@@ -89,7 +89,7 @@ extension KPBoardDocument {
     }
 
     // Note
-    func updateNode(_ nodeID: KPNode.ID, note: String?, undoManager: UndoManager? = nil) {
+    func updateNode(_ nodeID: KPNode.ID, note: String?, undoManager: UndoManager?) {
         guard let index = getIndex(nodeID) else { return }
 
         let original = self.board.nodes[index].note
@@ -102,7 +102,7 @@ extension KPBoardDocument {
     }
 
     // URL
-    func updateNode(_ nodeID: KPNode.ID, url: String?, undoManager: UndoManager? = nil) {
+    func updateNode(_ nodeID: KPNode.ID, url: String?, undoManager: UndoManager?) {
         guard let index = getIndex(nodeID) else { return }
 
         let original = self.board.nodes[index].url
@@ -115,7 +115,7 @@ extension KPBoardDocument {
     }
 
     // URL
-    func updateNode(_ nodeID: KPNode.ID, tags: [KPTag], undoManager: UndoManager? = nil) {
+    func updateNode(_ nodeID: KPNode.ID, tags: [KPTag], undoManager: UndoManager?) {
         guard let index = getIndex(nodeID) else { return }
 
         let original = self.board.nodes[index].tags
@@ -128,7 +128,7 @@ extension KPBoardDocument {
     }
 
     // ColorTheme
-    func updateNode(_ nodeID: KPNode.ID, colorTheme: KPColorTheme, undoManager: UndoManager? = nil) {
+    func updateNode(_ nodeID: KPNode.ID, colorTheme: KPColorTheme, undoManager: UndoManager?) {
         guard let index = getIndex(nodeID) else { return }
 
         let original = self.board.nodes[index].colorTheme
@@ -141,7 +141,7 @@ extension KPBoardDocument {
     }
 
     // Position
-    func updateNode(_ nodeID: KPNode.ID, position: CGPoint, undoManager: UndoManager? = nil) {
+    func updateNode(_ nodeID: KPNode.ID, position: CGPoint, undoManager: UndoManager?) {
         guard let index = getIndex(nodeID) else { return }
 
         let original = self.board.nodes[index].position
@@ -154,7 +154,7 @@ extension KPBoardDocument {
     }
 
     // Size
-    func updateNode(_ nodeID: KPNode.ID, size: CGSize, undoManager: UndoManager? = nil) {
+    func updateNode(_ nodeID: KPNode.ID, size: CGSize, undoManager: UndoManager?) {
         guard let index = getIndex(nodeID) else { return }
 
         let original = self.board.nodes[index].size
@@ -167,7 +167,7 @@ extension KPBoardDocument {
     }
 
     // add InputPoint
-    func addInputPoint(_ nodeID: KPNode.ID, inputPoint: KPInputPoint, undoManager: UndoManager? = nil) {
+    func addInputPoint(_ nodeID: KPNode.ID, inputPoint: KPInputPoint, undoManager: UndoManager?) {
         guard let index = getIndex(nodeID) else { return }
 
         self.board.nodes[index].inputPoints.append(inputPoint)
@@ -178,7 +178,7 @@ extension KPBoardDocument {
     }
 
     // delete InputPoint
-    func deleteInputPoint(_ nodeID: KPNode.ID, inputPointID: KPInputPoint.ID, undoManager: UndoManager? = nil) {
+    func deleteInputPoint(_ nodeID: KPNode.ID, inputPointID: KPInputPoint.ID, undoManager: UndoManager?) {
         guard let nodeIndex = getIndex(nodeID) else { return }
         guard let inputPointIndex = getInputPointIndex(nodeIndex, inputPointID) else { return }
 
@@ -193,7 +193,7 @@ extension KPBoardDocument {
 
     // add OutputPoint
     // TODO: - Edge 관련 로직 추가되어야 함
-    func addOutputPoint(_ nodeID: KPNode.ID, outputPoint: KPOutputPoint, undoManager: UndoManager? = nil) {
+    func addOutputPoint(_ nodeID: KPNode.ID, outputPoint: KPOutputPoint, undoManager: UndoManager?) {
         guard let index = getIndex(nodeID) else { return }
 
         self.board.nodes[index].outputPoints.append(outputPoint)
@@ -205,7 +205,7 @@ extension KPBoardDocument {
 
     // delete OutputPoint
     // TODO: - Edge 관련 로직 추가되어야 함
-    func deleteOutputPoint(_ nodeID: KPNode.ID, outputPointID: KPOutputPoint.ID, undoManager: UndoManager? = nil) {
+    func deleteOutputPoint(_ nodeID: KPNode.ID, outputPointID: KPOutputPoint.ID, undoManager: UndoManager?) {
         guard let nodeIndex = getIndex(nodeID) else { return }
         guard let outputPointIndex = getInputPointIndex(nodeIndex, outputPointID) else { return }
 
@@ -215,6 +215,71 @@ extension KPBoardDocument {
 
         undoManager?.registerUndo(withTarget: self) { doc in
             doc.addOutputPoint(nodeID, outputPoint: originalOutputPoint, undoManager: undoManager)
+        }
+    }
+}
+
+// MARK: - 엣지
+extension KPBoardDocument {
+    func addEdge(edge: KPEdge, undoManager: UndoManager?) {
+        self.board.addEdge(edge)
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.removeEdge(edge.id, undoManager: undoManager)
+        }
+
+        // MARK: 디버그용 출력 문장들, 추후 삭제 등에 이 코드가 필요할 것 같음
+        self.board.nodes.forEach { node in
+
+            node.outputPoints.forEach { outputPoint in
+                if outputPoint.id == edge.sourceID {
+                    print("outputPoint 정보 : \(outputPoint.name ?? "")")
+                    if let ownerNodeID = outputPoint.ownerNode {
+                        self.board.nodes.forEach { node in
+                            if node.id == ownerNodeID {
+                                print("<- 그의 부모는 \(node.title ?? "") 입니다.")
+                            }
+                        }
+                    }
+                }
+            }
+            node.inputPoints.forEach { inputPoint in
+                if inputPoint.id == edge.sinkID {
+                    print("inputPoint 정보 : \(inputPoint.name ?? "")")
+
+
+                    if let ownerNodeID = inputPoint.ownerNode {
+                        self.board.nodes.forEach { node in
+                            if node.id == ownerNodeID {
+
+                                print("<- 그의 부모는 \(node.title ?? "") 입니다.")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    func removeEdge(_ edgeID: KPEdge.ID, undoManager: UndoManager?) {
+        let oldEdges = self.board.edges
+
+        withAnimation {
+            self.board.removeEdge(edgeID)
+        }
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.replaceEdges(oldEdges, undoManager: undoManager)
+        }
+    }
+
+    func replaceEdges(_ edges: [KPEdge], undoManager: UndoManager?, animation: Animation? = .default) {
+        let oldEdges = self.board.edges
+
+        self.board.edges = edges
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.replaceEdges(oldEdges, undoManager: undoManager, animation: animation)
         }
     }
 }
