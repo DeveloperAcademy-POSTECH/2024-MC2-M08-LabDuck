@@ -17,6 +17,8 @@ struct TableView: View {
     @State private var editingNode: KPNode = KPNode()
     @State private var editingNodeID: KPNode.ID?
     
+//    @Binding var uniqueTags: [KPTag]
+    
     var body: some View {
         VStack{
             Table(of: KPNode.self, selection: $selection, sortOrder: $sortOrder) {
@@ -179,7 +181,7 @@ struct TableView: View {
 }
 
 
-    
-#Preview {
-    TableView(board: .constant(.mockData), searchText: .constant(""))
-}
+//    
+//#Preview {
+//    TableView(board: .constant(.mockData), searchText: .constant(""))
+//}
