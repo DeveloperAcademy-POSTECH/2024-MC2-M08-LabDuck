@@ -58,10 +58,14 @@ struct GraphView: View {
                 })
             }
             
-            ForEach(self.$board.texts) { text in
-                TextView(text: text, board: $board)
-                    .draggable(offset: text.position) { offset in
-                        text.position.wrappedValue = offset
+            ForEach(self.board.texts) { text in
+                TextView(text: text)
+                    .offset(x: text.position.x, y: text.position.y)
+                    .draggable { offset in
+                        let newPosition = text.position + offset
+                        var newText = text
+                        newText.position = newPosition
+                        document.updateText(newText, undoManager: undoManager, animation: nil)
                     }
             }
             

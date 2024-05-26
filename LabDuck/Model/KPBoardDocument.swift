@@ -320,7 +320,7 @@ extension KPBoardDocument {
     }
 }
 
-// MARK: - 보드
+// MARK: - 태그
 extension KPBoardDocument {
     func createTag(_ nodeID: KPNode.ID, tag: KPTag, undoManager: UndoManager?, animation: Animation? = .default) {
         guard let nodeIndex = getIndex(nodeID) else { return }
@@ -348,4 +348,44 @@ extension KPBoardDocument {
             doc.createTag(nodeID, tag: originalTag, undoManager: undoManager, animation: animation)
         }
     }
+}
+
+// MARK: - 텍스트
+extension KPBoardDocument {
+    func createText(_ text: KPText, undoManager: UndoManager?, animation: Animation? = .default) {
+        withAnimation(animation) {
+            self.board.texts.append(text)
+        }
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            self.board.texts.removeLast()
+        }
+    }
+
+    func updateText(_ text: KPText, undoManager: UndoManager?, animation: Animation? = .default) {
+        guard let originalTextIndex = self.board.texts.firstIndex(where: { $0.id == text.id }) else { return }
+
+        let originalText = self.board.texts[originalTextIndex]
+
+        withAnimation(animation) {
+            self.board.texts[originalTextIndex] = text
+        }
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            self.board.texts[originalTextIndex] = originalText
+        }
+    }
+
+    func deleteText(_ textID: KPText.ID, undoManager: UndoManager?) {
+        guard let originalTextIndex = self.board.texts.firstIndex(where: { $0.id == textID }) else { return }
+
+        let originalText = self.board.texts[originalTextIndex]
+
+        self.board.texts.remove(at: originalTextIndex)
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            self.board.texts.insert(originalText, at: originalTextIndex)
+        }
+    }
+
 }

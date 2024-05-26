@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct TextView: View {
-    @Binding var text: KPText
-    @Binding var board: KPBoard
+    @EnvironmentObject var document: KPBoardDocument
+    @Environment(\.undoManager) var undoManager
+    var text: KPText
     @State private var isEditing: Bool = false
+    @State private var tempText: String = ""
 
     var body: some View {
         ZStack {
@@ -23,14 +25,17 @@ struct TextView: View {
                 
                 HStack {
                     ZStack(alignment: .topTrailing) {
-                        TextField("type anything...", text: $text.unwrappedText, onCommit: {
+                        TextField("type anything...", text: $tempText, onCommit: {
                             self.isEditing = false
+                            var newText = self.text
+                            newText.text = tempText
+                            document.updateText(newText, undoManager: undoManager, animation: nil)
                         })
                             .border(Color.blue.opacity(0.6))
                             .frame(width: 200, height: 50)
                         
                         Button(action: {
-                            board.deleteDefaultText(text.id)
+                            document.deleteText(self.text.id, undoManager: undoManager)
                         }) {
                             Image(systemName: "xmark.circle.fill")
                                 .foregroundColor(.gray)
@@ -45,9 +50,12 @@ struct TextView: View {
                     }
             }
         }
+        .onAppear {
+            self.tempText = self.text.unwrappedText
+        }
     }
 }
 
 #Preview {
-    TextView(text: .constant(.mockData), board: .constant(.mockData))
+    TextView(text: .mockData)
 }

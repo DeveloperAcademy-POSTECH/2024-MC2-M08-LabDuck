@@ -157,7 +157,7 @@ struct MainView: View {
                 if board.viewType == .graph {
                     ToolbarItem(placement: .primaryAction) {
                         Button(action: {
-                            board.addDefaultText(KPText.emptyData)
+                            document.createText(KPText.emptyData, undoManager: undoManager, animation: .default)
                         }, label: {
                             Image(systemName: "character.textbox")
                         })
