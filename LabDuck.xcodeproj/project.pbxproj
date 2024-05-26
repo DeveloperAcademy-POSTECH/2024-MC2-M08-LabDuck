@@ -40,6 +40,7 @@
 		6FA98D722BFAF5CF00F7D19E /* MainViewPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FA98D712BFAF5CF00F7D19E /* MainViewPreference.swift */; };
 		BD33D8A52BFF7BD500B86A09 /* EditSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD33D8A42BFF7BD500B86A09 /* EditSheetView.swift */; };
 		BD33D8A72BFF80C900B86A09 /* TagPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD33D8A62BFF80C900B86A09 /* TagPopupView.swift */; };
+		BD33D8A92C0237B800B86A09 /* SearchTextKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD33D8A82C0237B800B86A09 /* SearchTextKey.swift */; };
 		BD57969D2BF1F2AC0023A92C /* TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD57969C2BF1F2AC0023A92C /* TableView.swift */; };
 		BDFE71A82BF87B8400D68E04 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFE71A72BF87B8400D68E04 /* Color+Hex.swift */; };
 		BDFE71AA2BF889A400D68E04 /* KPTagColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFE71A92BF889A400D68E04 /* KPTagColor.swift */; };
@@ -84,6 +85,7 @@
 		6FA98D712BFAF5CF00F7D19E /* MainViewPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewPreference.swift; sourceTree = "<group>"; };
 		BD33D8A42BFF7BD500B86A09 /* EditSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSheetView.swift; sourceTree = "<group>"; };
 		BD33D8A62BFF80C900B86A09 /* TagPopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagPopupView.swift; sourceTree = "<group>"; };
+		BD33D8A82C0237B800B86A09 /* SearchTextKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTextKey.swift; sourceTree = "<group>"; };
 		BD57969C2BF1F2AC0023A92C /* TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableView.swift; sourceTree = "<group>"; wrapsLines = 1; };
 		BDFE71A72BF87B8400D68E04 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		BDFE71A92BF889A400D68E04 /* KPTagColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KPTagColor.swift; sourceTree = "<group>"; };
@@ -151,6 +153,7 @@
 				6F050B4A2BF5F795003D54BD /* CGPoint+distance.swift */,
 				6F050B442BF37D4B003D54BD /* CGRect+center.swift */,
 				BDFE71A72BF87B8400D68E04 /* Color+Hex.swift */,
+				BD33D8A82C0237B800B86A09 /* SearchTextKey.swift */,
 				6F63245F2C0069E0007091A7 /* CoreGraphics+Hashable.swift */,
 				6F63245D2C00681B007091A7 /* UserDefaultsCenter.swift */,
 				6F6324612C006D19007091A7 /* NotificationCenter+.swift */,
@@ -303,6 +306,7 @@
 				6F63245C2BFF7A68007091A7 /* KPBoardDocument.swift in Sources */,
 				6F050B242BF1AC30003D54BD /* KPNode.swift in Sources */,
 				6F050B382BF1BEEF003D54BD /* KPText.swift in Sources */,
+				BD33D8A92C0237B800B86A09 /* SearchTextKey.swift in Sources */,
 				6F050B302BF1BDDD003D54BD /* KPColorTheme.swift in Sources */,
 				6F050B282BF1ACA0003D54BD /* DraggableViewModifier.swift in Sources */,
 				BDFE71A82BF87B8400D68E04 /* Color+Hex.swift in Sources */,

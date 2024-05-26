@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct EditSheetView: View {
+    @EnvironmentObject var document: KPBoardDocument
+    @Environment(\.undoManager) var undoManager
     @Binding var node: KPNode
     @Binding var board: KPBoard
     @Binding var isSheet: Bool
@@ -8,6 +10,7 @@ struct EditSheetView: View {
     @State private var relatedNodes: [KPNode] = []
     @State private var isEditingForTag: Bool = false
     let findNodes: (KPNode) -> [KPNode]
+//    @Binding var uniqueTags: [KPTag]
     
     var body: some View {
         VStack {
@@ -42,7 +45,7 @@ struct EditSheetView: View {
             Spacer()
             
             Button(action: {
-                //삭제 기능을 추가해요
+                document.removeNode(node.id, undoManager: undoManager, animation: .default)
             }) {
                 Image(systemName: "trash")
                     .frame(width: 20, height: 20)
@@ -93,13 +96,14 @@ struct EditSheetView: View {
     
     private var tagsAndUrlSections: some View {
         ZStack {
-            VStack {
+            VStack(alignment: .leading) {
                 tagsSection
                 urlSection
+                Spacer()
             }
             if isEditingForTag {
-                TagPopupView(isEditingForTag: $isEditingForTag, node: $node)
-                    .transition(.scale)
+                TagPopupView(isEditingForTag: $isEditingForTag, node: node)
+                    .transition(.slide)
                     .zIndex(1)
             }
         }
@@ -185,6 +189,10 @@ struct EditSheetView: View {
         .frame(height: 40)
         .background(Color.white)
         .cornerRadius(6)
+        .overlay(
+            RoundedRectangle(cornerRadius: 6)
+                .stroke(.black.opacity(0.1), lineWidth: 1)
+        )
     }
     
     private var colorSelectionView: some View {
