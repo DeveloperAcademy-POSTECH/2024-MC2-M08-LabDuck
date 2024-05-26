@@ -85,6 +85,19 @@ struct KPBoard: Identifiable {
         self.allTags.first(where: { $0.id == id })
     }
 
+    public func getTags(_ nodeID: KPNode.ID) -> [KPTag] {
+        guard let node = self.nodes.first(where: { $0.id == nodeID }) else { return [] }
+        return node.tags
+            .compactMap { tagID in
+                getTag(tagID)
+            }
+    }
+
+    public func hasTag(_ nodeID: KPNode.ID, _ tagID: KPTag.ID) -> Bool {
+        guard let node = self.nodes.first(where: { $0.id == nodeID }) else { return false }
+        return node.tags.contains(where: { $0 == tagID })
+    }
+
     public mutating func createTag(_ name: String) -> KPTag {
         if let tag = getTag(name) {
             return tag

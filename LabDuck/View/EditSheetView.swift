@@ -14,6 +14,8 @@ struct EditSheetView: View {
     @State private var tempNodeNote: String = ""
     @State private var tempNodeURL: String = ""
 
+    @State private var showAlert: Bool = false
+
     var body: some View {
         VStack {
             headerView
@@ -194,7 +196,7 @@ struct EditSheetView: View {
         HStack {
             ScrollView(.horizontal) {
                 HStack {
-                    ForEach(node.tags, id: \.id) { tag in
+                    ForEach(document.board.getTags(node.id), id: \.id) { tag in
                         Button(action: {
                             isEditingForTag.toggle()
                         }) {

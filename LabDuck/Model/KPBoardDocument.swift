@@ -132,6 +132,21 @@ extension KPBoardDocument {
         }
     }
 
+    // tag
+    func addTag(_ nodeID: KPNode.ID, tagID: KPTag.ID, undoManager: UndoManager?) {
+        guard let index = getIndex(nodeID) else { return }
+
+        if self.board.nodes[index].tags.contains(where: { $0 == tagID }) { return }
+
+        withAnimation {
+            self.board.nodes[index].tags.append(tagID)
+        }
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.board.nodes[index].tags.removeLast()
+        }
+    }
+
     // ColorTheme
     func updateNode(_ nodeID: KPNode.ID, colorTheme: KPColorTheme, undoManager: UndoManager?) {
         guard let index = getIndex(nodeID) else { return }
@@ -411,7 +426,7 @@ extension KPBoardDocument {
         }
 
         undoManager?.registerUndo(withTarget: self) { doc in
-            self.board.allTags.append(original)
+            doc.board.allTags.append(original)
         }
     }
 }
@@ -424,7 +439,7 @@ extension KPBoardDocument {
         }
 
         undoManager?.registerUndo(withTarget: self) { doc in
-            self.board.texts.removeLast()
+            doc.board.texts.removeLast()
         }
     }
 
@@ -438,7 +453,7 @@ extension KPBoardDocument {
         }
 
         undoManager?.registerUndo(withTarget: self) { doc in
-            self.board.texts[originalTextIndex] = originalText
+            doc.board.texts[originalTextIndex] = originalText
         }
     }
 
@@ -450,7 +465,7 @@ extension KPBoardDocument {
         self.board.texts[originalTextIndex].position = position
 
         undoManager?.registerUndo(withTarget: self) { doc in
-            self.board.texts[originalTextIndex].position = original
+            doc.board.texts[originalTextIndex].position = original
         }
     }
 
@@ -462,7 +477,7 @@ extension KPBoardDocument {
         self.board.texts.remove(at: originalTextIndex)
 
         undoManager?.registerUndo(withTarget: self) { doc in
-            self.board.texts.insert(originalText, at: originalTextIndex)
+            doc.board.texts.insert(originalText, at: originalTextIndex)
         }
     }
 

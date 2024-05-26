@@ -252,7 +252,8 @@ struct NodeView: View {
         let titleContains = node.unwrappedTitle.lowercased().contains(lowercasedSearchText)
         let noteContains = node.unwrappedNote.lowercased().contains(lowercasedSearchText)
         let urlContains = node.unwrappedURL.lowercased().contains(lowercasedSearchText)
-        let tagsContain = node.tags.contains { ("#" + $0.name).lowercased().contains(lowercasedSearchText) }
+        let tags = document.board.getTags(node.id)
+        let tagsContain = tags.contains { ("#" + $0.name).lowercased().contains(lowercasedSearchText) }
         
         return titleContains || noteContains || urlContains || tagsContain
     }
@@ -386,7 +387,7 @@ extension NodeView {
                 }
                 ScrollView(.horizontal) {
                     HStack{
-                        ForEach(node.tags) { tag in
+                        ForEach(document.board.getTags(node.id)) { tag in
                             HighlightText(fullText: "#\(tag.name)", searchText: searchText)
                                 .foregroundColor(.white)
                                 .padding(8)
@@ -402,7 +403,7 @@ extension NodeView {
         } else {
             ScrollView(.horizontal){
                 HStack{
-                    ForEach(node.tags){ tag in
+                    ForEach(document.board.getTags(node.id)){ tag in
                         HighlightText(fullText: "#\(tag.name)", searchText: searchText)
                             .foregroundColor(.white)
                             .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
