@@ -61,12 +61,10 @@ struct GraphView: View {
             ForEach(self.board.texts) { text in
                 TextView(text: text)
                     .offset(x: text.position.x, y: text.position.y)
-                    .draggable { offset in
+                    .draggable(onEnded: { offset in
                         let newPosition = text.position + offset
-                        var newText = text
-                        newText.position = newPosition
-                        document.updateText(newText, undoManager: undoManager, animation: nil)
-                    }
+                        document.updateText(text.id, position: newPosition, undoManager: undoManager)
+                    })
             }
             
             if let previewEdge {
@@ -191,5 +189,11 @@ extension GraphView {
         } else {
             self.previewEdge = nil
         }
+    }
+}
+
+extension GraphView: Equatable {
+    static func == (lhs: GraphView, rhs: GraphView) -> Bool {
+        lhs.board == rhs.board
     }
 }

@@ -376,6 +376,18 @@ extension KPBoardDocument {
         }
     }
 
+    func updateText(_ textID: KPText.ID, position: CGPoint, undoManager: UndoManager?) {
+        guard let originalTextIndex = self.board.texts.firstIndex(where: { $0.id == textID }) else { return }
+
+        let original = self.board.texts[originalTextIndex].position
+
+        self.board.texts[originalTextIndex].position = position
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            self.board.texts[originalTextIndex].position = original
+        }
+    }
+
     func deleteText(_ textID: KPText.ID, undoManager: UndoManager?) {
         guard let originalTextIndex = self.board.texts.firstIndex(where: { $0.id == textID }) else { return }
 

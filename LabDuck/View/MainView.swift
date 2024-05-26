@@ -157,7 +157,9 @@ struct MainView: View {
                 if board.viewType == .graph {
                     ToolbarItem(placement: .primaryAction) {
                         Button(action: {
-                            document.createText(KPText.emptyData, undoManager: undoManager, animation: .default)
+                            let center = calculateCenterCoordinate(.zero)
+                            let newText = KPText(position: CGPoint(x: center.x, y: center.y))
+                            document.createText(newText, undoManager: undoManager, animation: .default)
                         }, label: {
                             Image(systemName: "character.textbox")
                         })

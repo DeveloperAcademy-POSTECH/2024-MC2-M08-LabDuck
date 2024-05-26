@@ -44,7 +44,7 @@ struct TextView: View {
                     }
                 }
             } else {
-                Text(text.unwrappedText)
+                Text(text.unwrappedText.isEmpty ? "type anything..." : text.unwrappedText)
                     .onTapGesture(count: 1) {
                         self.isEditing = true
                     }
@@ -53,6 +53,12 @@ struct TextView: View {
         .onAppear {
             self.tempText = self.text.unwrappedText
         }
+    }
+}
+
+extension TextView: Equatable {
+    static func == (lhs: TextView, rhs: TextView) -> Bool {
+        lhs.text == rhs.text
     }
 }
 
