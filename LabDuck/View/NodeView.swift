@@ -66,11 +66,11 @@ struct NodeView: View {
 
                 .opacity((searchText == "" || nodeContainsSearchText()) ? 1 : 0.3)
                 //태그 팝업창
-//                if isEditingForTag {
-//                    TagPopupView(isEditingForTag: $isEditingForTag, node: $node)
-//                        .transition(.scale)
-//                        .zIndex(1)
-//                }
+                if isEditingForTag {
+                    TagPopupView(isEditingForTag: $isEditingForTag, node: node)
+                        .transition(.scale)
+                        .zIndex(1)
+                }
             }
             .overlay(alignment: .topTrailing) {
                 HStack(spacing: 8) {

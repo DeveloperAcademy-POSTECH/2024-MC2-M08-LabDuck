@@ -10,8 +10,10 @@ import SwiftUI
 var allTags: [KPTag] = []
 
 struct TagPopupView: View {
+    @EnvironmentObject var document: KPBoardDocument
+    @Environment(\.undoManager) var undoManager
     @Binding var isEditingForTag: Bool
-    @Binding var node: KPNode
+    var node: KPNode
     @State private var hoveredForClosingTagView: Bool = false
     @State private var textForTags: String = ""
     @State private var previewTag: KPTag?
@@ -154,16 +156,14 @@ struct TagPopupView: View {
     
     private func createTag() {
         guard let previewTag = previewTag else { return }
-        node.tags.append(previewTag)
+        document.createTag(node.id, tag: previewTag, undoManager: undoManager, animation: .default)
         self.previewTag = nil
         self.textForTags = ""
         updateUniqueTags(with: previewTag)
     }
     
     private func deleteTag(_ tag: KPTag) {
-        if let index = node.tags.firstIndex(where: { $0.id == tag.id }) {
-            node.tags.remove(at: index)
-        }
+        document.deleteTag(node.id, tagID: tag.id, undoManager: undoManager, animation: .default)
     }
     
     private func updateUniqueTags(with tag: KPTag) {

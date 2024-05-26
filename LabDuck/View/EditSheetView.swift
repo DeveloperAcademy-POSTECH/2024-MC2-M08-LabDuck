@@ -100,7 +100,7 @@ struct EditSheetView: View {
                 Spacer()
             }
             if isEditingForTag {
-                TagPopupView(isEditingForTag: $isEditingForTag, node: $node)
+                TagPopupView(isEditingForTag: $isEditingForTag, node: node)
                     .transition(.slide)
                     .zIndex(1)
             }
