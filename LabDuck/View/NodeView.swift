@@ -79,7 +79,7 @@ struct NodeView: View {
                             DragGesture()
                                 .onChanged { value in
                                     let delta = -value.translation.width * 2
-                                    let newWidth = max(50, initialWidth + delta)
+                                    let newWidth = initialWidth + delta
                                     var updatedNode = node
                                     updatedNode.size.width = newWidth
                                     document.updateNode(node: updatedNode, undoManager: undoManager)
