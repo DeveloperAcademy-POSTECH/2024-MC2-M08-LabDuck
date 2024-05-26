@@ -157,7 +157,9 @@ struct MainView: View {
                 if board.viewType == .graph {
                     ToolbarItem(placement: .primaryAction) {
                         Button(action: {
-                            // 그래프 뷰에서 텍스트 박스 추가 기능 필요
+                            let center = calculateCenterCoordinate(.zero)
+                            let newText = KPText(position: CGPoint(x: center.x, y: center.y))
+                            document.createText(newText, undoManager: undoManager, animation: .default)
                         }, label: {
                             Image(systemName: "character.textbox")
                         })
