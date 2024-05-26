@@ -12,6 +12,12 @@ struct KPTag: Identifiable, Equatable, Codable, Hashable {
     var id: UUID
     var name: String
     var colorTheme: KPTagColor = KPTagColor.default
+
+    init(id: UUID = UUID(), name: String, colorTheme: KPTagColor? = nil) {
+            self.id = id
+            self.name = name
+            self.colorTheme = colorTheme ?? KPTagColor.random()
+        }
 }
 
 extension String {

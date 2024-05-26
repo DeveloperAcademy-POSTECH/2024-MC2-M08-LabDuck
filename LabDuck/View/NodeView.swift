@@ -197,32 +197,45 @@ struct NodeView: View {
         guard !searchText.isEmpty else {
             return Text(fullText)
         }
-        
-        let lowercasedFullText = fullText.lowercased()
-        let lowercasedSearchText = searchText.lowercased()
-        
-        let parts = lowercasedFullText.components(separatedBy: lowercasedSearchText)
-        
+
+        let ranges = rangesOfSubstring(fullText: fullText, searchText: searchText)
+
         var result = Text("")
-        
-        var lastIndex = fullText.startIndex
-        
-        for (index, part) in parts.enumerated() {
-            if let range = fullText.range(of: part, range: lastIndex..<fullText.endIndex) {
-                result = result + Text(fullText[range])
-                lastIndex = range.upperBound
+        var currentIndex = fullText.startIndex
+
+        for range in ranges {
+            if range.lowerBound > currentIndex {
+                let beforeMatch = fullText[currentIndex..<range.lowerBound]
+                result = result + Text(beforeMatch)
             }
-            
-            if index < parts.count - 1 {
-                if let range = fullText.range(of: searchText, options: .caseInsensitive, range: lastIndex..<fullText.endIndex) {
-                    result = result + Text(fullText[range]).bold().foregroundColor(.red)
-                    lastIndex = range.upperBound
-                }
-            }
+
+            let match = fullText[range]
+            result = result + Text(match).bold().foregroundColor(.red)
+
+            currentIndex = range.upperBound
         }
-        
+
+        if currentIndex < fullText.endIndex {
+            let remainingText = fullText[currentIndex..<fullText.endIndex]
+            result = result + Text(remainingText)
+        }
+
         return result
     }
+
+    func rangesOfSubstring(fullText: String, searchText: String) -> [Range<String.Index>] {
+        var ranges: [Range<String.Index>] = []
+        var lowercasedFullText = fullText
+        var searchRange: Range<String.Index>?
+
+        while let range = lowercasedFullText.range(of: searchText, options: .caseInsensitive, range: searchRange ?? lowercasedFullText.startIndex..<lowercasedFullText.endIndex) {
+            ranges.append(range)
+            searchRange = range.upperBound..<lowercasedFullText.endIndex
+        }
+
+        return ranges
+    }
+
     
     // MARK: - 노드음영여부 관리
     private func nodeContainsSearchText() -> Bool {
