@@ -41,7 +41,7 @@ struct NodeView: View {
 
             ZStack {
                 VStack(spacing: 0) {
-                    VStack(alignment: .center, spacing: 10) {
+                    VStack(alignment: .leading, spacing: 10) {
                         if isEditing {
                             SelectColorView()
                         }
