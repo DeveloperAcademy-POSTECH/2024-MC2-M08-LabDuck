@@ -40,6 +40,8 @@ struct NodeView: View {
     @State private var resizeOffset: CGPoint = .zero
     @State private var isNodeHovered: Bool = false
     
+    @State private var showAlert = false
+    
     var judgeConnection: (_ outputID: KPOutputPoint.ID, _ dragLocation: CGPoint) -> (KPOutputPoint.ID, KPInputPoint.ID)?
     var updatePreviewEdge: (_ sourceID: KPOutputPoint.ID, _ dragPoint: CGPoint?) -> ()
     
@@ -127,7 +129,9 @@ struct NodeView: View {
                         .frame(maxHeight: 28)
 
                     Button {
-                        document.removeNode(node.id, undoManager: undoManager, animation: .default)
+                        print("버튼 클릭")
+                        showAlert = true
+//                        document.removeNode(node.id, undoManager: undoManager, animation: .default)
                     } label: {
                         Image(systemName: "trash")
                             .frame(width: 32, height: 32)
@@ -147,6 +151,13 @@ struct NodeView: View {
                         .stroke(.gray.opacity(0.3), lineWidth: 1)
                 )
                 .padding(4)
+                .confirmationDialog("정말 삭제하시겠습니까?", isPresented: $showAlert, titleVisibility: .visible) {
+                        Button("네", role: .none)
+                        {   print("yes")
+                            document.removeNode(node.id, undoManager: undoManager, animation: .default)
+                        }
+                        Button("아니오", role: .cancel){}
+                    }.dialogSeverity(.critical)
             }
             .frame(minWidth: 50, maxWidth: node.size.width, minHeight: 50, maxHeight: .infinity)
             .shadow(color: .black.opacity(0.25), radius: 1.5, x: 0, y: 0)
