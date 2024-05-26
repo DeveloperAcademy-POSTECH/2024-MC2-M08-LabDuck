@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+var allTags: [KPTag] = []
+
 struct TagPopupView: View {
     @Binding var isEditingForTag: Bool
     @Binding var node: KPNode
@@ -14,7 +16,7 @@ struct TagPopupView: View {
     @State private var textForTags: String = ""
     @State private var previewTag: KPTag?
     
-    @Binding var uniqueTags: [KPTag]
+    @State private var uniqueTags: [KPTag] = []
 
     
     var body: some View {
@@ -115,9 +117,9 @@ struct TagPopupView: View {
                             .cornerRadius(6)
                         Spacer()
                         Button{
-                            deleteTag(tag)
+                            createTag()
                         }label: {
-                            Image(systemName: "trash").foregroundColor(.gray)
+                            Image(systemName: "plus.circle").foregroundColor(.gray)
                         }.buttonStyle(BorderlessButtonStyle())
                     }
                 }
@@ -128,16 +130,13 @@ struct TagPopupView: View {
         }
         .cornerRadius(6)
         .shadow(radius: 10)
-        .onAppear {
-                    // 뷰가 나타날 때 중복 제거
-                    node.tags = node.tags.removingDuplicates()
-                }
     }
     
     private func addPreviewTag() {
         guard !textForTags.isEmpty else { return }
         let newTagForPreview = KPTag(id: UUID(), name: textForTags, colorTheme: KPTagColor.random())
         previewTag = newTagForPreview
+        updateUniqueTags(with: newTagForPreview)
     }
     
     private func createTag() {
@@ -145,11 +144,20 @@ struct TagPopupView: View {
         node.tags.append(previewTag)
         self.previewTag = nil
         self.textForTags = ""
-                    
+        updateUniqueTags(with: previewTag)
     }
+    
     private func deleteTag(_ tag: KPTag) {
         if let index = node.tags.firstIndex(where: { $0.id == tag.id }) {
             node.tags.remove(at: index)
         }
     }
+    
+    private func updateUniqueTags(with tag: KPTag) {
+        let existingTagNames = uniqueTags.map { $0.name }
+            if !existingTagNames.contains(tag.name) {
+                uniqueTags.append(tag)
+            }
+    }
+  
 }

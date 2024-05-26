@@ -27,7 +27,7 @@ struct GraphView: View {
     // MARK: Combine
     @State var cancellabes = Set<AnyCancellable>()
     
-    @Binding var uniqueTags: [KPTag]
+//    @Binding var uniqueTags: [KPTag]
 
     var body: some View {
         ZStack {
@@ -46,7 +46,7 @@ struct GraphView: View {
             ForEach(self.$board.nodes) { node in
                 
                 NodeView(
-                    node: node, uniqueTags: $uniqueTags, clickingOutput: $clickingOutput,
+                    node: node, clickingOutput: $clickingOutput,
                     judgeConnection: self.judgeConnection(outputID:dragLocation:),
                     addEdge: self.addEdge(edge:),
                     updatePreviewEdge: self.updatePreviewEdge(from:to:)

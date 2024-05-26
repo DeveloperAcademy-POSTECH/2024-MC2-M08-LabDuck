@@ -25,7 +25,7 @@ struct MainDocumentView: View {
 
 struct MainView: View {
     @Binding var board: KPBoard
-    @State private var uniqueTags: [KPTag] = []
+//    @State private var uniqueTags: [KPTag] = []
 
     // MARK: - Zoom
     @State private var zoom = 1.0
@@ -110,7 +110,7 @@ struct MainView: View {
         GeometryReader { proxy in
             VStack{
                 if board.viewType == .graph {
-                    GraphView(board: $board, uniqueTags: $uniqueTags)
+                    GraphView(board: $board/*, uniqueTags: $uniqueTags*/)
                         .background(Rectangle().fill(Color.white).frame(width: 5000, height: 5000))
                         .offset(offsetValue)
                         .scaleEffect(scaleValue, anchor: .center)
@@ -121,7 +121,7 @@ struct MainView: View {
                             trackScrollWheel()
                         }
                 } else {
-                    TableView(board: $board, searchText: $searchText, uniqueTags: $uniqueTags)
+                    TableView(board: $board, searchText: $searchText/*, uniqueTags: $uniqueTags*/)
                 }
             }
             

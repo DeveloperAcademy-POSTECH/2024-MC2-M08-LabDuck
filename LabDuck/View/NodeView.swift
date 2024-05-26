@@ -18,7 +18,7 @@ struct NodeView: View {
     @State private var isEditing: Bool = false
     @State private var hovered: Bool = false
     @State private var hoveredForClosingTagView: Bool = false
-    @Binding var uniqueTags: [KPTag]
+//    @Binding var uniqueTags: [KPTag]
     
     @State private var isScrollDisabled: Bool = false
     
@@ -277,7 +277,7 @@ struct NodeView: View {
                 
                 //태그 팝업창
                 if isEditingForTag {
-                    TagPopupView(isEditingForTag: $isEditingForTag, node: $node, uniqueTags: $uniqueTags)
+                    TagPopupView(isEditingForTag: $isEditingForTag, node: $node)
                         .transition(.scale)
                         .zIndex(1)
                 }

@@ -62,7 +62,6 @@ struct KPBoard: Identifiable {
 
     public mutating func addNode(_ node: KPNode) {
         self.nodes.append(node)
-       
         
         
     }
