@@ -19,7 +19,8 @@ class CSVConvertManager {
     static private let keyMapping: [String: PartialKeyPath<KPNode>] = [
         "Name": \KPNode.unwrappedTitle,
         "Tags": \KPNode.tags,
-        "Text": \KPNode.unwrappedNote
+        "Text": \KPNode.unwrappedNote,
+        "URL" : \KPNode.url,
     ]
 
     static private func writableKeyPath<V>(from label: String, type: V.Type) -> WritableKeyPath<KPNode, V>? {
@@ -27,19 +28,28 @@ class CSVConvertManager {
         return keyPath as? WritableKeyPath<KPNode, V>
     }
 
-    static func dictionaryToKPNode(_ contents: [String: String]) -> KPNode {
+    static func addNodeToKPBoard(_ board: KPBoard, _ contents: [String: String]) -> KPBoard {
+        var board = board
         var node = KPNode()
         contents.forEach { key, value in
             if let writableKeyPath = writableKeyPath(from: key, type: String.self) {
                 node[keyPath: writableKeyPath] = value
             } else if let writableKeyPath = writableKeyPath(from: key, type: [KPTag].self) {
                 let values = value.components(separatedBy: ",")
-                node[keyPath: \.tags] = values.toKPTags()
+                values.forEach { name in
+                    if let tag = board.getTag(name) {
+                        node[keyPath: \.tags].append(tag.id)
+                    } else {
+                        let tag = board.createTag(name)
+                        node[keyPath: \.tags].append(tag.id)
+                    }
+                }
             } else {
                 print("writableKeyPath 없음")
             }
         }
         dump(node)
-        return node
+        board.addNode(node)
+        return board
     }
 }

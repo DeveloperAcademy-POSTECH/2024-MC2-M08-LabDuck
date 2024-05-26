@@ -43,13 +43,13 @@ extension Array<String> {
 }
 
 extension KPTag {
-    static var mockData: KPTag {
+    static let mockData: KPTag = {
         .init(id: UUID(), name: "tag1", colorTheme: KPTagColor.blue)
-    }
-    static var mockData1: KPTag {
+    }()
+    static let mockData1: KPTag = {
         .init(id: UUID(), name: "tag2", colorTheme: KPTagColor.gray)
-    }
-    static var mockData2: KPTag {
+    }()
+    static let mockData2: KPTag = {
         .init(id: UUID(), name: "tag3", colorTheme: KPTagColor.yellow)
-    }
+    }()
 }
