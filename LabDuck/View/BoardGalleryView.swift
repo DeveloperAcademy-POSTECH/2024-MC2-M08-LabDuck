@@ -117,16 +117,14 @@ struct BoardGalleryView: View {
                     let contents = try String(contentsOf: file, encoding: .utf8)
                     print(contents)
                     let dictionaryData = try CSVConvertManager.csvStringToDictionary(contents)
-                    let parsedNodes = dictionaryData.map { dictionary in
-                        CSVConvertManager.dictionaryToKPNode(dictionary)
-                    }
                     var newBoard = KPBoard.emptyData
-                    newBoard.addNodes(parsedNodes)
+                    dictionaryData.forEach { dictionary in
+                        newBoard = CSVConvertManager.addNodeToKPBoard(newBoard, dictionary)
+                    }
                     dump("newBoard : \(newBoard)")
                     let newBoardDocument = KPBoardDocument()
                     newBoardDocument.board = newBoard
                     newDocument { newBoardDocument }
-                    
                 } catch {
                     print(error.localizedDescription)
                 }

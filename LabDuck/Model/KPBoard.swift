@@ -16,21 +16,14 @@ struct KPBoard: Identifiable {
     var modifiedDate: Date
     var viewType: BoardViewType
     var previewImage: Data?
-    
-    var uniqueTags: [KPTag] {
-            var allTags: [KPTag] = []
-            for node in nodes {
-                allTags.append(contentsOf: node.tags)
-            }
-            return allTags.removingDuplicates()
-        }
+    var allTags: [KPTag]
 
     enum BoardViewType: String, CaseIterable, Codable, Hashable {
         case graph = "Graph View"
         case table = "Table View"
     }
 
-    init(id: UUID = UUID(), title: String, nodes: [KPNode], edges: [KPEdge], texts: [KPText], modifiedDate: Date, viewType: BoardViewType, previewImage: Data? = nil) {
+    init(id: UUID = UUID(), title: String, nodes: [KPNode], edges: [KPEdge], texts: [KPText], modifiedDate: Date, viewType: BoardViewType, previewImage: Data? = nil, allTags: [KPTag] = []) {
         self.id = id
         self.title = title
         self.nodes = nodes
@@ -39,7 +32,7 @@ struct KPBoard: Identifiable {
         self.modifiedDate = modifiedDate
         self.viewType = viewType
         self.previewImage = previewImage
-        
+        self.allTags = allTags
     }
 
     public mutating func addEdge(_ edge: KPEdge) {
@@ -84,7 +77,40 @@ struct KPBoard: Identifiable {
         self.modifiedDate = .now
     }
     
-    
+    public func getTag(_ name: String) -> KPTag? {
+        self.allTags.first(where: { $0.name == name })
+    }
+
+    public func getTag(_ id: KPTag.ID) -> KPTag? {
+        self.allTags.first(where: { $0.id == id })
+    }
+
+    public func getTags(_ nodeID: KPNode.ID) -> [KPTag] {
+        guard let node = self.nodes.first(where: { $0.id == nodeID }) else { return [] }
+        return node.tags
+            .compactMap { tagID in
+                getTag(tagID)
+            }
+    }
+
+    public func hasTag(_ nodeID: KPNode.ID, _ tagID: KPTag.ID) -> Bool {
+        guard let node = self.nodes.first(where: { $0.id == nodeID }) else { return false }
+        return node.tags.contains(where: { $0 == tagID })
+    }
+
+    public mutating func createTag(_ name: String) -> KPTag {
+        if let tag = getTag(name) {
+            return tag
+        } else {
+            let tag = KPTag(id: UUID(), name: name, colorTheme: .random())
+            self.allTags.append(tag)
+            return tag
+        }
+    }
+
+    public mutating func deleteTag(_ tagID: KPTag.ID) {
+        self.allTags.removeAll(where: { $0.id == tagID })
+    }
 }
 
 extension KPBoard: Equatable, Codable, Hashable {}

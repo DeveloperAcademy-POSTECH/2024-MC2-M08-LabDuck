@@ -127,7 +127,7 @@ struct MainView: View {
                             }
                         }
                 } else {
-                    TableView(board: $board, searchText: $searchText/*, uniqueTags: $uniqueTags*/)
+                    TableView(board: document.board, searchText: $searchText)
                 }
             }
             
