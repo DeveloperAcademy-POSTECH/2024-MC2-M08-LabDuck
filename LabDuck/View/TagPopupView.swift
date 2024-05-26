@@ -124,6 +124,19 @@ struct TagPopupView: View {
                     }
                 }
                 
+                Text("태그 선택 또는 생성").foregroundColor(.gray).font(.system(size:7)).padding(10)
+                
+//                ForEach() { tag in
+//                    HStack{
+//                        Text("#\(tag.name)")
+//                            .foregroundColor(.white)
+//                            .padding(EdgeInsets(top: 6, leading: 8, bottom: 6, trailing: 8))
+//                            .background(tag.colorTheme.backgroundColor)
+//                            .cornerRadius(6)
+//                        Spacer()
+//                    }
+//                }
+                
             }
             .frame(width:250)
             .background(Color.white)
