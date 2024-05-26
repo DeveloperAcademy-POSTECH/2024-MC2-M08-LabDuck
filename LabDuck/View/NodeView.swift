@@ -108,50 +108,45 @@ struct NodeView: View {
             }
             
             .overlay(alignment: .topTrailing) {
-                HStack(spacing: 8) {
-                    Spacer()
-                    Picker("", selection: $selectedAction) {
-                        Button {
-                            selectedAction = "Edit"
-                        } label: {
-                            Label("Edit", systemImage: isEditing ? "checkmark" : "square.and.pencil")
-                                .labelStyle(.iconOnly)
-                                .frame(width: 15, height: 15)
-                        }
-                        .tag("Edit")
-                        
-                        Button {
-                            selectedAction = "Delete"
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                                .labelStyle(.iconOnly)
-                                .frame(width: 15, height: 15)
-                        }
-                        .tag("Delete")
+                HStack(spacing: 2) {
+                    Button {
+                        isEditing.toggle()
+                    } label: {
+                        Image(systemName: isEditing ? "checkmark" : "square.and.pencil")
+                            .frame(width: 32, height: 32)
                     }
-                    .pickerStyle(SegmentedPickerStyle())
-                    .onChange(of: selectedAction) { newValue in
-                        switch newValue {
-                        case "Edit":
-                            print("edit버튼")
-                            isEditing.toggle()
-                            selectedAction = "normal"
-                            break
-                        case "Delete":
-                            print("delete버튼")
-                            document.removeNode(node.id, undoManager: undoManager, animation: .default)
-                            break
-                        default:
-                            break
-                        }
-                    }
-//                    .foregroundColor(.gray)
-                    .frame(width: 100)
-                    .scaleEffect(0.6)
-                    .background(.white.opacity(self.hovered ? 0.1 : 0.0))
+                    .buttonStyle(.borderless)
+                    .foregroundColor(.gray)
+                    .background(.gray.opacity(self.hovered ? 0.1 : 0.0))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
-                                        
+                    .onHover { hover in
+                        self.hovered = hover
+                    }
+
+                    Divider()
+                        .frame(maxHeight: 28)
+
+                    Button {
+                        document.removeNode(node.id, undoManager: undoManager, animation: .default)
+                    } label: {
+                        Image(systemName: "trash")
+                            .frame(width: 32, height: 32)
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundColor(.gray)
+                    .background(.gray.opacity(self.trashcanHovered ? 0.1 : 0.0))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .onHover { hover in
+                        self.trashcanHovered = hover
+                    }
                 }
+                .cornerRadius(10)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.gray.opacity(0.1))
+                        .stroke(.gray.opacity(0.3), lineWidth: 1)
+                )
+                .padding(4)
             }
             .frame(minWidth: 50, maxWidth: node.size.width, minHeight: 50, maxHeight: .infinity)
             .shadow(color: .black.opacity(0.25), radius: 1.5, x: 0, y: 0)
