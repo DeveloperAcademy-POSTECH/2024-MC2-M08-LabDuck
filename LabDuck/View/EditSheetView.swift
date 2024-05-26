@@ -17,6 +17,7 @@ struct EditSheetView: View {
     @State private var showAlert: Bool = false
 
     @State private var totalHeight: CGFloat = .zero
+    @State private var isHovered = false
 
     var body: some View {
         VStack {
@@ -205,45 +206,7 @@ struct EditSheetView: View {
         }
         .buttonStyle(BorderlessButtonStyle())
     }
-    
-//    private var tagsScrollView: some View {
-//        HStack {
-//            ScrollView(.horizontal) {
-//                HStack {
-//                    ForEach(document.board.getTags(node.id), id: \.id) { tag in
-//                        Button(action: {
-//                            isEditingForTag.toggle()
-//                        }) {
-//                            HStack {
-//                                Text("#\(tag.name)")
-//                                    .font(
-//                                        Font.custom("SF Pro", size: 13)
-//                                            .weight(.semibold)
-//                                    )
-//                                    .foregroundColor(.white)
-//                            }
-//                            .padding(6)
-//                            .background(tag.colorTheme.backgroundColor)
-//                            .cornerRadius(6)
-//                            .frame(height: 40)
-//                        }
-//                        .buttonStyle(BorderlessButtonStyle())
-//                    }
-//                }
-//            }
-//            Spacer()
-//        }
-//        .padding(.horizontal, 16)
-//        .padding(.vertical, 12)
-//        .frame(height: 40)
-//        .background(Color.white)
-//        .cornerRadius(6)
-//        .overlay(
-//            RoundedRectangle(cornerRadius: 6)
-//                .stroke(.black.opacity(0.1), lineWidth: 1)
-//        )
-//    }
-    
+
     private var colorSelectionView: some View {
         HStack(alignment: .center) {
             ForEach(KPColorTheme.allCases, id: \.self) { colorTheme in
@@ -332,11 +295,18 @@ struct EditSheetView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .background(Color(hex: 0xFBFBFB))
+            .background(isHovered ? Color(hex: 0xE0E0E0) : Color(hex: 0xFBFBFB))
             .cornerRadius(6)
             .frame(height: 40)
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(.black.opacity(0.1), lineWidth: 1)
+            )
         }
         .buttonStyle(BorderlessButtonStyle())
+        .onHover { hovering in
+                isHovered = hovering
+            }
     }
 }
 
