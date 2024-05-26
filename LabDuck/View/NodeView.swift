@@ -35,6 +35,7 @@ struct NodeView: View {
     @Binding var clickingOutput: Bool
     @Environment(\.searchText) private var searchText
     
+    @State private var selectedAction = "normal"
     @State private var initialWidth: CGFloat = 0
     @State private var resizeOffset: CGPoint = .zero
     @State private var isNodeHovered: Bool = false
@@ -107,7 +108,7 @@ struct NodeView: View {
             }
             
             .overlay(alignment: .topTrailing) {
-                HStack(spacing: 8) {
+                HStack(spacing: 2) {
                     Button {
                         isEditing.toggle()
                     } label: {
@@ -121,7 +122,10 @@ struct NodeView: View {
                     .onHover { hover in
                         self.hovered = hover
                     }
-                    
+
+                    Divider()
+                        .frame(maxHeight: 28)
+
                     Button {
                         document.removeNode(node.id, undoManager: undoManager, animation: .default)
                     } label: {
@@ -136,6 +140,13 @@ struct NodeView: View {
                         self.trashcanHovered = hover
                     }
                 }
+                .cornerRadius(10)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.gray.opacity(0.1))
+                        .stroke(.gray.opacity(0.3), lineWidth: 1)
+                )
+                .padding(4)
             }
             .frame(minWidth: 50, maxWidth: node.size.width, minHeight: 50, maxHeight: .infinity)
             .shadow(color: .black.opacity(0.25), radius: 1.5, x: 0, y: 0)

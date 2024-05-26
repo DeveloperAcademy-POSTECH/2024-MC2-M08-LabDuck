@@ -271,6 +271,8 @@ extension KPBoardDocument {
 
         undoManager?.registerUndo(withTarget: self) { doc in
             doc.replaceEdges(oldEdges, undoManager: undoManager)
+            
+            
         }
     }
 
