@@ -319,3 +319,33 @@ extension KPBoardDocument {
         }
     }
 }
+
+// MARK: - 보드
+extension KPBoardDocument {
+    func createTag(_ nodeID: KPNode.ID, tag: KPTag, undoManager: UndoManager?, animation: Animation? = .default) {
+        guard let nodeIndex = getIndex(nodeID) else { return }
+
+        withAnimation(animation) {
+            self.board.nodes[nodeIndex].tags.append(tag)
+        }
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            self.board.nodes[nodeIndex].tags.removeLast()
+        }
+    }
+
+    func deleteTag(_ nodeID: KPNode.ID, tagID: KPTag.ID, undoManager: UndoManager?, animation: Animation? = .default) {
+        guard let nodeIndex = getIndex(nodeID) else { return }
+
+        guard let originalTag = self.board.nodes[nodeIndex].tags.first(where: { $0.id == tagID }) else { return }
+
+
+        withAnimation(animation) {
+            self.board.nodes[nodeIndex].tags.removeAll { $0.id == tagID }
+        }
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.createTag(nodeID, tag: originalTag, undoManager: undoManager, animation: animation)
+        }
+    }
+}

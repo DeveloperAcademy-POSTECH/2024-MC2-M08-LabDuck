@@ -24,7 +24,11 @@ struct NodeView: View {
     @State private var hovered: Bool = false
     @State private var trashcanHovered: Bool = false
     @State private var hoveredForClosingTagView: Bool = false
+
+    @State private var isScrollDisabled: Bool = false
     
+    @State private var textViewHeight: CGFloat = 20
+
     @State private var textForTags: String = ""
     @State private var previewTag: KPTag?
     
@@ -65,11 +69,11 @@ struct NodeView: View {
                 .opacity((searchText == "" || nodeContainsSearchText()) ? 1 : 0.3)
                 
                 //태그 팝업창
-                //                if isEditingForTag {
-                //                    TagPopupView(isEditingForTag: $isEditingForTag, node: $node)
-                //                        .transition(.scale)
-                //                        .zIndex(1)
-                //                }
+                if isEditingForTag {
+                    TagPopupView(isEditingForTag: $isEditingForTag, node: node)
+                        .transition(.scale)
+                        .zIndex(1)
+                }
                 
                 if isNodeHovered {
                     Image(systemName: "arrow.left.and.right.circle")

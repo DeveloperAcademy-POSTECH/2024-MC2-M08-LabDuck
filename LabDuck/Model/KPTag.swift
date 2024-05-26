@@ -21,10 +21,24 @@ extension String {
     }
 }
 
+extension Array where Element == KPTag {
+    func removingDuplicates() -> [KPTag] {
+        var seen = Set<String>()
+        return self.filter { tag in
+            if seen.contains(tag.name) {
+                return false
+            } else {
+                seen.insert(tag.name)
+                return true
+            }
+        }
+    }
+}
+
 extension Array<String> {
     // 추후 태그 생성 방식에 대해 더 논의
     func toKPTags() -> [KPTag] {
-        self.map { $0.toKPTag() }
+        self.map { $0.toKPTag() }.removingDuplicates()
     }
 }
 

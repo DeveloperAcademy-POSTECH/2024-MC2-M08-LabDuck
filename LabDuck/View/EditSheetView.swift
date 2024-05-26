@@ -8,6 +8,7 @@ struct EditSheetView: View {
     @State private var relatedNodes: [KPNode] = []
     @State private var isEditingForTag: Bool = false
     let findNodes: (KPNode) -> [KPNode]
+//    @Binding var uniqueTags: [KPTag]
     
     var body: some View {
         VStack {
@@ -99,7 +100,7 @@ struct EditSheetView: View {
                 Spacer()
             }
             if isEditingForTag {
-                TagPopupView(isEditingForTag: $isEditingForTag, node: $node)
+                TagPopupView(isEditingForTag: $isEditingForTag, node: node)
                     .transition(.slide)
                     .zIndex(1)
             }
