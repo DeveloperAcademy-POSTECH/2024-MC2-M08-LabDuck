@@ -13,6 +13,7 @@ struct TextView: View {
     var text: KPText
     @State private var isEditing: Bool = false
     @State private var tempText: String = ""
+    @Environment(\.searchText) private var searchText
 
     var body: some View {
         ZStack {
@@ -44,7 +45,7 @@ struct TextView: View {
                     }
                 }
             } else {
-                Text(text.unwrappedText.isEmpty ? "type anything..." : text.unwrappedText)
+                HighlightText(fullText: text.unwrappedText.isEmpty ? "type anything..." : text.unwrappedText, searchText: searchText)
                     .onTapGesture(count: 1) {
                         self.isEditing = true
                     }
@@ -54,6 +55,49 @@ struct TextView: View {
             self.tempText = self.text.unwrappedText
         }
     }
+
+    func HighlightText(fullText: String, searchText: String) -> Text {
+        guard !searchText.isEmpty else {
+            return Text(fullText)
+        }
+
+        let ranges = rangesOfSubstring(fullText: fullText, searchText: searchText)
+
+        var result = Text("")
+        var currentIndex = fullText.startIndex
+
+        for range in ranges {
+            if range.lowerBound > currentIndex {
+                let beforeMatch = fullText[currentIndex..<range.lowerBound]
+                result = result + Text(beforeMatch)
+            }
+
+            let match = fullText[range]
+            result = result + Text(match).bold().foregroundColor(.red)
+
+            currentIndex = range.upperBound
+        }
+
+        if currentIndex < fullText.endIndex {
+            let remainingText = fullText[currentIndex..<fullText.endIndex]
+            result = result + Text(remainingText)
+        }
+
+        return result
+    }
+
+    func rangesOfSubstring(fullText: String, searchText: String) -> [Range<String.Index>] {
+        var ranges: [Range<String.Index>] = []
+        var searchRange: Range<String.Index>?
+
+        while let range = fullText.range(of: searchText, options: .caseInsensitive, range: searchRange ?? fullText.startIndex..<fullText.endIndex) {
+            ranges.append(range)
+            searchRange = range.upperBound..<fullText.endIndex
+        }
+
+        return ranges
+    }
+
 }
 
 extension TextView: Equatable {

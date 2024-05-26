@@ -60,6 +60,7 @@ struct GraphView: View {
             
             ForEach(self.board.texts) { text in
                 TextView(text: text)
+                    .searchText(searchText)
                     .offset(x: text.position.x, y: text.position.y)
                     .draggable(onEnded: { offset in
                         let newPosition = text.position + offset
