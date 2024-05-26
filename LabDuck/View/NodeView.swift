@@ -48,16 +48,63 @@ struct NodeView: View {
     var body: some View {
         HStack {
             InputPointsView()
-            
-            ZStack {
+            ZStack() {
                 VStack(spacing: 0) {
-                    VStack(alignment: .leading, spacing: 10) {
+                    VStack(alignment: .center, spacing: 10) {
+                        ZStack{
                         if isEditing {
-                            SelectColorView()
+                            HStack{
+                                    SelectColorView()
+                                }
+                            }
+                            Spacer()
+                            HStack(alignment:.top) {
+                                Spacer()
+                                Spacer()
+                                
+                                Button {
+                                    isEditing.toggle()
+                                } label: {
+                                    Image(systemName: isEditing ? "checkmark" : "square.and.pencil")
+                                        .frame(width: 32, height: 32)
+                                }
+                                .buttonStyle(.borderless)
+                                .foregroundColor(.gray)
+                                .background(.gray.opacity(self.hovered ? 0.1 : 0.0))
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .onHover { hover in
+                                    self.hovered = hover
+                                }
+
+                                Button {
+                                    //print("버튼 클릭 노드")
+                                    showAlert = true
+                                    //document.removeNode(node.id, undoManager: undoManager, animation: .default)
+                                } label: {
+                                    Image(systemName: "trash")
+                                        .frame(width: 32, height: 32)
+                                }
+                                .buttonStyle(.borderless)
+                                .foregroundColor(.gray)
+                                .background(.gray.opacity(self.trashcanHovered ? 0.1 : 0.0))
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .onHover { hover in
+                                    self.trashcanHovered = hover
+                                }
+                            }
                         }
+                            .cornerRadius(10)
+                            .padding(10)
+                            .confirmationDialog("정말 삭제하시겠습니까?", isPresented: $showAlert, titleVisibility: .visible) {
+                                    Button("네", role: .none)
+                                    {   //print("yes")
+                                        document.removeNode(node.id, undoManager: undoManager, animation: .default)
+                                    }
+                                    Button("아니오", role: .cancel){}
+                                }.dialogSeverity(.critical)
+
                         TitleTextField()
                         NoteTextEditor()
-                        
                         Divider().background(.gray)
                         
                         LinkTextField()
@@ -67,9 +114,11 @@ struct NodeView: View {
                     
                     TagsView()
                         .background(.white)
+                    
                 }
                 .cornerRadius(10)
                 .opacity((searchText == "" || nodeContainsSearchText()) ? 1 : 0.3)
+
                 
                 //태그 팝업창
                 if isEditingForTag {
@@ -109,60 +158,9 @@ struct NodeView: View {
                 isNodeHovered = hovering
             }
             
-            .overlay(alignment: .topTrailing) {
-                HStack(spacing: 2) {
-                    Button {
-                        isEditing.toggle()
-                    } label: {
-                        Image(systemName: isEditing ? "checkmark" : "square.and.pencil")
-                            .frame(width: 32, height: 32)
-                    }
-                    .buttonStyle(.borderless)
-                    .foregroundColor(.gray)
-                    .background(.gray.opacity(self.hovered ? 0.1 : 0.0))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .onHover { hover in
-                        self.hovered = hover
-                    }
-
-                    Divider()
-                        .frame(maxHeight: 28)
-
-                    Button {
-                        print("버튼 클릭")
-                        showAlert = true
-//                        document.removeNode(node.id, undoManager: undoManager, animation: .default)
-                    } label: {
-                        Image(systemName: "trash")
-                            .frame(width: 32, height: 32)
-                    }
-                    .buttonStyle(.borderless)
-                    .foregroundColor(.gray)
-                    .background(.gray.opacity(self.trashcanHovered ? 0.1 : 0.0))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .onHover { hover in
-                        self.trashcanHovered = hover
-                    }
-                }
-                .cornerRadius(10)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.gray.opacity(0.1))
-                        .stroke(.gray.opacity(0.3), lineWidth: 1)
-                )
-                .padding(4)
-                .confirmationDialog("정말 삭제하시겠습니까?", isPresented: $showAlert, titleVisibility: .visible) {
-                        Button("네", role: .none)
-                        {   print("yes")
-                            document.removeNode(node.id, undoManager: undoManager, animation: .default)
-                        }
-                        Button("아니오", role: .cancel){}
-                    }.dialogSeverity(.critical)
-            }
             .frame(minWidth: 50, maxWidth: node.size.width, minHeight: 50, maxHeight: .infinity)
             .shadow(color: .black.opacity(0.25), radius: 1.5, x: 0, y: 0)
             .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 4)
-            
             OutputPointsView()
         }
         .onChange(of: isEditing) { oldValue, newValue in
@@ -198,14 +196,7 @@ struct NodeView: View {
         previewTag = newTagForPreview
     }
     
-    //KPNode에 새 태그 정보 추가
-    //    private func createTag() {
-    //        guard let previewTag = previewTag else { return }
-    //        node.tags.append(previewTag)
-    //        self.previewTag = nil
-    //        self.textForTags = ""
-    //    }
-    
+
     private func judgeConnection(with location: CGPoint) -> (KPOutputPoint.ID, KPInputPoint.ID)? {
         if let currentOutputPoint {
             return self.judgeConnection(currentOutputPoint, location)
