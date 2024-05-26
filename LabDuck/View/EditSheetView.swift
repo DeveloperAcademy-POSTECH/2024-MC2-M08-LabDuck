@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct EditSheetView: View {
+    @EnvironmentObject var document: KPBoardDocument
+    @Environment(\.undoManager) var undoManager
     @Binding var node: KPNode
     @Binding var board: KPBoard
     @Binding var isSheet: Bool
@@ -43,7 +45,7 @@ struct EditSheetView: View {
             Spacer()
             
             Button(action: {
-                //삭제 기능을 추가해요
+                document.removeNode(node.id, undoManager: undoManager, animation: .default)
             }) {
                 Image(systemName: "trash")
                     .frame(width: 20, height: 20)

@@ -20,7 +20,11 @@ struct KPNode: Identifiable, Equatable, Codable, Hashable {
                 position.y = min(max(position.y, -1800), 1800)
             }
         }
-    var size: CGSize
+    var size: CGSize {
+            didSet {
+                size.width = min(max(size.width, 240), 612)
+            }
+        }
     var inputPoints: [KPInputPoint] = []
     var outputPoints: [KPOutputPoint] = []
 
