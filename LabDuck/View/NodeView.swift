@@ -73,16 +73,26 @@ struct NodeView: View {
                 
                 if isNodeHovered {
                     Image(systemName: "arrow.left.and.right.circle")
-                        .frame(width: 10, height: 10)
+                        .imageScale(.large)
                         .offset(x: -node.size.width / 2, y: 0)
-                        .draggable(offset: $resizeOffset) { offset in
-                            let delta = -offset.x
-                            let newWidth = max(50, initialWidth + delta)
-                            var updatedNode = node
-                            updatedNode.size.width = newWidth
-                            document.updateNode(node: updatedNode, undoManager: undoManager)
-                            let _ = print(delta)
-                        }
+                        .gesture(
+                            DragGesture()
+                                .onChanged { value in
+                                    let delta = -value.translation.width
+                                    let newWidth = max(50, initialWidth + delta)
+                                    var updatedNode = node
+                                    updatedNode.size.width = newWidth
+                                    document.updateNode(node: updatedNode, undoManager: undoManager)
+                                }
+                                .onEnded { value in
+                                    let delta = -value.translation.width
+                                    let newWidth = max(50, initialWidth + delta)
+                                    var updatedNode = node
+                                    updatedNode.size.width = newWidth
+                                    document.updateNode(node: updatedNode, undoManager: undoManager)
+                                    initialWidth = updatedNode.size.width
+                                }
+                        )
                         .onAppear {
                             initialWidth = node.size.width
                         }
