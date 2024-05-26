@@ -82,6 +82,8 @@ extension KPBoardDocument {
 
         let original = self.board.nodes[index].title
 
+        if original == title { return }
+
         self.board.nodes[index].title = title
 
         undoManager?.registerUndo(withTarget: self) { doc in
@@ -346,4 +348,39 @@ extension KPBoardDocument {
             }
         }
     }
+
+    func updateBoard(_ oldBoard: KPBoard, _ newBoard: KPBoard, undoManager: UndoManager?, animation: Animation? = .default) {
+        withAnimation(animation) {
+            self.board = newBoard
+        }
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.board = oldBoard
+        }
+    }
+
+    func replaceBoard(_ newBoard: KPBoard, undoManager: UndoManager?, animation: Animation? = .default) {
+        let oldBoard = self.board
+
+        withAnimation(animation) {
+            self.board = newBoard
+        }
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.replaceBoard(oldBoard, undoManager: undoManager, animation: animation)
+        }
+    }
+
+    func replaceNodes(_ newNodes: [KPNode], undoManager: UndoManager?, animation: Animation? = .default) {
+        let oldNodes = self.board.nodes
+
+        withAnimation(animation) {
+            self.board.nodes = newNodes
+        }
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.replaceNodes(oldNodes, undoManager: undoManager, animation: animation)
+        }
+    }
+
 }

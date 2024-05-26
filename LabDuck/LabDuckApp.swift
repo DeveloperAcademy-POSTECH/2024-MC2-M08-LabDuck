@@ -22,5 +22,6 @@ struct LabDuckApp: App {
                 url: configuration.fileURL
             )
         }
+        .defaultSize(width: 1280, height: 720)
     }
 }

@@ -122,7 +122,7 @@ struct MainView: View {
                             }
                         }
                 } else {
-                    TableView(board: $board, searchText: $searchText)
+                    TableView(board: document.board, searchText: $searchText)
                 }
             }
             
