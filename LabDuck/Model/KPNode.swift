@@ -22,7 +22,7 @@ struct KPNode: Identifiable, Equatable, Codable, Hashable {
         }
     var size: CGSize {
             didSet {
-                size.width = min(max(size.width, 240), 612)
+                size.width = min(max(size.width, 320), 612)
             }
         }
     var inputPoints: [KPInputPoint] = []
