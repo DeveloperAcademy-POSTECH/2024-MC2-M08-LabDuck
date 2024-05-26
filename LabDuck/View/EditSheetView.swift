@@ -46,9 +46,8 @@ struct EditSheetView: View {
             Spacer()
             
             Button(action: {
+                //print("테이블")
                 showAlert = true
-
-
             }) {
                 Image(systemName: "trash")
                     .frame(width: 20, height: 20)

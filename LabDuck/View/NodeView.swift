@@ -48,28 +48,174 @@ struct NodeView: View {
     var body: some View {
         HStack {
             InputPointsView()
-            
-            ZStack {
+            ZStack() {
                 VStack(spacing: 0) {
                     VStack(alignment: .center, spacing: 10) {
+                        ZStack{
+                            
                         if isEditing {
-                            SelectColorView()
-                        }
+                            HStack{
+                                //if isEditing {
+                                    SelectColorView()
+                                }
+                            }
+//                                TitleTextField()
+//                                NoteTextEditor()
+//                                
+//                                Divider().background(.gray)
+//                                
+//                                LinkTextField()
+//                           
+                            
+                            Spacer()
+                            
+                            HStack(alignment:.top) {
+                                Spacer()
+                                Spacer()
+                                
+                                Button {
+                                    isEditing.toggle()
+                                } label: {
+                                    Image(systemName: isEditing ? "checkmark" : "square.and.pencil")
+                                        .frame(width: 32, height: 32)
+                                }
+                                .buttonStyle(.borderless)
+                                .foregroundColor(.gray)
+                                .background(.gray.opacity(self.hovered ? 0.1 : 0.0))
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .onHover { hover in
+                                    self.hovered = hover
+                                }
+
+                                //Divider()
+                                    //.frame(maxHeight: 28)
+                                Button {
+                                    print("버튼 클릭 노드")
+                                    showAlert = true
+                                    //                        document.removeNode(node.id, undoManager: undoManager, animation: .default)
+                                } label: {
+                                    Image(systemName: "trash")
+                                        .frame(width: 32, height: 32)
+                                }
+                                .buttonStyle(.borderless)
+                                .foregroundColor(.gray)
+                                .background(.gray.opacity(self.trashcanHovered ? 0.1 : 0.0))
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .onHover { hover in
+                                    self.trashcanHovered = hover
+                                }
+                            }
+                        }//여기까지 제트스택으로
+                            .cornerRadius(10)
+//                            .background(
+//                                RoundedRectangle(cornerRadius: 10)
+//                                    .fill(Color.gray.opacity(0.1))
+//                                    .stroke(.gray.opacity(0.3), lineWidth: 1)
+//                                    .frame(width: 100, height: 40)
+//                            )
+                        
+                            .padding(10)
+                            .confirmationDialog("정말 삭제하시겠습니까?", isPresented: $showAlert, titleVisibility: .visible) {
+                                    Button("네", role: .none)
+                                    {   print("yes")
+                                        document.removeNode(node.id, undoManager: undoManager, animation: .default)
+                                    }
+                                    Button("아니오", role: .cancel){}
+                                }.dialogSeverity(.critical)
+
+                        
+                        
+                        
                         TitleTextField()
                         NoteTextEditor()
                         
                         Divider().background(.gray)
                         
                         LinkTextField()
+                   
+                        
+//                        VStack{
+//                            if isEditing {
+//                                SelectColorView()
+//                            }
+//                            TitleTextField()
+//                            NoteTextEditor()
+//
+//                            Divider().background(.gray)
+//
+//                            LinkTextField()
+//                        }
+//
+                        
+                        
+                        
+                        
                     }
                     .padding(20)
                     .background(node.colorTheme.backgroundColor)
                     
                     TagsView()
                         .background(.white)
+                    
+//                    ZStack{
+//                        
+//                        HStack(spacing: 2) {
+//                            Button {
+//                                isEditing.toggle()
+//                            } label: {
+//                                Image(systemName: isEditing ? "checkmark" : "square.and.pencil")
+//                                    .frame(width: 32, height: 32)
+//                            }
+//                            .buttonStyle(.borderless)
+//                            .foregroundColor(.gray)
+//                            .background(.gray.opacity(self.hovered ? 0.1 : 0.0))
+//                            .clipShape(RoundedRectangle(cornerRadius: 10))
+//                            .onHover { hover in
+//                                self.hovered = hover
+//                            }
+//
+//                            Divider()
+//                                .frame(maxHeight: 28)
+//                            Button {
+//                                print("버튼 클릭 노드")
+//                                showAlert = true
+//                                //                        document.removeNode(node.id, undoManager: undoManager, animation: .default)
+//                            } label: {
+//                                Image(systemName: "trash")
+//                                    .frame(width: 32, height: 32)
+//                            }
+//                            .buttonStyle(.borderless)
+//                            .foregroundColor(.gray)
+//                            .background(.gray.opacity(self.trashcanHovered ? 0.1 : 0.0))
+//                            .clipShape(RoundedRectangle(cornerRadius: 10))
+//                            .onHover { hover in
+//                                self.trashcanHovered = hover
+//                            }
+//                        }.position(x:170,y:-100)
+//                            .frame()
+//                    }//여기까지 제트스택으로
+//                        .cornerRadius(10)
+//                        .background(
+//                            RoundedRectangle(cornerRadius: 10)
+//                                .fill(Color.gray.opacity(0.1))
+//                                .stroke(.gray.opacity(0.3), lineWidth: 1)
+//                        )
+//                        .padding(4)
+//                        .confirmationDialog("정말 삭제하시겠습니까?", isPresented: $showAlert, titleVisibility: .visible) {
+//                                Button("네", role: .none)
+//                                {   print("yes")
+//                                    document.removeNode(node.id, undoManager: undoManager, animation: .default)
+//                                }
+//                                Button("아니오", role: .cancel){}
+//                            }.dialogSeverity(.critical)
+                        
+                        
+                    //}.position(x:170, y:-100)
+                    //제트스택
                 }
                 .cornerRadius(10)
                 .opacity((searchText == "" || nodeContainsSearchText()) ? 1 : 0.3)
+
                 
                 //태그 팝업창
                 if isEditingForTag {
@@ -108,61 +254,62 @@ struct NodeView: View {
             .onHover { hovering in
                 isNodeHovered = hovering
             }
-            
-            .overlay(alignment: .topTrailing) {
-                HStack(spacing: 2) {
-                    Button {
-                        isEditing.toggle()
-                    } label: {
-                        Image(systemName: isEditing ? "checkmark" : "square.and.pencil")
-                            .frame(width: 32, height: 32)
-                    }
-                    .buttonStyle(.borderless)
-                    .foregroundColor(.gray)
-                    .background(.gray.opacity(self.hovered ? 0.1 : 0.0))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .onHover { hover in
-                        self.hovered = hover
-                    }
-
-                    Divider()
-                        .frame(maxHeight: 28)
-
-                    Button {
-                        print("버튼 클릭")
-                        showAlert = true
-//                        document.removeNode(node.id, undoManager: undoManager, animation: .default)
-                    } label: {
-                        Image(systemName: "trash")
-                            .frame(width: 32, height: 32)
-                    }
-                    .buttonStyle(.borderless)
-                    .foregroundColor(.gray)
-                    .background(.gray.opacity(self.trashcanHovered ? 0.1 : 0.0))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .onHover { hover in
-                        self.trashcanHovered = hover
-                    }
-                }
-                .cornerRadius(10)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.gray.opacity(0.1))
-                        .stroke(.gray.opacity(0.3), lineWidth: 1)
-                )
-                .padding(4)
-                .confirmationDialog("정말 삭제하시겠습니까?", isPresented: $showAlert, titleVisibility: .visible) {
-                        Button("네", role: .none)
-                        {   print("yes")
-                            document.removeNode(node.id, undoManager: undoManager, animation: .default)
-                        }
-                        Button("아니오", role: .cancel){}
-                    }.dialogSeverity(.critical)
-            }
+            //.overlay(alignment:.topTrailing) {
+                
+//                HStack(spacing: 2) {
+//                    Button {
+//                        isEditing.toggle()
+//                    } label: {
+//                        Image(systemName: isEditing ? "checkmark" : "square.and.pencil")
+//                            .frame(width: 32, height: 32)
+//                    }
+//                    .buttonStyle(.borderless)
+//                    .foregroundColor(.gray)
+//                    .background(.gray.opacity(self.hovered ? 0.1 : 0.0))
+//                    .clipShape(RoundedRectangle(cornerRadius: 10))
+//                    .onHover { hover in
+//                        self.hovered = hover
+//                    }
+//                    
+//
+//                    Divider()
+//                        .frame(maxHeight: 28)
+//
+//                    Button {
+//                        print("버튼 클릭 노드")
+//                        showAlert = true
+////                        document.removeNode(node.id, undoManager: undoManager, animation: .default)
+//                    } label: {
+//                        Image(systemName: "trash")
+//                            .frame(width: 32, height: 32)
+//                    }
+//                    .buttonStyle(.borderless)
+//                    .foregroundColor(.gray)
+//                    .background(.gray.opacity(self.trashcanHovered ? 0.1 : 0.0))
+//                    .clipShape(RoundedRectangle(cornerRadius: 10))
+//                    .onHover { hover in
+//                        self.trashcanHovered = hover
+//                    }
+//                }
+//                .cornerRadius(10)
+//                .background(
+//                    RoundedRectangle(cornerRadius: 10)
+//                        .fill(Color.gray.opacity(0.1))
+//                        .stroke(.gray.opacity(0.3), lineWidth: 1)
+//                )
+//                .padding(4)
+//                .confirmationDialog("정말 삭제하시겠습니까?", isPresented: $showAlert, titleVisibility: .visible) {
+//                        Button("네", role: .none)
+//                        {   print("yes")
+//                            document.removeNode(node.id, undoManager: undoManager, animation: .default)
+//                        }
+//                        Button("아니오", role: .cancel){}
+//                    }.dialogSeverity(.critical)
+            //}overlay
+            //.offset(x: 50, y:50)
             .frame(minWidth: 50, maxWidth: node.size.width, minHeight: 50, maxHeight: .infinity)
             .shadow(color: .black.opacity(0.25), radius: 1.5, x: 0, y: 0)
             .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 4)
-            
             OutputPointsView()
         }
         .onChange(of: isEditing) { oldValue, newValue in
