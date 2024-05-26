@@ -27,7 +27,7 @@ struct GraphView: View {
     // MARK: Combine
     @State var cancellabes = Set<AnyCancellable>()
     
-    @State private var uniqueTags: [KPTag] = []
+    @Binding var uniqueTags: [KPTag]
 
     var body: some View {
         ZStack {
@@ -44,7 +44,7 @@ struct GraphView: View {
                 }
             }
             ForEach(self.$board.nodes) { node in
-
+                
                 NodeView(
                     node: node, uniqueTags: $uniqueTags, clickingOutput: $clickingOutput,
                     judgeConnection: self.judgeConnection(outputID:dragLocation:),
@@ -85,7 +85,6 @@ struct GraphView: View {
                 }
                 selectedEdgeID = nil
             }
-            uniqueTags = board.nodes.flatMap { $0.tags }.removingDuplicates()
         }
     }
 

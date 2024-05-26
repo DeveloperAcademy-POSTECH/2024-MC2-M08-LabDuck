@@ -23,12 +23,12 @@ extension String {
 
 extension Array where Element == KPTag {
     func removingDuplicates() -> [KPTag] {
-        var seenNames = Set<String>()
+        var seen = Set<String>()
         return self.filter { tag in
-            if seenNames.contains(tag.name) {
+            if seen.contains(tag.name) {
                 return false
             } else {
-                seenNames.insert(tag.name)
+                seen.insert(tag.name)
                 return true
             }
         }

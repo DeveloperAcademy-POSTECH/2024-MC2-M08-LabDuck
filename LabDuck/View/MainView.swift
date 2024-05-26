@@ -9,10 +9,14 @@ import SwiftUI
 import Combine
 
 struct MainDocumentView: View {
+    
     @EnvironmentObject var document: KPBoardDocument
+    
+    
     init(url: URL?) {
         UserDefaultsCenter.shared.setDocument(url)
         NotificationCenter.default.sendDocumentsChanged()
+        
     }
     var body: some View {
         MainView(board: $document.board)
@@ -21,6 +25,7 @@ struct MainDocumentView: View {
 
 struct MainView: View {
     @Binding var board: KPBoard
+    @State private var uniqueTags: [KPTag] = []
 
     // MARK: - Zoom
     @State private var zoom = 1.0
@@ -105,7 +110,7 @@ struct MainView: View {
         GeometryReader { proxy in
             VStack{
                 if board.viewType == .graph {
-                    GraphView(board: $board)
+                    GraphView(board: $board, uniqueTags: $uniqueTags)
                         .background(Rectangle().fill(Color.white).frame(width: 5000, height: 5000))
                         .offset(offsetValue)
                         .scaleEffect(scaleValue, anchor: .center)
@@ -116,7 +121,7 @@ struct MainView: View {
                             trackScrollWheel()
                         }
                 } else {
-                    TableView(board: $board, searchText: $searchText)
+                    TableView(board: $board, searchText: $searchText, uniqueTags: $uniqueTags)
                 }
             }
             
@@ -198,6 +203,6 @@ extension MainView: Equatable {
     }
 }
 
-#Preview {
-    MainView(board: .constant(.mockData))
-}
+//#Preview {
+//    MainView(board: .constant(.mockData))
+//}

@@ -15,6 +15,7 @@ struct TagPopupView: View {
     @State private var previewTag: KPTag?
     
     @Binding var uniqueTags: [KPTag]
+
     
     var body: some View {
         VStack (alignment:.leading,spacing: 0){
@@ -144,6 +145,7 @@ struct TagPopupView: View {
         node.tags.append(previewTag)
         self.previewTag = nil
         self.textForTags = ""
+                    
     }
     private func deleteTag(_ tag: KPTag) {
         if let index = node.tags.firstIndex(where: { $0.id == tag.id }) {

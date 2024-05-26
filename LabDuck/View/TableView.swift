@@ -17,6 +17,8 @@ struct TableView: View {
     @State private var editingNode: KPNode = KPNode()
     @State private var editingNodeID: KPNode.ID?
     
+    @Binding var uniqueTags: [KPTag]
+    
     var body: some View {
         VStack{
             Table(of: KPNode.self, selection: $selection, sortOrder: $sortOrder) {
@@ -108,7 +110,7 @@ struct TableView: View {
             .searchable(text: $searchText)
             .inspector(isPresented: $isSheet) {
                 if let editingNodeID = editingNodeID, let editingNodeIndex = board.nodes.firstIndex(where: { $0.id == editingNodeID }) {
-                    EditSheetView(node: $board.nodes[editingNodeIndex], board: $board, isSheet: $isSheet,selection: $selection, findNodes: findNodes)
+                    EditSheetView(node: $board.nodes[editingNodeIndex], board: $board, isSheet: $isSheet,selection: $selection, findNodes: findNodes, uniqueTags: $uniqueTags)
                         .inspectorColumnWidth(min: 320, ideal: 320, max: 900)
                 }
                 
@@ -178,7 +180,7 @@ struct TableView: View {
 }
 
 
-    
-#Preview {
-    TableView(board: .constant(.mockData), searchText: .constant(""))
-}
+//    
+//#Preview {
+//    TableView(board: .constant(.mockData), searchText: .constant(""))
+//}
