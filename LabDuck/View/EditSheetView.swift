@@ -3,15 +3,18 @@ import SwiftUI
 struct EditSheetView: View {
     @EnvironmentObject var document: KPBoardDocument
     @Environment(\.undoManager) var undoManager
-    @Binding var node: KPNode
-    @Binding var board: KPBoard
+    var node: KPNode
     @Binding var isSheet: Bool
     @Binding var selection: Set<KPNode.ID>
     @State private var relatedNodes: [KPNode] = []
     @State private var isEditingForTag: Bool = false
     let findNodes: (KPNode) -> [KPNode]
-    //    @Binding var uniqueTags: [KPTag]
-    @State private var showAlert = false
+
+    @State private var tempNodeTitle: String = ""
+    @State private var tempNodeNote: String = ""
+    @State private var tempNodeURL: String = ""
+
+    @State private var showAlert: Bool = false
 
     var body: some View {
         VStack {
@@ -36,6 +39,9 @@ struct EditSheetView: View {
         }
         .onChange(of: node.id) { _, _ in
             relatedNodes = findNodes(node)
+            tempNodeTitle = self.node.unwrappedTitle
+            tempNodeNote = self.node.unwrappedNote
+            tempNodeURL = self.tempNodeURL
         }
         
         colorSelectionView
@@ -75,22 +81,34 @@ struct EditSheetView: View {
     private var titleSection: some View {
         Section(header: sectionHeader("Title")) {
             styledTextEditor(
-                text: $node.unwrappedTitle,
+                text: $tempNodeTitle,
                 lineLimit: 3,
                 fontSize: 15,
                 height: 84
             )
+            .onAppear {
+                tempNodeTitle = node.unwrappedTitle
+            }
+            .onChange(of: tempNodeTitle) { _, newValue in
+                document.updateNode(node.id, title: newValue, undoManager: undoManager)
+            }
         }
     }
     
     private var noteSection: some View {
         Section(header: sectionHeader("Note")) {
             styledTextEditor(
-                text: $node.unwrappedNote,
+                text: $tempNodeNote,
                 lineLimit: 10,
                 fontSize: 13,
                 height: 100
             )
+            .onAppear {
+                tempNodeNote = node.unwrappedNote
+            }
+            .onChange(of: tempNodeNote) { _, newValue in
+                document.updateNode(node.id, note: newValue, undoManager: undoManager)
+            }
         }
     }
     
@@ -134,11 +152,17 @@ struct EditSheetView: View {
     private var urlSection: some View {
         Section(header: sectionHeader("URL")) {
             styledTextEditor(
-                text: $node.unwrappedURL,
+                text: $tempNodeURL,
                 lineLimit: 2,
                 fontSize: 13,
                 height: 40
             )
+            .onAppear {
+                tempNodeURL = node.unwrappedURL
+            }
+            .onChange(of: tempNodeURL) { _, newValue in
+                document.updateNode(node.id, url: newValue, undoManager: undoManager)
+            }
         }
     }
     
@@ -171,7 +195,7 @@ struct EditSheetView: View {
         HStack {
             ScrollView(.horizontal) {
                 HStack {
-                    ForEach(node.tags, id: \.id) { tag in
+                    ForEach(document.board.getTags(node.id), id: \.id) { tag in
                         Button(action: {
                             isEditingForTag.toggle()
                         }) {
@@ -209,7 +233,7 @@ struct EditSheetView: View {
         HStack(alignment: .center) {
             ForEach(KPColorTheme.allCases, id: \.self) { colorTheme in
                 Button(action: {
-                    node.colorTheme = colorTheme
+                    document.updateNode(node.id, colorTheme: colorTheme, undoManager: undoManager)
                 }) {
                     ZStack {
                         Rectangle()
@@ -247,6 +271,7 @@ struct EditSheetView: View {
         TextEditor(text: text)
             .lineLimit(lineLimit)
             .scrollContentBackground(.hidden)
+            .autocorrectionDisabled()
             .foregroundColor(.black)
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -297,5 +322,11 @@ struct EditSheetView: View {
             .frame(height: 40)
         }
         .buttonStyle(BorderlessButtonStyle())
+    }
+}
+
+extension EditSheetView: Equatable {
+    static func == (lhs: EditSheetView, rhs: EditSheetView) -> Bool {
+        lhs.node == rhs.node
     }
 }

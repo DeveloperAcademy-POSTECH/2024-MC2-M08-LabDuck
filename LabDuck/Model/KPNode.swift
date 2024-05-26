@@ -12,7 +12,7 @@ struct KPNode: Identifiable, Equatable, Codable, Hashable {
     var title: String?
     var note: String?
     var url: String?
-    var tags: [KPTag] = []
+    var tags: [KPTag.ID] = []
     var colorTheme: KPColorTheme = .default
     var position: CGPoint {
             didSet {
@@ -28,7 +28,7 @@ struct KPNode: Identifiable, Equatable, Codable, Hashable {
     var inputPoints: [KPInputPoint] = []
     var outputPoints: [KPOutputPoint] = []
 
-    init(id: UUID = UUID(), title: String? = nil, note: String? = nil, url: String? = nil, tags: [KPTag] = [], colorTheme: KPColorTheme = .default, position: CGPoint = .zero, size: CGSize = CGSize(width: 400, height: 400), inputPoints: [KPInputPoint] = [], outputPoints: [KPOutputPoint] = []) {
+    init(id: UUID = UUID(), title: String? = nil, note: String? = nil, url: String? = nil, tags: [KPTag.ID] = [], colorTheme: KPColorTheme = .default, position: CGPoint = .zero, size: CGSize = CGSize(width: 400, height: 400), inputPoints: [KPInputPoint] = [], outputPoints: [KPOutputPoint] = []) {
         self.id = UUID()
         self.title = title
         self.note = note
@@ -79,7 +79,7 @@ extension KPNode {
             title: "title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1",
             note: "note1note1note1note1note1note1note1note1note1note1note1note1note1note1note1",
             url: "https://www.naver.com",
-            tags: [.mockData, .mockData1, .mockData2],
+            tags: [KPTag.mockData.id, KPTag.mockData1.id, KPTag.mockData2.id],
             colorTheme: .blue,
             position: .init(x: 50, y: 20),
             inputPoints: .mockData,
@@ -91,7 +91,7 @@ extension KPNode {
             title: "title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1",
             note: "",
             url: "",
-            tags: [.mockData, .mockData1, .mockData2],
+            tags: [KPTag.mockData.id, KPTag.mockData1.id, KPTag.mockData2.id],
             colorTheme: .blue,
             position: .init(x: 50, y: 20),
             inputPoints: .mockData,
@@ -106,7 +106,7 @@ extension Array where Element == KPNode {
             title: "Thrilled by Your Progress! Large Language Models (GPT-4) No Longer Struggle to Pass Assessments in Higher Education Programming Courses",
             note: "Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯 Related work 살펴보기 좋을듯",
             url: "https://arxiv.org/pdf/2306.10073.pdf",
-            tags: [KPTag.mockData, KPTag.mockData1],
+            tags: [KPTag.mockData.id, KPTag.mockData1.id],
             colorTheme: .blue,
             position: .init(x: 50, y: 20),
             inputPoints: .mockData,
@@ -129,7 +129,7 @@ extension Array where Element == KPNode {
         ),
         .init(
             title: "Supporting programming and learning-to-program with an integrated CAD and scaffolding workbench",
-            tags: [KPTag.mockData],
+            tags: [KPTag.mockData.id],
             position: .init(x: 140, y: 60),
             inputPoints: .mockData,
             outputPoints: .mockData
@@ -138,14 +138,14 @@ extension Array where Element == KPNode {
             title: "Robust and Scalable Online Code Execution System",
             note: "Judge0 - code execution system",
             url: "https://ieeexplore.ieee.org/document/9245310",
-            tags: [KPTag.mockData, KPTag.mockData2],
+            tags: [KPTag.mockData.id, KPTag.mockData2.id],
             position: .init(x: 170, y: 70),
             inputPoints: .mockData,
             outputPoints: .mockData
         ),
         .init(
             note: "이름없는노드다.",
-            tags: [KPTag.mockData, KPTag.mockData2],
+            tags: [KPTag.mockData.id, KPTag.mockData2.id],
             position: .init(x: 170, y: 70),
             inputPoints: .mockData,
             outputPoints: .mockData

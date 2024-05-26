@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct TableView: View {
-    @Binding var board: KPBoard
+    @EnvironmentObject var document: KPBoardDocument
+    @Environment(\.undoManager) var undoManager
+    var board: KPBoard
     @Binding var searchText: String
     @State private var expanded: Bool = true
     @State private var selection = Set<KPNode.ID>()
@@ -16,9 +18,8 @@ struct TableView: View {
     @State private var isSheet: Bool = false
     @State private var editingNode: KPNode = KPNode()
     @State private var editingNodeID: KPNode.ID?
-    
-//    @Binding var uniqueTags: [KPTag]
-    
+
+
     var body: some View {
         VStack{
             Table(of: KPNode.self, selection: $selection, sortOrder: $sortOrder) {
@@ -60,7 +61,7 @@ struct TableView: View {
                 TableColumn("Tags") { node in
                     ScrollView(.horizontal) {
                         HStack() {
-                            ForEach(node.tags) { tag in
+                            ForEach(document.board.getTags(node.id)) { tag in
                                 Button(action: {
                                     editingNodeID = node.id
                                     isSheet = true
@@ -104,13 +105,15 @@ struct TableView: View {
             .tableStyle(.inset(alternatesRowBackgrounds: false))
             .scrollContentBackground(.hidden)
             .onChange(of: sortOrder) { _, newSortOrder in
-                board.nodes.sort(using: newSortOrder)}
+                let newNodes = board.nodes.sorted(using: newSortOrder)
+                document.replaceNodes(newNodes, undoManager: undoManager, animation: .default)
+            }
             .onChange(of: selection) { _, newSelection in
                 updateSelection(newSelection: newSelection)}
             .searchable(text: $searchText)
             .inspector(isPresented: $isSheet) {
                 if let editingNodeID = editingNodeID, let editingNodeIndex = board.nodes.firstIndex(where: { $0.id == editingNodeID }) {
-                    EditSheetView(node: $board.nodes[editingNodeIndex], board: $board, isSheet: $isSheet,selection: $selection, findNodes: findNodes)
+                    EditSheetView(node: board.nodes[editingNodeIndex], isSheet: $isSheet, selection: $selection, findNodes: findNodes)
                         .inspectorColumnWidth(min: 320, ideal: 320, max: 900)
                 }
                 
@@ -159,7 +162,7 @@ struct TableView: View {
         } else {
             return board.nodes.filter { node in
                 let titleMatch = node.unwrappedTitle.lowercased().contains(searchText.lowercased())
-                let tagsMatch = node.tags.map { ("#" + $0.name).lowercased() }.contains { $0.contains(searchText.lowercased()) }
+                let tagsMatch = document.board.getTags(node.id).map { ("#" + $0.name).lowercased() }.contains { $0.contains(searchText.lowercased()) }
                 let urlMatch = node.unwrappedURL.lowercased().contains(searchText.lowercased())
                 let noteMatch = node.unwrappedNote.lowercased().contains(searchText.lowercased())
                 
@@ -180,8 +183,12 @@ struct TableView: View {
     }
 }
 
+extension TableView: Equatable {
+    static func == (lhs: TableView, rhs: TableView) -> Bool {
+        lhs.board == rhs.board
+    }
+}
 
-//    
-//#Preview {
-//    TableView(board: .constant(.mockData), searchText: .constant(""))
-//}
+#Preview {
+    TableView(board: .mockData, searchText: .constant(""))
+}

@@ -52,7 +52,6 @@ struct NodeView: View {
                 VStack(spacing: 0) {
                     VStack(alignment: .center, spacing: 10) {
                         ZStack{
-                            
                         if isEditing {
                             HStack{
                                     SelectColorView()
@@ -244,7 +243,8 @@ struct NodeView: View {
         let titleContains = node.unwrappedTitle.lowercased().contains(lowercasedSearchText)
         let noteContains = node.unwrappedNote.lowercased().contains(lowercasedSearchText)
         let urlContains = node.unwrappedURL.lowercased().contains(lowercasedSearchText)
-        let tagsContain = node.tags.contains { ("#" + $0.name).lowercased().contains(lowercasedSearchText) }
+        let tags = document.board.getTags(node.id)
+        let tagsContain = tags.contains { ("#" + $0.name).lowercased().contains(lowercasedSearchText) }
         
         return titleContains || noteContains || urlContains || tagsContain
     }
@@ -267,6 +267,7 @@ extension NodeView {
                 .background(colorTheme.backgroundColor)
                 .clipShape(RoundedRectangle(cornerRadius: 3))
                 .buttonStyle(.borderless)
+
             }
             Spacer()
         }
@@ -377,11 +378,11 @@ extension NodeView {
                 }
                 ScrollView(.horizontal) {
                     HStack{
-                        ForEach(node.tags) { tag in
+                        ForEach(document.board.getTags(node.id)) { tag in
                             HighlightText(fullText: "#\(tag.name)", searchText: searchText)
                                 .foregroundColor(.white)
                                 .padding(8)
-                                .background(Color.blue)
+                                .background(tag.colorTheme.backgroundColor)
                                 .cornerRadius(10)
                         }
                         Spacer()
@@ -389,15 +390,15 @@ extension NodeView {
                 }
             }
             .padding(10)
-            .background(.gray.opacity(0.3))
+            .background(Color(hex: 0xF0F0F0))
         } else {
             ScrollView(.horizontal){
                 HStack{
-                    ForEach(node.tags){ tag in
+                    ForEach(document.board.getTags(node.id)){ tag in
                         HighlightText(fullText: "#\(tag.name)", searchText: searchText)
                             .foregroundColor(.white)
                             .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
-                            .background(Color.blue)
+                            .background(tag.colorTheme.backgroundColor)
                             .cornerRadius(10)
                         
                     }
@@ -406,7 +407,7 @@ extension NodeView {
             }
             .scrollDisabled(true)
             .padding(10)
-            .background(.gray.opacity(0.3))
+            .background(Color(hex: 0xF0F0F0))
         }
     }
     
