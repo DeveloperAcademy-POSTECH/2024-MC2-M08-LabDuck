@@ -9,6 +9,7 @@ import SwiftUI
 
 @main
 struct LabDuckApp: App {
+    
     var body: some Scene {
         Window("Board Gallery", id: "BoardGallery") {
             BoardGalleryView()

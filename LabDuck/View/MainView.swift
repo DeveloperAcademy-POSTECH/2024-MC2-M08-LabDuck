@@ -9,10 +9,14 @@ import SwiftUI
 import Combine
 
 struct MainDocumentView: View {
+    
     @EnvironmentObject var document: KPBoardDocument
+    
+    
     init(url: URL?) {
         UserDefaultsCenter.shared.setDocument(url)
         NotificationCenter.default.sendDocumentsChanged()
+        
     }
     var body: some View {
         MainView(board: $document.board)
@@ -23,6 +27,7 @@ struct MainView: View {
     @EnvironmentObject var document: KPBoardDocument
     @Environment(\.undoManager) var undoManager
     @Binding var board: KPBoard
+//    @State private var uniqueTags: [KPTag] = []
 
     // MARK: - Zoom
     @State private var zoom = 1.0
@@ -122,7 +127,7 @@ struct MainView: View {
                             }
                         }
                 } else {
-                    TableView(board: $board, searchText: $searchText)
+                    TableView(board: $board, searchText: $searchText/*, uniqueTags: $uniqueTags*/)
                 }
             }
             
@@ -194,6 +199,6 @@ extension MainView: Equatable {
     }
 }
 
-#Preview {
-    MainView(board: .constant(.mockData))
-}
+//#Preview {
+//    MainView(board: .constant(.mockData))
+//}

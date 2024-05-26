@@ -13,7 +13,7 @@ struct GraphView: View {
     @Environment(\.undoManager) var undoManager
     var board: KPBoard
     @Environment(\.searchText) private var searchText: String
-    
+
     // MARK: Edges
     @State private var inputPointRects: [KPInputPoint.ID : CGRect] = [:]
     @State private var outputPointRects: [KPOutputPoint.ID : CGRect] = [:]
