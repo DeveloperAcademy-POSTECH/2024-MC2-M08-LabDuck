@@ -293,6 +293,8 @@ extension KPBoardDocument {
 
         undoManager?.registerUndo(withTarget: self) { doc in
             doc.replaceEdges(oldEdges, undoManager: undoManager)
+            
+            
         }
     }
 
@@ -380,6 +382,88 @@ extension KPBoardDocument {
 
         undoManager?.registerUndo(withTarget: self) { doc in
             doc.replaceNodes(oldNodes, undoManager: undoManager, animation: animation)
+        }
+    }
+
+}
+
+// MARK: - 태그
+extension KPBoardDocument {
+    func createTag(_ nodeID: KPNode.ID, tag: KPTag, undoManager: UndoManager?, animation: Animation? = .default) {
+        guard let nodeIndex = getIndex(nodeID) else { return }
+
+        withAnimation(animation) {
+            self.board.nodes[nodeIndex].tags.append(tag)
+        }
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            self.board.nodes[nodeIndex].tags.removeLast()
+        }
+    }
+
+    func deleteTag(_ nodeID: KPNode.ID, tagID: KPTag.ID, undoManager: UndoManager?, animation: Animation? = .default) {
+        guard let nodeIndex = getIndex(nodeID) else { return }
+
+        guard let originalTag = self.board.nodes[nodeIndex].tags.first(where: { $0.id == tagID }) else { return }
+
+
+        withAnimation(animation) {
+            self.board.nodes[nodeIndex].tags.removeAll { $0.id == tagID }
+        }
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            doc.createTag(nodeID, tag: originalTag, undoManager: undoManager, animation: animation)
+        }
+    }
+}
+
+// MARK: - 텍스트
+extension KPBoardDocument {
+    func createText(_ text: KPText, undoManager: UndoManager?, animation: Animation? = .default) {
+        withAnimation(animation) {
+            self.board.texts.append(text)
+        }
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            self.board.texts.removeLast()
+        }
+    }
+
+    func updateText(_ text: KPText, undoManager: UndoManager?, animation: Animation? = .default) {
+        guard let originalTextIndex = self.board.texts.firstIndex(where: { $0.id == text.id }) else { return }
+
+        let originalText = self.board.texts[originalTextIndex]
+
+        withAnimation(animation) {
+            self.board.texts[originalTextIndex] = text
+        }
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            self.board.texts[originalTextIndex] = originalText
+        }
+    }
+
+    func updateText(_ textID: KPText.ID, position: CGPoint, undoManager: UndoManager?) {
+        guard let originalTextIndex = self.board.texts.firstIndex(where: { $0.id == textID }) else { return }
+
+        let original = self.board.texts[originalTextIndex].position
+
+        self.board.texts[originalTextIndex].position = position
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            self.board.texts[originalTextIndex].position = original
+        }
+    }
+
+    func deleteText(_ textID: KPText.ID, undoManager: UndoManager?) {
+        guard let originalTextIndex = self.board.texts.firstIndex(where: { $0.id == textID }) else { return }
+
+        let originalText = self.board.texts[originalTextIndex]
+
+        self.board.texts.remove(at: originalTextIndex)
+
+        undoManager?.registerUndo(withTarget: self) { doc in
+            self.board.texts.insert(originalText, at: originalTextIndex)
         }
     }
 

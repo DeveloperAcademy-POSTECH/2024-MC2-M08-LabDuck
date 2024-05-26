@@ -11,12 +11,12 @@ import Combine
 struct NodeView: View {
     @EnvironmentObject var document: KPBoardDocument
     @Environment(\.undoManager) var undoManager
-
+    
     var node: KPNode
     @State private var tempNodeTitle: String = ""
     @State private var tempNodeNote: String = ""
     @State private var tempNodeURL: String = ""
-
+    
     @State private var dragLocation: CGPoint?
     @State private var currentOutputPoint: KPOutputPoint.ID?
     @State private var isEditingForTag: Bool = false
@@ -25,20 +25,28 @@ struct NodeView: View {
     @State private var trashcanHovered: Bool = false
     @State private var hoveredForClosingTagView: Bool = false
 
+    @State private var isScrollDisabled: Bool = false
+    
+    @State private var textViewHeight: CGFloat = 20
+
     @State private var textForTags: String = ""
     @State private var previewTag: KPTag?
-
+    
     @Binding var clickingOutput: Bool
     @Environment(\.searchText) private var searchText
     
-    var judgeConnection: (_ outputID: KPOutputPoint.ID, _ dragLocation: CGPoint) -> (KPOutputPoint.ID, KPInputPoint.ID)?
+    @State private var selectedAction = "normal"
+    @State private var initialWidth: CGFloat = 0
+    @State private var resizeOffset: CGPoint = .zero
+    @State private var isNodeHovered: Bool = false
     
+    var judgeConnection: (_ outputID: KPOutputPoint.ID, _ dragLocation: CGPoint) -> (KPOutputPoint.ID, KPInputPoint.ID)?
     var updatePreviewEdge: (_ sourceID: KPOutputPoint.ID, _ dragPoint: CGPoint?) -> ()
-
+    
     var body: some View {
         HStack {
             InputPointsView()
-
+            
             ZStack {
                 VStack(spacing: 0) {
                     VStack(alignment: .leading, spacing: 10) {
@@ -47,29 +55,60 @@ struct NodeView: View {
                         }
                         TitleTextField()
                         NoteTextEditor()
-
+                        
                         Divider().background(.gray)
                         
                         LinkTextField()
                     }
                     .padding(20)
                     .background(node.colorTheme.backgroundColor)
-
+                    
                     TagsView()
                         .background(.white)
                 }
                 .cornerRadius(10)
-
                 .opacity((searchText == "" || nodeContainsSearchText()) ? 1 : 0.3)
+                
                 //태그 팝업창
-//                if isEditingForTag {
-//                    TagPopupView(isEditingForTag: $isEditingForTag, node: $node)
-//                        .transition(.scale)
-//                        .zIndex(1)
-//                }
+                if isEditingForTag {
+                    TagPopupView(isEditingForTag: $isEditingForTag, node: node)
+                        .transition(.scale)
+                        .zIndex(1)
+                }
+                
+                if isNodeHovered {
+                    Image(systemName: "arrow.left.and.right.circle")
+                        .imageScale(.large)
+                        .offset(x: -node.size.width / 2, y: 0)
+                        .gesture(
+                            DragGesture()
+                                .onChanged { value in
+                                    let delta = -value.translation.width * 2
+                                    let newWidth = initialWidth + delta
+                                    var updatedNode = node
+                                    updatedNode.size.width = newWidth
+                                    document.updateNode(node: updatedNode, undoManager: undoManager)
+                                }
+                                .onEnded { value in
+                                    let delta = -value.translation.width
+                                    let newWidth = max(50, initialWidth + delta)
+                                    var updatedNode = node
+                                    updatedNode.size.width = newWidth
+                                    document.updateNode(node: updatedNode, undoManager: undoManager)
+                                    initialWidth = updatedNode.size.width
+                                }
+                        )
+                        .onAppear {
+                            initialWidth = node.size.width
+                        }
+                }
             }
+            .onHover { hovering in
+                isNodeHovered = hovering
+            }
+            
             .overlay(alignment: .topTrailing) {
-                HStack(spacing: 8) {
+                HStack(spacing: 2) {
                     Button {
                         isEditing.toggle()
                     } label: {
@@ -83,6 +122,9 @@ struct NodeView: View {
                     .onHover { hover in
                         self.hovered = hover
                     }
+
+                    Divider()
+                        .frame(maxHeight: 28)
 
                     Button {
                         document.removeNode(node.id, undoManager: undoManager, animation: .default)
@@ -98,11 +140,18 @@ struct NodeView: View {
                         self.trashcanHovered = hover
                     }
                 }
+                .cornerRadius(10)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.gray.opacity(0.1))
+                        .stroke(.gray.opacity(0.3), lineWidth: 1)
+                )
+                .padding(4)
             }
             .frame(minWidth: 50, maxWidth: node.size.width, minHeight: 50, maxHeight: .infinity)
             .shadow(color: .black.opacity(0.25), radius: 1.5, x: 0, y: 0)
             .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 4)
-
+            
             OutputPointsView()
         }
         .onChange(of: isEditing) { oldValue, newValue in
@@ -139,12 +188,12 @@ struct NodeView: View {
     }
     
     //KPNode에 새 태그 정보 추가
-//    private func createTag() {
-//        guard let previewTag = previewTag else { return }
-//        node.tags.append(previewTag)
-//        self.previewTag = nil
-//        self.textForTags = ""
-//    }
+    //    private func createTag() {
+    //        guard let previewTag = previewTag else { return }
+    //        node.tags.append(previewTag)
+    //        self.previewTag = nil
+    //        self.textForTags = ""
+    //    }
     
     private func judgeConnection(with location: CGPoint) -> (KPOutputPoint.ID, KPInputPoint.ID)? {
         if let currentOutputPoint {
@@ -220,7 +269,7 @@ extension NodeView {
         }
         .background(Color.clear)
     }
-
+    
     private func TitleTextField() -> some View {
         @ViewBuilder var TextView: some View {
             if !isEditing {
@@ -239,7 +288,7 @@ extension NodeView {
             .textFieldStyle(.plain)
             .multilineTextAlignment(.leading)
     }
-
+    
     @ViewBuilder
     private func NoteTextEditor() -> some View {
         if isEditing {
@@ -272,7 +321,7 @@ extension NodeView {
             }
         }
     }
-
+    
     @ViewBuilder
     private func LinkTextField() -> some View {
         if isEditing {
@@ -308,11 +357,11 @@ extension NodeView {
             }
         }
     }
-
+    
     @ViewBuilder
     private func TagsView() -> some View {
         //태그
-
+        
         if isEditing {
             HStack{
                 Button {
@@ -347,7 +396,7 @@ extension NodeView {
                             .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
                             .background(Color.blue)
                             .cornerRadius(10)
-
+                        
                     }
                     Spacer()
                 }
@@ -357,7 +406,7 @@ extension NodeView {
             .background(.gray.opacity(0.3))
         }
     }
-
+    
     @ViewBuilder
     private func InputPointsView() -> some View {
         //인풋 포인트
@@ -367,7 +416,7 @@ extension NodeView {
             }
         }
     }
-
+    
     @ViewBuilder
     private func OutputPointsView() -> some View {
         VStack(spacing: 20){
@@ -379,20 +428,20 @@ extension NodeView {
                                 dragLocation = value.location
                                 currentOutputPoint = outputPoint.id
                                 updatePreviewEdge(outputPoint.id, dragLocation)
-
+                                
                                 clickingOutput = true
                             }
                             .onEnded { value in
                                 if let dragLocation {
                                     if let (outputID, inputID) = self.judgeConnection(with: dragLocation) {
                                         self.document.addEdge(edge: KPEdge(sourceID: outputID, sinkID: inputID), undoManager: undoManager)
-
+                                        
                                     }
                                 }
                                 clickingOutput = false
                                 dragLocation = nil
                                 updatePreviewEdge(outputPoint.id, dragLocation)
-
+                                
                             }
                     )
             }

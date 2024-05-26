@@ -38,7 +38,7 @@ struct DraggableViewModifier2: ViewModifier {
         content
             .offset(x: gestureOffset.width, y: gestureOffset.height)
             .gesture(
-                DragGesture(minimumDistance: 0)
+                DragGesture(minimumDistance: 1)
                     .updating($gestureOffset) { value, gestureState, _ in
                         gestureState = value.translation
                     }

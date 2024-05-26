@@ -9,10 +9,14 @@ import SwiftUI
 import Combine
 
 struct MainDocumentView: View {
+    
     @EnvironmentObject var document: KPBoardDocument
+    
+    
     init(url: URL?) {
         UserDefaultsCenter.shared.setDocument(url)
         NotificationCenter.default.sendDocumentsChanged()
+        
     }
     var body: some View {
         MainView(board: $document.board)
@@ -23,6 +27,7 @@ struct MainView: View {
     @EnvironmentObject var document: KPBoardDocument
     @Environment(\.undoManager) var undoManager
     @Binding var board: KPBoard
+//    @State private var uniqueTags: [KPTag] = []
 
     // MARK: - Zoom
     @State private var zoom = 1.0
@@ -152,7 +157,9 @@ struct MainView: View {
                 if board.viewType == .graph {
                     ToolbarItem(placement: .primaryAction) {
                         Button(action: {
-                            // 그래프 뷰에서 텍스트 박스 추가 기능 필요
+                            let center = calculateCenterCoordinate(.zero)
+                            let newText = KPText(position: CGPoint(x: center.x, y: center.y))
+                            document.createText(newText, undoManager: undoManager, animation: .default)
                         }, label: {
                             Image(systemName: "character.textbox")
                         })
@@ -194,6 +201,6 @@ extension MainView: Equatable {
     }
 }
 
-#Preview {
-    MainView(board: .constant(.mockData))
-}
+//#Preview {
+//    MainView(board: .constant(.mockData))
+//}

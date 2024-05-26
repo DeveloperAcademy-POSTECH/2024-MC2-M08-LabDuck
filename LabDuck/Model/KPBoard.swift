@@ -16,6 +16,14 @@ struct KPBoard: Identifiable {
     var modifiedDate: Date
     var viewType: BoardViewType
     var previewImage: Data?
+    
+    var uniqueTags: [KPTag] {
+            var allTags: [KPTag] = []
+            for node in nodes {
+                allTags.append(contentsOf: node.tags)
+            }
+            return allTags.removingDuplicates()
+        }
 
     enum BoardViewType: String, CaseIterable, Codable, Hashable {
         case graph = "Graph View"
@@ -31,6 +39,7 @@ struct KPBoard: Identifiable {
         self.modifiedDate = modifiedDate
         self.viewType = viewType
         self.previewImage = previewImage
+        
     }
 
     public mutating func addEdge(_ edge: KPEdge) {
@@ -53,15 +62,29 @@ struct KPBoard: Identifiable {
 
     public mutating func addNode(_ node: KPNode) {
         self.nodes.append(node)
+        
+        
     }
 
     public mutating func addNodes(_ nodes: [KPNode]) {
         self.nodes.append(contentsOf: nodes)
+   
     }
-
+    
+    public mutating func addDefaultText(_ text: KPText) {
+        self.texts.append(text)
+    }
+    public mutating func deleteDefaultText(_ textID:KPText.ID){
+        self.texts.removeAll{ text in
+            text.id == textID
+        }
+    }
+    
     public mutating func modified() {
         self.modifiedDate = .now
     }
+    
+    
 }
 
 extension KPBoard: Equatable, Codable, Hashable {}
@@ -88,4 +111,6 @@ extension KPBoard {
     static var emptyData: KPBoard {
         KPBoard(title: "Untitled", nodes: [], edges: [], texts: [], modifiedDate: .now, viewType: .table)
     }
+    
+    
 }
