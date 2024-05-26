@@ -55,7 +55,6 @@ struct NodeView: View {
                             
                         if isEditing {
                             HStack{
-                                //if isEditing {
                                     SelectColorView()
                                 }
                             }
