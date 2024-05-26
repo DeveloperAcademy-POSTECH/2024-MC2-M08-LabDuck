@@ -10,8 +10,9 @@ struct EditSheetView: View {
     @State private var relatedNodes: [KPNode] = []
     @State private var isEditingForTag: Bool = false
     let findNodes: (KPNode) -> [KPNode]
-//    @Binding var uniqueTags: [KPTag]
-    
+    //    @Binding var uniqueTags: [KPTag]
+    @State private var showAlert = false
+
     var body: some View {
         VStack {
             headerView
@@ -45,11 +46,14 @@ struct EditSheetView: View {
             Spacer()
             
             Button(action: {
-                document.removeNode(node.id, undoManager: undoManager, animation: .default)
+                showAlert = true
+
+
             }) {
                 Image(systemName: "trash")
                     .frame(width: 20, height: 20)
             }
+            
             
             Button(action: {
                 isSheet = false
@@ -60,6 +64,13 @@ struct EditSheetView: View {
         }
         .padding(4)
         .background(node.colorTheme.backgroundColor)
+        .confirmationDialog("정말 삭제하시겠습니까?", isPresented: $showAlert, titleVisibility: .visible) {
+                       Button("네", role: .none)
+                       {   print("yes")
+                           document.removeNode(node.id, undoManager: undoManager, animation: .default)
+                       }
+                       Button("아니오", role: .cancel){}
+                   }.dialogSeverity(.critical)
     }
     
     private var titleSection: some View {
@@ -209,7 +220,7 @@ struct EditSheetView: View {
                             .padding(3)
                         if colorTheme == .default {
                             RoundedRectangle(cornerRadius: 3)
-                                .stroke(.black.opacity(0.1), lineWidth: 1)
+                                .stroke(.black.opacity(0.2), lineWidth: 1)
                                 .frame(width: 16, height: 16)
                                 .padding(3)
                         }
@@ -245,8 +256,8 @@ struct EditSheetView: View {
             .font(Font.custom("SF Pro", size: fontSize))
             .frame(height: height)
             .overlay(
-                RoundedRectangle(cornerRadius: 6)
-                    .stroke(Color.black.opacity(0.1), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(Color.black.opacity(0.2), lineWidth: 1)
             )
     }
     

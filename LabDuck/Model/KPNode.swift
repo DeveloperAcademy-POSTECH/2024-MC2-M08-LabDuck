@@ -57,7 +57,7 @@ extension KPNode {
     }
     var unwrappedNote: String {
         get {
-            self.note ?? ""
+            self.note ?? "asdf"
         }
         set {
             self.note = newValue

@@ -22,8 +22,22 @@ struct KPText: Identifiable, Equatable, Codable, Hashable {
 }
 
 extension KPText {
+    var unwrappedText: String {
+        get {
+            self.text ?? ""
+        }
+        set {
+            self.text = newValue
+        }
+    }
+}
+
+extension KPText {
     static var mockData: KPText {
         .init(text: "조금 있다 읽을 것", position: .init(x: 50, y: 100))
+    }
+    static var emptyData: KPText {
+        .init(text: "type anything...", position: .init(x: 50, y: 100))
     }
 }
 
