@@ -78,7 +78,7 @@ struct NodeView: View {
                         .gesture(
                             DragGesture()
                                 .onChanged { value in
-                                    let delta = -value.translation.width
+                                    let delta = -value.translation.width * 2
                                     let newWidth = max(50, initialWidth + delta)
                                     var updatedNode = node
                                     updatedNode.size.width = newWidth
