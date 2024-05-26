@@ -82,7 +82,7 @@ struct TableView: View {
                 }
                 
                 TableColumn("URL", value: \.unwrappedURL) { node in
-                    Link(destination: URL(string: node.url ?? " ")!, label: {
+                    Link(destination: URL(string: node.unwrappedURL) ?? URL(string: "https://mosu.blog")!, label: {
                         styledText(node.unwrappedURL, node: node)
                             .underline()
                     })
@@ -118,6 +118,7 @@ struct TableView: View {
             
         }
     }
+    
     
     // MARK: - 노드의 ouputPoint에 대한 inputPoint들을 찾아 해당 노드들 리턴
     func findNodes(matching node: KPNode) -> [KPNode] {
@@ -158,7 +159,7 @@ struct TableView: View {
         } else {
             return board.nodes.filter { node in
                 let titleMatch = node.unwrappedTitle.lowercased().contains(searchText.lowercased())
-                let tagsMatch = node.tags.map { $0.name.lowercased() }.contains { $0.contains(searchText.lowercased()) }
+                let tagsMatch = node.tags.map { ("#" + $0.name).lowercased() }.contains { $0.contains(searchText.lowercased()) }
                 let urlMatch = node.unwrappedURL.lowercased().contains(searchText.lowercased())
                 let noteMatch = node.unwrappedNote.lowercased().contains(searchText.lowercased())
                 

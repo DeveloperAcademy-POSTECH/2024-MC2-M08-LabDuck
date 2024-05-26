@@ -29,6 +29,27 @@ struct DraggableViewModifier: ViewModifier {
                     }
             )
     }
-    
+}
 
+struct DraggableViewModifier2: ViewModifier {
+    @GestureState private var gestureOffset: CGSize = .zero
+    var onEnded: ((_ offset: CGPoint) -> Void)? = nil
+    func body(content: Content) -> some View {
+        content
+            .offset(x: gestureOffset.width, y: gestureOffset.height)
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .updating($gestureOffset) { value, gestureState, _ in
+                        gestureState = value.translation
+                    }
+                    .onEnded { value in
+                        onEnded?(
+                            CGPoint(
+                                x: value.translation.width,
+                                y: value.translation.height
+                            )
+                        )
+                    }
+            )
+    }
 }

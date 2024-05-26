@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 
 enum KPTagColor: String, CaseIterable, Codable {
-    case red
     case orange
     case yellow
     case green
@@ -22,8 +21,6 @@ enum KPTagColor: String, CaseIterable, Codable {
     
     var backgroundColor: Color {
         switch self {
-        case .red:
-            return Color(.systemRed)
         case .orange:
             return Color(.systemOrange)
         case .yellow:

@@ -47,7 +47,7 @@ extension KPTag {
         .init(id: UUID(), name: "tag1", colorTheme: KPTagColor.blue)
     }
     static var mockData1: KPTag {
-        .init(id: UUID(), name: "tag2", colorTheme: KPTagColor.red)
+        .init(id: UUID(), name: "tag2", colorTheme: KPTagColor.gray)
     }
     static var mockData2: KPTag {
         .init(id: UUID(), name: "tag3", colorTheme: KPTagColor.yellow)

@@ -11,29 +11,29 @@ import Combine
 struct GraphView: View {
     @EnvironmentObject var document: KPBoardDocument
     @Environment(\.undoManager) var undoManager
-    @Binding var board: KPBoard
-    
+    var board: KPBoard
+    @Environment(\.searchText) private var searchText: String
 
     // MARK: Edges
     @State private var inputPointRects: [KPInputPoint.ID : CGRect] = [:]
     @State private var outputPointRects: [KPOutputPoint.ID : CGRect] = [:]
-
+    
     @State private var previewEdge: (CGPoint, CGPoint)? = nil
     @State private var hoveredEdgeID: KPEdge.ID? = nil
     @State private var selectedEdgeID: KPEdge.ID? = nil
     
     @State private var clickingOutput: Bool = false
-
-    // MARK: Combine
-    @State var cancellabes = Set<AnyCancellable>()
     
-//    @Binding var uniqueTags: [KPTag]
+    //    @State var isEditingForTitle: Bool = false
+
+    var deleteKeyPublisher = NSApp.publisher(for: \.currentEvent)
+        .eraseToAnyPublisher()
+        .filter { event in
+            event?.type == .keyUp && (event?.keyCode == 51 || event?.keyCode == 117)
+        }
 
     var body: some View {
         ZStack {
-            Color.white
-                .contentShape(Rectangle())
-            
             ForEach(board.edges) { edge in
                 if let sourcePoint = outputPointRects[edge.sourceID]?.center,
                    let sinkPoint = inputPointRects[edge.sinkID]?.center {
@@ -43,23 +43,26 @@ struct GraphView: View {
                     PathShapes(sourcePoint, sinkPoint, edge.id)
                 }
             }
-            ForEach(self.$board.nodes) { node in
-                
+            ForEach(self.board.nodes) { node in
                 NodeView(
-                    node: node, clickingOutput: $clickingOutput,
+                    node: node,
+                    clickingOutput: $clickingOutput,
                     judgeConnection: self.judgeConnection(outputID:dragLocation:),
-                    addEdge: self.addEdge(edge:),
                     updatePreviewEdge: self.updatePreviewEdge(from:to:)
                 )
-                .draggable(offset: node.position) { offset in
-                    document.moveNode(node.wrappedValue.id, to: offset, undoManager: undoManager)
-                }
+                .searchText(searchText)
+                .offset(x: node.position.x, y: node.position.y)
+                .draggable(onEnded: { offset in
+                    let newPosition = node.position + offset
+                    document.updateNode(node.id, position: newPosition, undoManager: undoManager)
+                })
             }
             if let previewEdge {
                 PathBetween(previewEdge.0, previewEdge.1)
-                    .stroke(lineWidth: 2)
+                    .stroke(.black, lineWidth: 2)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .backgroundPreferenceValue(InputPointPreferenceKey.self) { values in
             GeometryReader { proxy in
                 self.readPreferenceValues(from: values, in: proxy)
@@ -78,16 +81,14 @@ struct GraphView: View {
                     }
                 }
         )
-        .onAppear {
-            trackDeleteCommand {
-                if let selectedEdgeID {
-                    self.board.removeEdge(selectedEdgeID)
-                }
-                selectedEdgeID = nil
+        .onReceive(deleteKeyPublisher) { received in
+            if let selectedEdgeID {
+                self.document.removeEdge(selectedEdgeID, undoManager: undoManager)
             }
+            selectedEdgeID = nil
         }
     }
-
+    
     @ViewBuilder
     private func PathBetween(_ sourcePoint: CGPoint, _ sinkPoint: CGPoint) -> Path {
         let midPoint = (sourcePoint + sinkPoint) / 2
@@ -98,7 +99,7 @@ struct GraphView: View {
             path.addCurve(to: sinkPoint, control1: control1, control2: control2)
         }
     }
-
+    
     @ViewBuilder
     private func PathShapes(_ sourcePoint: CGPoint, _ sinkPoint: CGPoint, _ edgeID: KPEdge.ID) -> some View {
         let pathShapeSide = 10.0 // 선을 이루는 shape들의 width, height, 간격은 모두 10.0으로 설정합니다.
@@ -126,10 +127,6 @@ struct GraphView: View {
     }
 }
 
-//#Preview {
-//    GraphView(board: .constant(.mockData), isEditingForTitle: isEditingForTitle)
-//}
-
 // MARK: - read preferences : 각 지점의 아이디와 위치를 가져오기 위한 메소드들
 extension GraphView {
     private func readPreferenceValues(from values: [InputPointPreference], in proxy: GeometryProxy) -> some View {
@@ -141,7 +138,7 @@ extension GraphView {
         return Rectangle()
             .fill(Color.clear)
     }
-
+    
     private func readPreferenceValues(from values: [OutputPointPreference], in proxy: GeometryProxy) -> some View {
         DispatchQueue.main.async {
             values.forEach { preference in
@@ -163,54 +160,16 @@ extension GraphView {
         guard let outputItem = self.outputPointRects.first(where: { id, _ in
             id == outputID
         }) else { return nil }
-
+        
         let calculatedPoint = outputItem.1.origin + dragLocation
-
+        
         guard let inputItem = self.inputPointRects.first(where: { _, rect in
             CGRectContainsPoint(rect, calculatedPoint)
         }) else { return nil }
-
+        
         return (outputItem.0, inputItem.0)
     }
-
-    private func addEdge(
-        edge: KPEdge
-    ) {
-        self.board.addEdge(edge)
-
-        // MARK: 디버그용 출력 문장들, 추후 삭제 등에 이 코드가 필요할 것 같음
-        self.board.nodes.forEach { node in
-            
-            node.outputPoints.forEach { outputPoint in
-                if outputPoint.id == edge.sourceID {
-                    print("outputPoint 정보 : \(outputPoint.name ?? "")")
-                    if let ownerNodeID = outputPoint.ownerNode {
-                        self.board.nodes.forEach { node in
-                            if node.id == ownerNodeID {
-                                print("<- 그의 부모는 \(node.title ?? "") 입니다.")
-                            }
-                        }
-                    }
-                }
-            }
-            node.inputPoints.forEach { inputPoint in
-                if inputPoint.id == edge.sinkID {
-                    print("inputPoint 정보 : \(inputPoint.name ?? "")")
-                    
-                    
-                    if let ownerNodeID = inputPoint.ownerNode {
-                        self.board.nodes.forEach { node in
-                            if node.id == ownerNodeID {
-                                
-                                print("<- 그의 부모는 \(node.title ?? "") 입니다.")
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
+    
     private func updatePreviewEdge(
         from sourceID: KPOutputPoint.ID,
         to dragPoint: CGPoint?
@@ -220,21 +179,5 @@ extension GraphView {
         } else {
             self.previewEdge = nil
         }
-    }
-}
-
-
-
-// MARK: - Delete key를 받기 위한
-extension GraphView {
-    private func trackDeleteCommand(_ perform: @escaping () -> ()) {
-        NSApp.publisher(for: \.currentEvent)
-            .filter { event in
-                event?.type == .keyUp && (event?.keyCode == 51 || event?.keyCode == 117)
-            }
-            .sink { (event: NSEvent?) in
-                perform()
-            }
-            .store(in: &cancellabes)
     }
 }

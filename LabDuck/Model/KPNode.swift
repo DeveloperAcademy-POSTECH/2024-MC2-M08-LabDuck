@@ -33,13 +33,12 @@ struct KPNode: Identifiable, Equatable, Codable, Hashable {
         self.colorTheme = colorTheme
         self.position = position
         self.size = size
-        self.inputPoints = inputPoints.map({ inputPoint in
+        self.inputPoints = inputPoints.isEmpty ? (0..<3).map { _ in KPInputPoint(ownerNode: self.id) } : inputPoints.map { inputPoint in
             KPInputPoint(id: inputPoint.id, name: inputPoint.name, ownerNode: self.id)
-        })
-
-        self.outputPoints = outputPoints.map({ outputPoint in
+        }
+        self.outputPoints = outputPoints.isEmpty ? (0..<3).map { _ in KPOutputPoint(ownerNode: self.id) } : outputPoints.map { outputPoint in
             KPOutputPoint(id: outputPoint.id, name: outputPoint.name, ownerNode: self.id)
-        })
+        }
     }
 }
 
@@ -72,7 +71,28 @@ extension KPNode {
 
 extension KPNode {
     static var mockData: KPNode {
-        .init(title: "title1", position: .init(x: 50, y: 20), inputPoints: .mockData, outputPoints: .mockData)
+        KPNode(
+            title: "title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1",
+            note: "note1note1note1note1note1note1note1note1note1note1note1note1note1note1note1",
+            url: "https://www.naver.com",
+            tags: [.mockData, .mockData1, .mockData2],
+            colorTheme: .blue,
+            position: .init(x: 50, y: 20),
+            inputPoints: .mockData,
+            outputPoints: .mockData
+        )
+    }
+    static var mockData2: KPNode {
+        KPNode(
+            title: "title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1title1",
+            note: "",
+            url: "",
+            tags: [.mockData, .mockData1, .mockData2],
+            colorTheme: .blue,
+            position: .init(x: 50, y: 20),
+            inputPoints: .mockData,
+            outputPoints: .mockData
+        )
     }
 }
 
