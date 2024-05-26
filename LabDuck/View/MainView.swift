@@ -146,7 +146,7 @@ struct MainView: View {
                 if board.viewType == .graph {
                     ToolbarItem(placement: .primaryAction) {
                         Button(action: {
-                            // 그래프 뷰에서 텍스트 박스 추가 기능 필요
+                            board.addDefaultText(KPText.emptyData)
                         }, label: {
                             Image(systemName: "character.textbox")
                         })

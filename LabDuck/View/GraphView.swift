@@ -57,6 +57,14 @@ struct GraphView: View {
                     document.moveNode(node.wrappedValue.id, to: offset, undoManager: undoManager)
                 }
             }
+            
+            ForEach(self.$board.texts) { text in
+                TextView(text: text, board: $board)
+                    .draggable(offset: text.position) { offset in
+                        text.position.wrappedValue = offset
+                    }
+            }
+            
             if let previewEdge {
                 PathBetween(previewEdge.0, previewEdge.1)
                     .stroke(lineWidth: 2)

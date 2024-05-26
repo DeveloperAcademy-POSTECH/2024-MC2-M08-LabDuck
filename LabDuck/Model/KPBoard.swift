@@ -58,7 +58,16 @@ struct KPBoard: Identifiable {
     public mutating func addNodes(_ nodes: [KPNode]) {
         self.nodes.append(contentsOf: nodes)
     }
-
+    
+    public mutating func addDefaultText(_ text: KPText) {
+        self.texts.append(text)
+    }
+    public mutating func deleteDefaultText(_ textID:KPText.ID){
+        self.texts.removeAll{ text in
+            text.id == textID
+        }
+    }
+    
     public mutating func modified() {
         self.modifiedDate = .now
     }
