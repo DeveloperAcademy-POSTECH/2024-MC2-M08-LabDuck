@@ -50,7 +50,8 @@ struct EditSheetView: View {
             Spacer()
             
             Button(action: {
-                document.removeNode(node.id, undoManager: undoManager, animation: .default)
+                showAlert = true
+
 
             }) {
                 Image(systemName: "trash")
@@ -67,6 +68,13 @@ struct EditSheetView: View {
         }
         .padding(4)
         .background(node.colorTheme.backgroundColor)
+        .confirmationDialog("정말 삭제하시겠습니까?", isPresented: $showAlert, titleVisibility: .visible) {
+                       Button("네", role: .none)
+                       {   print("yes")
+                           document.removeNode(node.id, undoManager: undoManager, animation: .default)
+                       }
+                       Button("아니오", role: .cancel){}
+                   }.dialogSeverity(.critical)
     }
     
     private var titleSection: some View {

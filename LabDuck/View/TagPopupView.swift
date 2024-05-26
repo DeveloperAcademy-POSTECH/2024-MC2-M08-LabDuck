@@ -20,39 +20,47 @@ struct TagPopupView: View {
     
     @State private var uniqueTags: [KPTag] = []
 
+    @State private var hovered: Bool = false
+
     
     var body: some View {
         VStack (alignment:.leading,spacing: 0){
-            //            ZStack{
-            //                Rectangle().fill(Color.gray.opacity(0.2))
-            //                    .frame(width:250, height:20)
-            VStack(spacing: 0){
                 HStack{
-                    Spacer()
-                    Button{
+                    ZStack(alignment: .leading) {
+                        if textForTags.isEmpty {
+                            Text("텍스트 입력").font(.system(size:13))
+                                .foregroundColor(.gray)
+                                .padding(.horizontal)
+                        }
+                        TextField("", text: $textForTags, onCommit: {
+                            addPreviewTag()
+                        })
+                        .padding(.horizontal)
+                        .foregroundColor(.black)
+                        .background(Color.clear)
+                        .textFieldStyle(PlainTextFieldStyle())
+                    } .padding(.leading, 10)
+
+                    Button {
                         isEditingForTag = false
-                    }label: {
-                        Image(systemName: "xmark.circle").foregroundColor(.gray)
-                            .opacity(self.hoveredForClosingTagView ? 1.0 : 0.3)
-                            .onHover { hover in
-                                print("Mouse hover: \(hover)")
-                                self.hoveredForClosingTagView = hover
-                            }
-                    }.buttonStyle(BorderlessButtonStyle())
-                }
-                
-                TextField("태그에 넣을 텍스트를 입력하세요", text: $textForTags, onCommit: {
-                    addPreviewTag()
-                })
-                .padding(.horizontal)
-                .foregroundColor(.blue)
-                .background(Color.clear)
-                
-            }.frame(width: 250, height: 50)
-                .background(.gray)
+                    } label: {
+                        Image(systemName: "xmark")
+                            .frame(width: 32, height: 32)
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundColor(.gray)
+                    .background(.gray.opacity(self.hovered ? 0.1 : 0.0))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .onHover { hover in
+                        self.hovered = hover
+                    }
+                    .padding(.trailing, 10)
+
+                }.frame(width: 250, height: 50)
+                .background(Color(hex: 0xF0F0F0))
+
             
-            
-            VStack(alignment: .leading, spacing: 10){
+            VStack(alignment: .leading, spacing:10){
                 if previewTag != nil {
                     HStack(spacing: 20){
                         
@@ -64,8 +72,10 @@ struct TagPopupView: View {
                         }label: {
                             Text("생성").foregroundColor(.black)
                         }.buttonStyle(BorderlessButtonStyle())
-                            .padding(.top, 5)
-                        
+                            .padding(.leading, 10)
+                            .padding(.top,10)
+                            .padding(.bottom,10)
+
                         
                         
                         //태그 프리뷰
@@ -75,19 +85,22 @@ struct TagPopupView: View {
                             .background(previewTag!.colorTheme.backgroundColor)
                             .cornerRadius(6)
                             .foregroundColor(.white)
-                            .padding(.top, 5)
-                        
+                            .padding(.top,10)
+                            .padding(.bottom,10)
+
                         
                         Spacer()
                         
-                    }.background(Color.gray)
+                    }.background(Color(hex: 0xF0F0F0))
                         .frame(width: 234, height: 40)
                         .cornerRadius(6)
                         .padding(10)
                 }
-                
-                Text("선택된 태그").foregroundColor(.gray).font(.system(size:7)).padding(10)
-                
+
+                if !node.tags.isEmpty {
+                    Text("선택된 태그").foregroundColor(.gray).font(.system(size:11)).padding(5)
+                }
+
                 //태그 뷰의 태그 출력
                 VStack(alignment: .leading, spacing: 10) {
                     ForEach(node.tags) { tag in
@@ -105,10 +118,14 @@ struct TagPopupView: View {
                             }.buttonStyle(BorderlessButtonStyle())
                             
                         }
+                        .padding(.leading, 8)
+                        .padding(.trailing, 8)
                     }
                 }
                 
-                Text("태그 선택 또는 생성").foregroundColor(.gray).font(.system(size:7)).padding(10)
+                if !uniqueTags.isEmpty{
+                    Text("태그 선택").foregroundColor(.gray).font(.system(size:11)).padding(5)
+                }
                 // 중복 제거된 태그 표시
                 ForEach(uniqueTags) { tag in
                     HStack{
@@ -124,22 +141,16 @@ struct TagPopupView: View {
                             Image(systemName: "plus.circle").foregroundColor(.gray)
                         }.buttonStyle(BorderlessButtonStyle())
                     }
+                    .padding(.leading, 8)
+                    .padding(.trailing, 8)
+
                 }
-                
-                Text("태그 선택 또는 생성").foregroundColor(.gray).font(.system(size:7)).padding(10)
-                
-//                ForEach() { tag in
-//                    HStack{
-//                        Text("#\(tag.name)")
-//                            .foregroundColor(.white)
-//                            .padding(EdgeInsets(top: 6, leading: 8, bottom: 6, trailing: 8))
-//                            .background(tag.colorTheme.backgroundColor)
-//                            .cornerRadius(6)
-//                        Spacer()
-//                    }
-//                }
-                
+
+
+
             }
+            .padding(.bottom, 7)
+            .padding(.top, 7)
             .frame(width:250)
             .background(Color.white)
         }
