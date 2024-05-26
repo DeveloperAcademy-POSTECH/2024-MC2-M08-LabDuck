@@ -275,6 +275,7 @@ extension NodeView {
                 .background(colorTheme.backgroundColor)
                 .clipShape(RoundedRectangle(cornerRadius: 3))
                 .buttonStyle(.borderless)
+
             }
             Spacer()
         }
@@ -389,7 +390,7 @@ extension NodeView {
                             HighlightText(fullText: "#\(tag.name)", searchText: searchText)
                                 .foregroundColor(.white)
                                 .padding(8)
-                                .background(Color.blue)
+                                .background(tag.colorTheme.backgroundColor)
                                 .cornerRadius(10)
                         }
                         Spacer()
@@ -397,7 +398,7 @@ extension NodeView {
                 }
             }
             .padding(10)
-            .background(.gray.opacity(0.3))
+            .background(Color(hex: 0xF0F0F0))
         } else {
             ScrollView(.horizontal){
                 HStack{
@@ -405,7 +406,7 @@ extension NodeView {
                         HighlightText(fullText: "#\(tag.name)", searchText: searchText)
                             .foregroundColor(.white)
                             .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
-                            .background(Color.blue)
+                            .background(tag.colorTheme.backgroundColor)
                             .cornerRadius(10)
                         
                     }
@@ -414,7 +415,7 @@ extension NodeView {
             }
             .scrollDisabled(true)
             .padding(10)
-            .background(.gray.opacity(0.3))
+            .background(Color(hex: 0xF0F0F0))
         }
     }
     
