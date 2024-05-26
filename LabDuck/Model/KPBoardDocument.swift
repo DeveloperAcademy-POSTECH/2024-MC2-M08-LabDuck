@@ -118,7 +118,7 @@ extension KPBoardDocument {
     }
 
     // tags
-    func updateNode(_ nodeID: KPNode.ID, tags: [KPTag], undoManager: UndoManager?) {
+    func updateNode(_ nodeID: KPNode.ID, tags: [KPTag.ID], undoManager: UndoManager?) {
         guard let index = getIndex(nodeID) else { return }
 
         let original = self.board.nodes[index].tags
@@ -193,9 +193,7 @@ extension KPBoardDocument {
         guard let nodeIndex = getIndex(nodeID) else { return }
         guard let inputPointIndex = getInputPointIndex(nodeIndex, inputPointID) else { return }
 
-        let originalInputPoint = self.board.nodes[nodeIndex].inputPoints[inputPointIndex]
-
-        withAnimation {
+        let originalInputPoint = withAnimation {
             self.board.nodes[nodeIndex].inputPoints.remove(at: inputPointIndex)
         }
 
@@ -228,9 +226,7 @@ extension KPBoardDocument {
         guard let nodeIndex = getIndex(nodeID) else { return }
         guard let outputPointIndex = getInputPointIndex(nodeIndex, outputPointID) else { return }
 
-        let originalOutputPoint = self.board.nodes[nodeIndex].outputPoints[outputPointIndex]
-
-        withAnimation {
+        let originalOutputPoint = withAnimation {
             self.board.nodes[nodeIndex].outputPoints.remove(at: outputPointIndex)
         }
 
@@ -389,30 +385,33 @@ extension KPBoardDocument {
 
 // MARK: - 태그
 extension KPBoardDocument {
-    func createTag(_ nodeID: KPNode.ID, tag: KPTag, undoManager: UndoManager?, animation: Animation? = .default) {
-        guard let nodeIndex = getIndex(nodeID) else { return }
+    // tag를 새로 만들 때 사용.
+    // 보드에 해당 tag가 있으면 무시. 아니면 새로 생성.
+    func createTag(_ name: String, undoManager: UndoManager?, animation: Animation? = .default) {
+        if let tag = self.board.getTag(name) {
+            print("Already there : \(tag)")
+        } else {
+            let tag = withAnimation(animation) {
+                self.board.createTag(name)
+            }
 
-        withAnimation(animation) {
-            self.board.nodes[nodeIndex].tags.append(tag)
-        }
-
-        undoManager?.registerUndo(withTarget: self) { doc in
-            self.board.nodes[nodeIndex].tags.removeLast()
+            undoManager?.registerUndo(withTarget: self) { doc in
+                doc.deleteTag(tagID: tag.id, undoManager: undoManager)
+            }
         }
     }
 
-    func deleteTag(_ nodeID: KPNode.ID, tagID: KPTag.ID, undoManager: UndoManager?, animation: Animation? = .default) {
-        guard let nodeIndex = getIndex(nodeID) else { return }
-
-        guard let originalTag = self.board.nodes[nodeIndex].tags.first(where: { $0.id == tagID }) else { return }
-
+    // tag를 삭제할 때 사용.
+    // 보드에 해당 tag가 없으면 무시. 아니면 지우기
+    func deleteTag(tagID: KPTag.ID, undoManager: UndoManager?, animation: Animation? = .default) {
+        guard let original = self.board.getTag(tagID) else { return }
 
         withAnimation(animation) {
-            self.board.nodes[nodeIndex].tags.removeAll { $0.id == tagID }
+            self.board.deleteTag(tagID)
         }
 
         undoManager?.registerUndo(withTarget: self) { doc in
-            doc.createTag(nodeID, tag: originalTag, undoManager: undoManager, animation: animation)
+            self.board.allTags.append(original)
         }
     }
 }
