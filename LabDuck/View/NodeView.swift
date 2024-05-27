@@ -11,12 +11,12 @@ import Combine
 struct NodeView: View {
     @EnvironmentObject var document: KPBoardDocument
     @Environment(\.undoManager) var undoManager
-    
+
     var node: KPNode
     @State private var tempNodeTitle: String = ""
     @State private var tempNodeNote: String = ""
     @State private var tempNodeURL: String = ""
-    
+
     @State private var dragLocation: CGPoint?
     @State private var currentOutputPoint: KPOutputPoint.ID?
     @State private var isEditingForTag: Bool = false
@@ -26,25 +26,25 @@ struct NodeView: View {
     @State private var hoveredForClosingTagView: Bool = false
 
     @State private var isScrollDisabled: Bool = false
-    
+
     @State private var textViewHeight: CGFloat = 20
 
     @State private var textForTags: String = ""
     @State private var previewTag: KPTag?
-    
+
     @Binding var clickingOutput: Bool
     @Environment(\.searchText) private var searchText
-    
+
     @State private var selectedAction = "normal"
     @State private var initialWidth: CGFloat = 0
     @State private var resizeOffset: CGPoint = .zero
     @State private var isNodeHovered: Bool = false
-    
+
     @State private var showAlert = false
-    
+
     var judgeConnection: (_ outputID: KPOutputPoint.ID, _ dragLocation: CGPoint) -> (KPOutputPoint.ID, KPInputPoint.ID)?
     var updatePreviewEdge: (_ sourceID: KPOutputPoint.ID, _ dragPoint: CGPoint?) -> ()
-    
+
     var body: some View {
         HStack {
             InputPointsView()
@@ -52,16 +52,15 @@ struct NodeView: View {
                 VStack(spacing: 0) {
                     VStack(alignment: .center, spacing: 10) {
                         ZStack{
-                        if isEditing {
-                            HStack{
+                            if isEditing {
+                                HStack{
                                     SelectColorView()
                                 }
                             }
                             Spacer()
                             HStack(alignment:.top) {
                                 Spacer()
-                                Spacer()
-                                
+
                                 Button {
                                     isEditing.toggle()
                                 } label: {
@@ -77,9 +76,7 @@ struct NodeView: View {
                                 }
 
                                 Button {
-                                    //print("버튼 클릭 노드")
                                     showAlert = true
-                                    //document.removeNode(node.id, undoManager: undoManager, animation: .default)
                                 } label: {
                                     Image(systemName: "trash")
                                         .frame(width: 32, height: 32)
@@ -93,40 +90,39 @@ struct NodeView: View {
                                 }
                             }
                         }
-                            .cornerRadius(10)
-                            .padding(10)
-                            .confirmationDialog("정말 삭제하시겠습니까?", isPresented: $showAlert, titleVisibility: .visible) {
-                                    Button("네", role: .none)
-                                    {   //print("yes")
-                                        document.removeNode(node.id, undoManager: undoManager, animation: .default)
-                                    }
-                                    Button("아니오", role: .cancel){}
-                                }.dialogSeverity(.critical)
+                        .cornerRadius(10)
+                        .padding(10)
+                        .confirmationDialog("정말 삭제하시겠습니까?", isPresented: $showAlert, titleVisibility: .visible) {
+                            Button("네", role: .none) {
+                                document.removeNode(node.id, undoManager: undoManager, animation: .default)
+                            }
+                            Button("아니오", role: .cancel){}
+                        }.dialogSeverity(.critical)
 
                         TitleTextField()
                         NoteTextEditor()
                         Divider().background(.gray)
-                        
+
                         LinkTextField()
                     }
                     .padding(20)
                     .background(node.colorTheme.backgroundColor)
-                    
+
                     TagsView()
                         .background(.white)
-                    
+
                 }
                 .cornerRadius(10)
                 .opacity((searchText == "" || nodeContainsSearchText()) ? 1 : 0.3)
 
-                
+
                 //태그 팝업창
                 if isEditingForTag {
                     TagPopupView(isEditingForTag: $isEditingForTag, node: node)
                         .transition(.scale)
                         .zIndex(1)
                 }
-                
+
                 if isNodeHovered {
                     Image(systemName: "arrow.left.and.right.circle")
                         .imageScale(.large)
@@ -157,7 +153,7 @@ struct NodeView: View {
             .onHover { hovering in
                 isNodeHovered = hovering
             }
-            
+
             .frame(minWidth: 50, maxWidth: node.size.width, minHeight: 50, maxHeight: .infinity)
             .shadow(color: .black.opacity(0.25), radius: 1.5, x: 0, y: 0)
             .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 4)
@@ -188,14 +184,14 @@ struct NodeView: View {
             }
         }
     }
-    
+
     //입력한 텍스트(textForTags)가 nil이 아닐 경우 프리뷰로 값 저장함.
     private func addPreviewTag() {
         guard !textForTags.isEmpty else { return }
         let newTagForPreview = KPTag(id: UUID(), name: textForTags, colorTheme: KPTagColor.blue)
         previewTag = newTagForPreview
     }
-    
+
 
     private func judgeConnection(with location: CGPoint) -> (KPOutputPoint.ID, KPInputPoint.ID)? {
         if let currentOutputPoint {
@@ -204,7 +200,7 @@ struct NodeView: View {
             return nil
         }
     }
-    
+
     // MARK: - search&higlight
     func HighlightText(fullText: String, searchText: String) -> Text {
         guard !searchText.isEmpty else {
@@ -249,7 +245,7 @@ struct NodeView: View {
         return ranges
     }
 
-    
+
     // MARK: - 노드음영여부 관리
     private func nodeContainsSearchText() -> Bool {
         let lowercasedSearchText = searchText.lowercased()
@@ -258,7 +254,7 @@ struct NodeView: View {
         let urlContains = node.unwrappedURL.lowercased().contains(lowercasedSearchText)
         let tags = document.board.getTags(node.id)
         let tagsContain = tags.contains { ("# " + $0.name).lowercased().contains(lowercasedSearchText) }
-        
+
         return titleContains || noteContains || urlContains || tagsContain
     }
 }
@@ -286,7 +282,7 @@ extension NodeView {
         }
         .background(Color.clear)
     }
-    
+
     private func TitleTextField() -> some View {
         @ViewBuilder var TextView: some View {
             if !isEditing {
@@ -305,7 +301,7 @@ extension NodeView {
             .textFieldStyle(.plain)
             .multilineTextAlignment(.leading)
     }
-    
+
     @ViewBuilder
     private func NoteTextEditor() -> some View {
         if isEditing {
@@ -338,7 +334,7 @@ extension NodeView {
             }
         }
     }
-    
+
     @ViewBuilder
     private func LinkTextField() -> some View {
         if isEditing {
@@ -374,11 +370,11 @@ extension NodeView {
             }
         }
     }
-    
+
     @ViewBuilder
     private func TagsView() -> some View {
         //태그
-        
+
         if isEditing {
             HStack{
                 Button {
@@ -413,7 +409,7 @@ extension NodeView {
                             .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
                             .background(tag.colorTheme.backgroundColor)
                             .cornerRadius(10)
-                        
+
                     }
                     Spacer()
                 }
@@ -423,7 +419,7 @@ extension NodeView {
             .background(Color(hex: 0xF0F0F0))
         }
     }
-    
+
     @ViewBuilder
     private func InputPointsView() -> some View {
         //인풋 포인트
@@ -433,7 +429,7 @@ extension NodeView {
             }
         }
     }
-    
+
     @ViewBuilder
     private func OutputPointsView() -> some View {
         VStack(spacing: 20){
@@ -445,20 +441,20 @@ extension NodeView {
                                 dragLocation = value.location
                                 currentOutputPoint = outputPoint.id
                                 updatePreviewEdge(outputPoint.id, dragLocation)
-                                
+
                                 clickingOutput = true
                             }
                             .onEnded { value in
                                 if let dragLocation {
                                     if let (outputID, inputID) = self.judgeConnection(with: dragLocation) {
                                         self.document.addEdge(edge: KPEdge(sourceID: outputID, sinkID: inputID), undoManager: undoManager)
-                                        
+
                                     }
                                 }
                                 clickingOutput = false
                                 dragLocation = nil
                                 updatePreviewEdge(outputPoint.id, dragLocation)
-                                
+
                             }
                     )
             }
