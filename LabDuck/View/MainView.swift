@@ -190,7 +190,14 @@ struct MainView: View {
 
     var trackWheelScrollPublisher = NSApp.publisher(for: \.currentEvent)
         .eraseToAnyPublisher()
-        .filter { event in event?.type == .scrollWheel }
+        .filter { event in
+            if event?.type == .scrollWheel {
+                if let window = NSApp.keyWindow, event?.window == window {
+                    return true
+                }
+            }
+            return false
+        }
 
     private func calculateCenterCoordinate(_ size: CGSize) -> CGPoint {
         let scaledWidth = size.width * scaleValue
