@@ -122,6 +122,16 @@ struct KPBoard: Identifiable {
         }
     }
 
+    public mutating func createTag(_ name: String, _ color: KPTagColor) -> KPTag {
+        if let tag = getTag(name) {
+            return tag
+        } else {
+            let tag = KPTag(id: UUID(), name: name, colorTheme: color)
+            self.allTags.append(tag)
+            return tag
+        }
+    }
+
     public mutating func deleteTag(_ tagID: KPTag.ID) {
         self.allTags.removeAll(where: { $0.id == tagID })
     }

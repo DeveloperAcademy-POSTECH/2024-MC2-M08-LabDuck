@@ -423,6 +423,21 @@ extension KPBoardDocument {
         }
     }
 
+    func createTag(_ name: String, color: KPTagColor, undoManager: UndoManager?, animation: Animation? = .default) {
+        let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let tag = self.board.getTag(name) {
+            print("Already there : \(tag)")
+        } else {
+            let tag = withAnimation(animation) {
+                self.board.createTag(name, color)
+            }
+
+            undoManager?.registerUndo(withTarget: self) { doc in
+                doc.deleteTag(tagID: tag.id, undoManager: undoManager)
+            }
+        }
+    }
+
     // tag를 삭제할 때 사용.
     // 보드에 해당 tag가 없으면 무시. 아니면 지우기
     func deleteTag(tagID: KPTag.ID, undoManager: UndoManager?, animation: Animation? = .default) {

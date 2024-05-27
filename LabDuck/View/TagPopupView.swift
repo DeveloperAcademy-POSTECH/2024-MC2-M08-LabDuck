@@ -190,7 +190,7 @@ struct TagPopupView: View {
     private func createTag() {
         guard let previewTag = previewTag else { return }
 
-        document.createTag(textForTags, undoManager: undoManager)
+        document.createTag(textForTags, color: previewTag.colorTheme, undoManager: undoManager)
         var tags = document.board.getTags(node.id).map { $0.id }
         guard let createdTag = document.board.getTag(textForTags)?.id else { return }
         tags.append(createdTag)
