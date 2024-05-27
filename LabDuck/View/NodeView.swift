@@ -277,6 +277,7 @@ extension NodeView {
                         .frame(width: 16, height: 16)
                         .foregroundColor(.blue.opacity(node.colorTheme == colorTheme ? 1 : 0))
                 }
+
                 .background(colorTheme.backgroundColor)
                 .clipShape(RoundedRectangle(cornerRadius: 3))
                 .buttonStyle(.borderless)
