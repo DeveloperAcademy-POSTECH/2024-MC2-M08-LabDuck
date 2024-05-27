@@ -396,6 +396,12 @@ extension KPBoardDocument {
         }
     }
 
+    func changeViewType(to viewType: KPBoard.BoardViewType, animation: Animation? = .default) {
+        withAnimation(animation) {
+            self.board.viewType = viewType
+        }
+    }
+
 }
 
 // MARK: - 태그
