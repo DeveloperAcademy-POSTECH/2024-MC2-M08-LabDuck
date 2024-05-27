@@ -257,7 +257,7 @@ struct NodeView: View {
         let noteContains = node.unwrappedNote.lowercased().contains(lowercasedSearchText)
         let urlContains = node.unwrappedURL.lowercased().contains(lowercasedSearchText)
         let tags = document.board.getTags(node.id)
-        let tagsContain = tags.contains { ("#" + $0.name).lowercased().contains(lowercasedSearchText) }
+        let tagsContain = tags.contains { ("# " + $0.name).lowercased().contains(lowercasedSearchText) }
         
         return titleContains || noteContains || urlContains || tagsContain
     }

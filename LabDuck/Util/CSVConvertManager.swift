@@ -39,8 +39,9 @@ class CSVConvertManager {
             } else if writableKeyPath(from: key, type: [KPTag.ID].self) != nil {
                 let values = value.components(separatedBy: ",")
                 values
+                    .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
                     .filter { name in
-                        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                        !name.isEmpty
                     }
                     .forEach { name in
                     if let tag = board.getTag(name) {

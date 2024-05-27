@@ -91,7 +91,8 @@ struct KPBoard: Identifiable {
     }
     
     public func getTag(_ name: String) -> KPTag? {
-        self.allTags.first(where: { $0.name == name })
+        let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        return self.allTags.first(where: { $0.name == name })
     }
 
     public func getTag(_ id: KPTag.ID) -> KPTag? {
