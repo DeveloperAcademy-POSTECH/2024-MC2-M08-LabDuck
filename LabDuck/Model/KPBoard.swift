@@ -91,7 +91,8 @@ struct KPBoard: Identifiable {
     }
     
     public func getTag(_ name: String) -> KPTag? {
-        self.allTags.first(where: { $0.name == name })
+        let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        return self.allTags.first(where: { $0.name == name })
     }
 
     public func getTag(_ id: KPTag.ID) -> KPTag? {
@@ -116,6 +117,16 @@ struct KPBoard: Identifiable {
             return tag
         } else {
             let tag = KPTag(id: UUID(), name: name, colorTheme: .random())
+            self.allTags.append(tag)
+            return tag
+        }
+    }
+
+    public mutating func createTag(_ name: String, _ color: KPTagColor) -> KPTag {
+        if let tag = getTag(name) {
+            return tag
+        } else {
+            let tag = KPTag(id: UUID(), name: name, colorTheme: color)
             self.allTags.append(tag)
             return tag
         }

@@ -19,14 +19,15 @@ struct MainDocumentView: View {
         
     }
     var body: some View {
-        MainView(board: $document.board)
+        MainView(board: document.board)
     }
 }
 
 struct MainView: View {
     @EnvironmentObject var document: KPBoardDocument
     @Environment(\.undoManager) var undoManager
-    @Binding var board: KPBoard
+    var board: KPBoard
+    @State private var viewType: KPBoard.BoardViewType = .table
 //    @State private var uniqueTags: [KPTag] = []
 
     // MARK: - Zoom
@@ -141,7 +142,7 @@ struct MainView: View {
                 }
 
                 ToolbarItem(placement: .principal) {
-                    Picker("View", selection: $board.viewType) {
+                    Picker("View", selection: $viewType) {
                         ForEach(KPBoard.BoardViewType.allCases, id: \.self) { view in
                             Text(view.rawValue).tag(view)
                         }
@@ -179,11 +180,24 @@ struct MainView: View {
             .navigationTitle("\(board.title)")
             .toolbarBackground(Color(hex: 0xEAEAEA))
         }
+        .onAppear {
+            self.viewType = self.board.viewType
+        }
+        .onChange(of: self.viewType) { oldValue, newValue in
+            self.document.changeViewType(to: newValue)
+        }
     }
 
     var trackWheelScrollPublisher = NSApp.publisher(for: \.currentEvent)
         .eraseToAnyPublisher()
-        .filter { event in event?.type == .scrollWheel }
+        .filter { event in
+            if event?.type == .scrollWheel {
+                if let window = NSApp.keyWindow, event?.window == window {
+                    return true
+                }
+            }
+            return false
+        }
 
     private func calculateCenterCoordinate(_ size: CGSize) -> CGPoint {
         let scaledWidth = size.width * scaleValue

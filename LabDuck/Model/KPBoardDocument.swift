@@ -396,6 +396,12 @@ extension KPBoardDocument {
         }
     }
 
+    func changeViewType(to viewType: KPBoard.BoardViewType, animation: Animation? = .default) {
+        withAnimation(animation) {
+            self.board.viewType = viewType
+        }
+    }
+
 }
 
 // MARK: - 태그
@@ -403,11 +409,27 @@ extension KPBoardDocument {
     // tag를 새로 만들 때 사용.
     // 보드에 해당 tag가 있으면 무시. 아니면 새로 생성.
     func createTag(_ name: String, undoManager: UndoManager?, animation: Animation? = .default) {
+        let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
         if let tag = self.board.getTag(name) {
             print("Already there : \(tag)")
         } else {
             let tag = withAnimation(animation) {
                 self.board.createTag(name)
+            }
+
+            undoManager?.registerUndo(withTarget: self) { doc in
+                doc.deleteTag(tagID: tag.id, undoManager: undoManager)
+            }
+        }
+    }
+
+    func createTag(_ name: String, color: KPTagColor, undoManager: UndoManager?, animation: Animation? = .default) {
+        let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let tag = self.board.getTag(name) {
+            print("Already there : \(tag)")
+        } else {
+            let tag = withAnimation(animation) {
+                self.board.createTag(name, color)
             }
 
             undoManager?.registerUndo(withTarget: self) { doc in
