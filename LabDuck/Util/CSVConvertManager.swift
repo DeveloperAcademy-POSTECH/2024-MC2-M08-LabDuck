@@ -20,7 +20,7 @@ class CSVConvertManager {
         "Name": \KPNode.unwrappedTitle,
         "Tags": \KPNode.tags,
         "Text": \KPNode.unwrappedNote,
-        "URL" : \KPNode.url,
+        "URL" : \KPNode.unwrappedURL,
     ]
 
     static private func writableKeyPath<V>(from label: String, type: V.Type) -> WritableKeyPath<KPNode, V>? {
@@ -32,11 +32,17 @@ class CSVConvertManager {
         var board = board
         var node = KPNode()
         contents.forEach { key, value in
+            print("key : \(key)")
+            print("value : \(value)")
             if let writableKeyPath = writableKeyPath(from: key, type: String.self) {
                 node[keyPath: writableKeyPath] = value
-            } else if let writableKeyPath = writableKeyPath(from: key, type: [KPTag].self) {
+            } else if writableKeyPath(from: key, type: [KPTag.ID].self) != nil {
                 let values = value.components(separatedBy: ",")
-                values.forEach { name in
+                values
+                    .filter { name in
+                        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                    }
+                    .forEach { name in
                     if let tag = board.getTag(name) {
                         node[keyPath: \.tags].append(tag.id)
                     } else {
@@ -48,7 +54,6 @@ class CSVConvertManager {
                 print("writableKeyPath 없음")
             }
         }
-        dump(node)
         board.addNode(node)
         return board
     }
