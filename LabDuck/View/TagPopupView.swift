@@ -21,21 +21,8 @@ struct TagPopupView: View {
 
     var body: some View {
         VStack (alignment:.leading,spacing: 0){
-            HStack {
-                ZStack(alignment: .leading) {
-                    if textForTags.isEmpty {
-                        Text("텍스트 입력").font(.system(size:13))
-                            .foregroundColor(.gray)
-                            .padding(.horizontal)
-                    }
-                    TextField("", text: $textForTags, onCommit: {
-                        addPreviewTag()
-                    })
-                    .padding(.horizontal)
-                    .foregroundColor(.black)
-                    .background(Color.clear)
-                    .textFieldStyle(PlainTextFieldStyle())
-                } .padding(.leading, 10)
+            HStack{
+                Spacer()
 
                 Button {
                     isEditingForTag = false
@@ -49,14 +36,35 @@ struct TagPopupView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .onHover { hover in
                     self.hovered = hover
-                }
+                } .padding(.leading, 10)
+                    .padding(.trailing, 10)
+
+            }.frame(width: 250, height: 36)
+                .background(.white)
+
+            HStack {
+                ZStack(alignment: .leading) {
+                    if textForTags.isEmpty {
+                        Text("텍스트 입력")
+                            .font(.system(size:13))
+                            .foregroundColor(.gray)
+                            .padding(.horizontal)
+                    }
+                    TextField("", text: $textForTags, onCommit: {
+                        addPreviewTag()
+                    })
+                    .padding(.horizontal)
+                    .foregroundColor(.black)
+                    .background(Color.clear)
+                    .textFieldStyle(PlainTextFieldStyle())
+                } .padding(.leading, 10)
                 .padding(.trailing, 10)
 
-            }.frame(width: 250, height: 50)
+            }.frame(width: 250, height: 48)
                 .background(Color(hex: 0xF0F0F0))
 
 
-            VStack(alignment: .leading, spacing:10){
+            VStack(alignment: .leading){
                 if previewTag != nil {
                     HStack(spacing: 20){
 
@@ -93,38 +101,54 @@ struct TagPopupView: View {
                 }
 
                 if !node.tags.isEmpty {
-                    Text("선택된 태그").foregroundColor(.gray).font(.system(size:11)).padding(5)
+                    Text("선택된 태그")
+                        .foregroundColor(.gray)
+                        .font(.system(size:12))
+                        .padding(5)
+                        .padding(.leading, 10)
                 }
 
                 //태그 뷰의 태그 출력
-                VStack(alignment: .leading, spacing: 10) {
-                    ForEach(node.tags, id: \.self) { tagID in
-                        if let tag = document.board.getTag(tagID) {
-                            HStack {
-                                Text("#\(tag.name)")
+                VStack(alignment: .center){
+                    VStack(alignment: .leading, spacing: 10) {
+                        ForEach(node.tags, id: \.self) { tagID in
+                            if let tag = document.board.getTag(tagID) {
+                                HStack {
+                                    HStack{
+                                        Text("#\(tag.name)")
+                                        Button {
+                                            let filteredTags = node.tags.filter { $0 != tagID }
+                                            document.updateNode(node.id, tags: filteredTags, undoManager: undoManager)
+                                        } label: {
+                                            Image(systemName: "x.circle")
+                                                .foregroundColor(.white)
+                                        }.buttonStyle(BorderlessButtonStyle())
+                                    }
                                     .foregroundColor(.white)
                                     .padding(EdgeInsets(top: 6, leading: 8, bottom: 6, trailing: 8))
                                     .background(tag.colorTheme.backgroundColor)
                                     .cornerRadius(6)
-                                Spacer()
-                                Button {
-                                    let filteredTags = node.tags.filter { $0 != tagID }
-                                    document.updateNode(node.id, tags: filteredTags, undoManager: undoManager)
-                                } label: {
-                                    Image(systemName: "trash")
-                                        .foregroundColor(.gray)
+                                    Spacer()
+
+
                                 }
-                                .buttonStyle(.borderless)
+                                .padding(.leading, 8)
+                                .padding(.trailing, 8)
 
                             }
-                            .padding(.leading, 8)
-                            .padding(.trailing, 8)
                         }
-                    }
-                }
+                    } .padding(.vertical, 8)
+                }.background(Color(hex: 0xF0F0F0))
+                    .frame(width: 234)
+                    .cornerRadius(6)
+                    .padding(.horizontal, 10)
 
                 if !document.board.allTags.isEmpty{
-                    Text("태그 선택").foregroundColor(.gray).font(.system(size:11)).padding(5)
+                    Text("전체 태그")
+                        .foregroundColor(.gray)
+                        .font(.system(size:12))
+                        .padding(5)
+                        .padding(.leading, 10)
                 }
                 // 중복 제거된 태그 표시
                 ForEach(document.board.allTags) { tag in
@@ -138,16 +162,13 @@ struct TagPopupView: View {
                         Button{
                             document.addTag(node.id, tagID: tag.id, undoManager: undoManager)
                         }label: {
-                            Image(systemName: document.board.hasTag(node.id, tag.id) ? "checkmark.seal.fill" : "plus.circle").foregroundColor(.gray)
+                            Image(systemName: document.board.hasTag(node.id, tag.id) ? "checkmark.square.fill" : "checkmark.square").foregroundColor(.gray)
                         }.buttonStyle(BorderlessButtonStyle())
                     }
                     .padding(.leading, 8)
                     .padding(.trailing, 8)
 
                 }
-
-
-
             }
             .padding(.bottom, 7)
             .padding(.top, 7)
@@ -178,18 +199,6 @@ struct TagPopupView: View {
         self.previewTag = nil
         self.textForTags = ""
     }
-//
-//    private func deleteTag(_ tag: KPTag) {
-//        document.deleteTag(node.id, tagID: tag.id, undoManager: undoManager, animation: .default)
-//    }
-//
-//    private func updateUniqueTags(with tag: KPTag) {
-//        let existingTagNames = uniqueTags.map { $0.name }
-//        if !existingTagNames.contains(tag.name) {
-//            uniqueTags.append(tag)
-//        }
-//    }
-
 }
 
 #Preview {
