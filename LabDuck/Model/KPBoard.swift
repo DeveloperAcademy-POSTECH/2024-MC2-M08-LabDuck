@@ -51,6 +51,19 @@ struct KPBoard: Identifiable {
         self.edges.removeAll { edge in
             edge.id == edgeID
         }
+        self.checkIsLinked()
+    }
+
+    public mutating func checkIsLinked() {
+        self.nodes.enumerated().forEach { index, node in
+            node.inputPoints.enumerated().forEach { inputPointIndex, inputPoint in
+                if self.edges.contains(where: { $0.sinkID == inputPoint.id }) {
+                    self.nodes[index].inputPoints[inputPointIndex].isLinked = true
+                } else {
+                    self.nodes[index].inputPoints[inputPointIndex].isLinked = false
+                }
+            }
+        }
     }
 
     public mutating func addNode(_ node: KPNode) {

@@ -300,12 +300,11 @@ extension KPBoardDocument {
 
         withAnimation {
             self.board.removeEdge(edgeID)
+            self.board.checkIsLinked()
         }
 
         undoManager?.registerUndo(withTarget: self) { doc in
             doc.replaceEdges(oldEdges, undoManager: undoManager)
-            
-            
         }
     }
 
@@ -313,6 +312,7 @@ extension KPBoardDocument {
         let oldEdges = self.board.edges
 
         self.board.edges = edges
+        self.board.checkIsLinked()
 
         undoManager?.registerUndo(withTarget: self) { doc in
             doc.replaceEdges(oldEdges, undoManager: undoManager, animation: animation)
