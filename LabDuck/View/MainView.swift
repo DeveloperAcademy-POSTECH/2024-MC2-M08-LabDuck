@@ -134,13 +134,6 @@ struct MainView: View {
             
             // MARK: - Toolbar
             .toolbar {
-                ToolbarItem(placement: .navigation) {
-                    Button(action: {}, 
-                           label: {
-                        Image(systemName: "chevron.backward")
-                    })
-                }
-
                 ToolbarItem(placement: .principal) {
                     Picker("View", selection: $viewType) {
                         ForEach(KPBoard.BoardViewType.allCases, id: \.self) { view in
