@@ -55,18 +55,16 @@ struct EditSheetView: View {
             Spacer()
             
             Button(action: {
-                //print("테이블")
                 showAlert = true
             }) {
                 Image(systemName: "trash")
                     .frame(width: 20, height: 20)
             }
-            
-            
+
             Button(action: {
                 isSheet = false
             }) {
-                Image(systemName: "xmark")
+                Image(systemName: "arrow.right.to.line")
                     .frame(width: 20, height: 20)
             }
         }
