@@ -14,7 +14,6 @@ struct TagPopupView: View {
     var node: KPNode
     @State private var hoveredForClosingTagView: Bool = false
     @State private var textForTags: String = ""
-    @State private var previewTag: KPTag?
 
     @State private var hovered: Bool = false
 
@@ -51,7 +50,8 @@ struct TagPopupView: View {
                             .padding(.horizontal)
                     }
                     TextField("", text: $textForTags, onCommit: {
-                        addPreviewTag()
+                        createTag(name: textForTags)
+                        textForTags = ""
                     })
                     .padding(.horizontal)
                     .foregroundColor(.black)
@@ -65,41 +65,6 @@ struct TagPopupView: View {
 
 
             VStack(alignment: .leading){
-                if previewTag != nil {
-                    HStack(spacing: 20){
-
-
-                        //태그 생성 버튼
-                        Button {
-                            createTag()
-                        } label: {
-                            Text("생성").foregroundColor(.black)
-                        }.buttonStyle(BorderlessButtonStyle())
-                            .padding(.leading, 10)
-                            .padding(.top,10)
-                            .padding(.bottom,10)
-
-
-
-                        //태그 프리뷰
-
-                        Text("#\(textForTags)")
-                            .padding(8)
-                            .background(previewTag!.colorTheme.backgroundColor)
-                            .cornerRadius(6)
-                            .foregroundColor(.white)
-                            .padding(.top,10)
-                            .padding(.bottom,10)
-
-
-                        Spacer()
-
-                    }.background(Color(hex: 0xF0F0F0))
-                        .frame(width: 234, height: 40)
-                        .cornerRadius(6)
-                        .padding(10)
-                }
-
                 if !node.tags.isEmpty {
                     Text("선택된 태그")
                         .foregroundColor(.gray)
@@ -179,25 +144,17 @@ struct TagPopupView: View {
         .shadow(radius: 10)
     }
 
-    private func addPreviewTag() {
-        guard !textForTags.isEmpty else { return }
-        if !document.board.allTags.contains(where: { $0.name == textForTags }) {
-            let newTagForPreview = KPTag(id: UUID(), name: textForTags, colorTheme: KPTagColor.random())
-            previewTag = newTagForPreview
+    private func createTag(name: String) {
+        if document.board.getTag(name) == nil {
+            document.createTag(name, undoManager: undoManager)
         }
-    }
 
-    private func createTag() {
-        guard let previewTag = previewTag else { return }
-
-        document.createTag(textForTags, color: previewTag.colorTheme, undoManager: undoManager)
         var tags = document.board.getTags(node.id).map { $0.id }
-        guard let createdTag = document.board.getTag(textForTags)?.id else { return }
-        tags.append(createdTag)
-
-        document.updateNode(node.id, tags: tags, undoManager: undoManager)
-        self.previewTag = nil
-        self.textForTags = ""
+        guard let createdTag = document.board.getTag(name)?.id else { return }
+        if !tags.contains(where: { $0 == createdTag }) {
+            tags.append(createdTag)
+            document.updateNode(node.id, tags: tags, undoManager: undoManager)
+        }
     }
 }
 
