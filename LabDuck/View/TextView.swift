@@ -32,8 +32,9 @@ struct TextView: View {
                             newText.text = tempText
                             document.updateText(newText, undoManager: undoManager, animation: nil)
                         })
-                            .border(Color.blue.opacity(0.6))
-                            .frame(width: 200, height: 50)
+                        .font(.title)
+                        .border(Color.blue.opacity(0.6))
+                        .frame(width: 200, height: 50)
                         
                         Button(action: {
                             document.deleteText(self.text.id, undoManager: undoManager)
@@ -49,6 +50,7 @@ struct TextView: View {
                     .onTapGesture(count: 1) {
                         self.isEditing = true
                     }
+                    .font(.title)
             }
         }
         .onAppear {

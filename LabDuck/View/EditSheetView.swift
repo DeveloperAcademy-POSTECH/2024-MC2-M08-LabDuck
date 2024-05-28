@@ -44,7 +44,7 @@ struct EditSheetView: View {
             relatedNodes = findNodes(node)
             tempNodeTitle = self.node.unwrappedTitle
             tempNodeNote = self.node.unwrappedNote
-            tempNodeURL = self.tempNodeURL
+            tempNodeURL = self.node.unwrappedURL
         }
         
         colorSelectionView
@@ -169,9 +169,9 @@ struct EditSheetView: View {
         Section(header: sectionHeader("URL")) {
             styledTextEditor(
                 text: $tempNodeURL,
-                lineLimit: 2,
+                lineLimit: 4,
                 fontSize: 13,
-                height: 40
+                height: 80
             )
             .onAppear {
                 tempNodeURL = node.unwrappedURL
