@@ -46,11 +46,28 @@ struct TableView: View {
                 .width(77)
                 
                 TableColumn("Title", value: \.unwrappedTitle) { node in
-                    if let _ = node.title {
-                        styledText(node.unwrappedTitle, node: node)
-                    } else {
-                        styledText(node.unwrappedTitle, node: node)
-                            .foregroundColor(.secondary)
+                    HStack {
+                        if let _ = node.title {
+                            styledText(node.unwrappedTitle, node: node)
+                        } else {
+                            styledText(node.unwrappedTitle, node: node)
+                                .foregroundColor(.secondary)
+                        }
+
+                        Spacer()
+
+                        Button {
+                            if editingNodeID == node.id {
+                                isSheet.toggle()
+                            } else {
+                                editingNodeID = node.id
+                                isSheet = true
+                            }
+                        } label: {
+                            Label("Open", systemImage: "rectangle.trailinghalf.inset.filled")
+                        }
+                        .buttonStyle(.bordered)
+
                     }
                 }.width(min: 100)
                 
