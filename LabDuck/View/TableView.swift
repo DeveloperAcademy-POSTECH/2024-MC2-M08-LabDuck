@@ -158,16 +158,16 @@ struct TableView: View {
     // MARK: - 필터링 기능
     var filteredNodes: [KPNode] {
         if searchText.isEmpty {
-            return board.nodes
+            return board.nodes.reversed()
         } else {
             return board.nodes.filter { node in
                 let titleMatch = node.unwrappedTitle.lowercased().contains(searchText.lowercased())
-                let tagsMatch = document.board.getTags(node.id).map { ("# " + $0.name).lowercased() }.contains { $0.contains(searchText.lowercased()) }
+                let tagsMatch = document.board.getTags(node.id).map { ("#" + $0.name).lowercased() }.contains { $0.contains(searchText.lowercased()) }
                 let urlMatch = node.unwrappedURL.lowercased().contains(searchText.lowercased())
                 let noteMatch = node.unwrappedNote.lowercased().contains(searchText.lowercased())
                 
                 return titleMatch || tagsMatch || urlMatch || noteMatch
-            }
+            }.reversed()
         }
     }
     
