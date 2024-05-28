@@ -35,9 +35,7 @@ struct NodeView: View {
     @Binding var clickingOutput: Bool
     @Environment(\.searchText) private var searchText
 
-    @State private var selectedAction = "normal"
     @State private var initialWidth: CGFloat = 0
-    @State private var resizeOffset: CGPoint = .zero
     @State private var isNodeHovered: Bool = false
 
     @State private var showAlert = false
@@ -50,7 +48,7 @@ struct NodeView: View {
             InputPointsView()
             ZStack() {
                 VStack(spacing: 0) {
-                    VStack(alignment: .center, spacing: 10) {
+                    VStack(alignment: .leading, spacing: 10) {
                         ZStack{
                             if isEditing {
                                 HStack{
@@ -119,7 +117,6 @@ struct NodeView: View {
                 //태그 팝업창
                 if isEditingForTag {
                     TagPopupView(isEditingForTag: $isEditingForTag, node: node)
-                        .transition(.scale)
                         .zIndex(1)
                 }
 
@@ -159,6 +156,8 @@ struct NodeView: View {
             .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 4)
             OutputPointsView()
         }
+        .animation(.easeInOut, value: isEditing)
+        .animation(.easeInOut, value: isEditingForTag)
         .onChange(of: isEditing) { oldValue, newValue in
             if oldValue && !newValue {
                 var newNode = node
