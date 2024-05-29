@@ -134,7 +134,6 @@ struct TableView: View {
                             }
                         }
                         .onHover { isHovered in
-                            print("isHovered")
                             if isHovered {
                                 self.hoveredNodeID = node.id
                             } else {
