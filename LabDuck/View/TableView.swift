@@ -114,7 +114,6 @@ struct TableView: View {
                     if findNodes(matching: node).isEmpty {
                         TableRow(node)
                             .onHover { isHovered in
-                                print("isHovered")
                                 if isHovered {
                                     self.hoveredNodeID = node.id
                                 } else {
@@ -126,7 +125,6 @@ struct TableView: View {
                             ForEach(findNodes(matching: node).sorted(using: sortOrder)) { subNode in
                                 TableRow(subNode)
                                     .onHover { isHovered in
-                                        print("isHovered")
                                         if isHovered {
                                             self.hoveredNodeID = subNode.id
                                         } else {
@@ -136,7 +134,6 @@ struct TableView: View {
                             }
                         }
                         .onHover { isHovered in
-                            print("isHovered")
                             if isHovered {
                                 self.hoveredNodeID = node.id
                             } else {

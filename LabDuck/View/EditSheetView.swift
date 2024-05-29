@@ -17,21 +17,21 @@ struct EditSheetView: View {
     @State private var showAlert: Bool = false
 
     @State private var totalHeight: CGFloat = .zero
-    @State private var isHovered = false
+    @State private var isHovered: KPNode.ID? = nil
 
     var body: some View {
         VStack(spacing: 0) {
             VStack {
-                headerView
+                HeaderView
 
                 ScrollView {
                     VStack(alignment: .leading) {
-                        titleSection
-                        noteSection
+                        TitleSection
+                        NoteSection
                         if !relatedNodes.isEmpty {
-                            relatedInfoSection
+                            RelatedInfoSection
                         }
-                        tagsAndUrlSections
+                        TagsAndUrlSections
                         Spacer()
                     }
                 }
@@ -50,14 +50,14 @@ struct EditSheetView: View {
 
             Divider()
 
-            colorSelectionView
+            ColorSelectionView
         }
     }
-    
-    private var headerView: some View {
+
+    private var HeaderView: some View {
         HStack {
             Spacer()
-            
+
             Button(action: {
                 showAlert = true
             }) {
@@ -71,6 +71,7 @@ struct EditSheetView: View {
                 Image(systemName: "arrow.right.to.line")
                     .frame(width: 20, height: 20)
             }
+            .keyboardShortcut("1")
         }
         .padding(4)
         .background(node.colorTheme.backgroundColor)
@@ -83,10 +84,10 @@ struct EditSheetView: View {
         }
         .dialogSeverity(.critical)
     }
-    
-    private var titleSection: some View {
-        Section(header: sectionHeader("Title")) {
-            styledTextEditor(
+
+    private var TitleSection: some View {
+        Section(header: SectionHeader("Title")) {
+            StyledTextEditor(
                 text: $tempNodeTitle,
                 lineLimit: 3,
                 fontSize: 15,
@@ -100,10 +101,10 @@ struct EditSheetView: View {
             }
         }
     }
-    
-    private var noteSection: some View {
-        Section(header: sectionHeader("Note")) {
-            styledTextEditor(
+
+    private var NoteSection: some View {
+        Section(header: SectionHeader("Note")) {
+            StyledTextEditor(
                 text: $tempNodeNote,
                 lineLimit: 10,
                 fontSize: 13,
@@ -117,22 +118,22 @@ struct EditSheetView: View {
             }
         }
     }
-    
-    private var relatedInfoSection: some View {
-        Section(header: sectionHeader("Related Informations")) {
+
+    private var RelatedInfoSection: some View {
+        Section(header: SectionHeader("Related Informations")) {
             VStack {
                 ForEach(relatedNodes) { relatedNode in
-                    relatedNodeButton(relatedNode)
+                    RelatedNodeButton(relatedNode)
                 }
             }
         }
     }
-    
-    private var tagsAndUrlSections: some View {
+
+    private var TagsAndUrlSections: some View {
         ZStack {
             VStack(alignment: .leading) {
-                tagsSection
-                urlSection
+                TagsSection
+                UrlSection
                 Spacer()
             }
             if isEditingForTag {
@@ -142,12 +143,12 @@ struct EditSheetView: View {
             }
         }
     }
-    
-    private var tagsSection: some View {
-        Section(header: sectionHeader("Tags")) {
+
+    private var TagsSection: some View {
+        Section(header: SectionHeader("Tags")) {
             ZStack {
                 if node.tags.isEmpty {
-                    addTagButton
+                    AddTagButton
                 } else {
                     TagsView(totalHeight: $totalHeight, isEditingForTag: $isEditingForTag, tagIDs: node.tags)
                         .frame(height: totalHeight)
@@ -158,7 +159,7 @@ struct EditSheetView: View {
                         .overlay(
                             RoundedRectangle(cornerRadius: 6)
                                 .stroke(Color.black.opacity(0.1), lineWidth: 1)
-                            )
+                        )
                         .environmentObject(document)
                         .onTapGesture {
                             isEditingForTag.toggle()
@@ -167,10 +168,10 @@ struct EditSheetView: View {
             }
         }
     }
-    
-    private var urlSection: some View {
-        Section(header: sectionHeader("URL")) {
-            styledTextEditor(
+
+    private var UrlSection: some View {
+        Section(header: SectionHeader("URL")) {
+            StyledTextEditor(
                 text: $tempNodeURL,
                 lineLimit: 4,
                 fontSize: 13,
@@ -184,8 +185,8 @@ struct EditSheetView: View {
             }
         }
     }
-    
-    private var addTagButton: some View {
+
+    private var AddTagButton: some View {
         Button(action: {
             isEditingForTag.toggle()
         }) {
@@ -210,7 +211,7 @@ struct EditSheetView: View {
         .buttonStyle(BorderlessButtonStyle())
     }
 
-    private var colorSelectionView: some View {
+    private var ColorSelectionView: some View {
         HStack(alignment: .center) {
             ForEach(KPColorTheme.allCases, id: \.self) { colorTheme in
                 Button(action: {
@@ -247,8 +248,8 @@ struct EditSheetView: View {
         .frame(height: 86)
         .background(Color.white)
     }
-    
-    private func styledTextEditor(text: Binding<String>, lineLimit: Int, fontSize: CGFloat, height: CGFloat) -> some View {
+
+    private func StyledTextEditor(text: Binding<String>, lineLimit: Int, fontSize: CGFloat, height: CGFloat) -> some View {
         TextEditor(text: text)
             .lineLimit(lineLimit)
             .scrollContentBackground(.hidden)
@@ -265,15 +266,15 @@ struct EditSheetView: View {
                     .stroke(Color.black.opacity(0.2), lineWidth: 1)
             )
     }
-    
-    private func sectionHeader(_ text: String) -> some View {
+
+    private func SectionHeader(_ text: String) -> some View {
         Text(text)
             .font(Font.custom("SF Pro", size: 13))
             .foregroundStyle(.secondary)
             .padding(.top, 16)
     }
-    
-    private func relatedNodeButton(_ relatedNode: KPNode) -> some View {
+
+    private func RelatedNodeButton(_ relatedNode: KPNode) -> some View {
         Button(action: {
             selection.removeAll()
             selection.insert(relatedNode.id)
@@ -293,12 +294,12 @@ struct EditSheetView: View {
                 Text(relatedNode.unwrappedTitle)
                     .foregroundColor(.black.opacity(0.85))
                     .lineLimit(1)
-                
+
                 Spacer()
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .background(isHovered ? Color(hex: 0xE0E0E0) : Color(hex: 0xFBFBFB))
+            .background(Color(hex: isHovered == relatedNode.id ? 0xE0E0E0 : 0xFBFBFB))
             .cornerRadius(6)
             .frame(height: 40)
             .overlay(
@@ -308,8 +309,8 @@ struct EditSheetView: View {
         }
         .buttonStyle(BorderlessButtonStyle())
         .onHover { hovering in
-                isHovered = hovering
-            }
+            isHovered = relatedNode.id
+        }
     }
 }
 
