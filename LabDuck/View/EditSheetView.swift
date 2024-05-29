@@ -20,34 +20,38 @@ struct EditSheetView: View {
     @State private var isHovered = false
 
     var body: some View {
-        VStack {
-            headerView
-            
-            ScrollView {
-                VStack(alignment: .leading) {
-                    titleSection
-                    noteSection
-                    if !relatedNodes.isEmpty {
-                        relatedInfoSection
+        VStack(spacing: 0) {
+            VStack {
+                headerView
+
+                ScrollView {
+                    VStack(alignment: .leading) {
+                        titleSection
+                        noteSection
+                        if !relatedNodes.isEmpty {
+                            relatedInfoSection
+                        }
+                        tagsAndUrlSections
+                        Spacer()
                     }
-                    tagsAndUrlSections
-                    Spacer()
                 }
             }
+            .padding(32)
+            .background(node.colorTheme.backgroundColor)
+            .onAppear {
+                relatedNodes = findNodes(node)
+            }
+            .onChange(of: node.id) { _, _ in
+                relatedNodes = findNodes(node)
+                tempNodeTitle = self.node.unwrappedTitle
+                tempNodeNote = self.node.unwrappedNote
+                tempNodeURL = self.node.unwrappedURL
+            }
+
+            Divider()
+
+            colorSelectionView
         }
-        .padding(32)
-        .background(node.colorTheme.backgroundColor)
-        .onAppear {
-            relatedNodes = findNodes(node)
-        }
-        .onChange(of: node.id) { _, _ in
-            relatedNodes = findNodes(node)
-            tempNodeTitle = self.node.unwrappedTitle
-            tempNodeNote = self.node.unwrappedNote
-            tempNodeURL = self.node.unwrappedURL
-        }
-        
-        colorSelectionView
     }
     
     private var headerView: some View {
@@ -71,12 +75,13 @@ struct EditSheetView: View {
         .padding(4)
         .background(node.colorTheme.backgroundColor)
         .confirmationDialog("정말 삭제하시겠습니까?", isPresented: $showAlert, titleVisibility: .visible) {
-                       Button("네", role: .none)
-                       {   print("yes")
-                           document.removeNode(node.id, undoManager: undoManager, animation: .default)
-                       }
-                       Button("아니오", role: .cancel){}
-                   }.dialogSeverity(.critical)
+            Button("네", role: .none){
+                self.isSheet = false
+                document.removeNode(node.id, undoManager: undoManager, animation: .default)
+            }
+            Button("아니오", role: .cancel){}
+        }
+        .dialogSeverity(.critical)
     }
     
     private var titleSection: some View {

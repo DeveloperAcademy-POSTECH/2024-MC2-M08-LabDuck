@@ -17,57 +17,60 @@ struct TableView: View {
     @State private var sortOrder = [KeyPathComparator(\KPNode.title)]
     @State private var isSheet: Bool = false
     @State private var editingNode: KPNode = KPNode()
-    @State private var editingNodeID: KPNode.ID?
+    @State private var editingNodeID: KPNode.ID? = nil
+
+    @State private var hoveredNodeID: KPNode.ID? = nil
 
 
     var body: some View {
-        VStack{
+        VStack {
             Table(of: KPNode.self, selection: $selection, sortOrder: $sortOrder) {
                 TableColumn("Color", value: \.colorTheme.rawValue)
                 { node in
-                    ZStack {
-                        Rectangle()
-                            .frame(width: 18, height: 18)
-                            .cornerRadius(5)
-                            .foregroundColor(node.colorTheme.backgroundColor)
-                            .padding(4)
-                            .onTapGesture(count: 2) {
-                                editingNodeID = node.id
-                                isSheet = true
-                            }
-                        if node.colorTheme == KPColorTheme.default {
-                            RoundedRectangle(cornerRadius: 5)
-                                .stroke(.black.opacity(0.1), lineWidth: 1)
-                                .frame(width: 18, height: 18)
-                                .padding(4)
-                        }
-                    }
-                }
-                .width(77)
-                
-                TableColumn("Title", value: \.unwrappedTitle) { node in
                     HStack {
-                        if let _ = node.title {
-                            styledText(node.unwrappedTitle, node: node)
-                        } else {
-                            styledText(node.unwrappedTitle, node: node)
-                                .foregroundColor(.secondary)
+                        ZStack {
+                            Rectangle()
+                                .frame(width: 18, height: 18)
+                                .cornerRadius(5)
+                                .foregroundColor(node.colorTheme.backgroundColor)
+                                .padding(4)
+                                .onTapGesture(count: 2) {
+                                    editingNodeID = node.id
+                                    isSheet = true
+                                }
+                            if node.colorTheme == KPColorTheme.default {
+                                RoundedRectangle(cornerRadius: 5)
+                                    .stroke(.black.opacity(0.1), lineWidth: 1)
+                                    .frame(width: 18, height: 18)
+                                    .padding(4)
+                            }
                         }
 
                         Spacer()
-
-                        Button {
-                            if editingNodeID == node.id {
-                                isSheet.toggle()
-                            } else {
-                                editingNodeID = node.id
-                                isSheet = true
+                        
+                        if self.hoveredNodeID == node.id {
+                            Button {
+                                if editingNodeID == node.id {
+                                    isSheet.toggle()
+                                } else {
+                                    editingNodeID = node.id
+                                    isSheet = true
+                                }
+                            } label: {
+                                Label("Open", systemImage: "rectangle.trailinghalf.inset.filled")
                             }
-                        } label: {
-                            Label("Open", systemImage: "rectangle.trailinghalf.inset.filled")
+                            .buttonStyle(.bordered)
                         }
-                        .buttonStyle(.bordered)
+                    }
+                }
+                .width(136)
 
+                TableColumn("Title", value: \.unwrappedTitle) { node in
+                    if let _ = node.title {
+                        styledText(node.unwrappedTitle, node: node)
+                    } else {
+                        styledText(node.unwrappedTitle, node: node)
+                            .foregroundColor(.secondary)
                     }
                 }.width(min: 100)
                 
@@ -110,10 +113,34 @@ struct TableView: View {
                 ForEach(filteredNodes, id: \.id) { node in
                     if findNodes(matching: node).isEmpty {
                         TableRow(node)
+                            .onHover { isHovered in
+                                print("isHovered")
+                                if isHovered {
+                                    self.hoveredNodeID = node.id
+                                } else {
+                                    self.hoveredNodeID = nil
+                                }
+                            }
                     } else {
                         DisclosureTableRow(node) {
                             ForEach(findNodes(matching: node).sorted(using: sortOrder)) { subNode in
                                 TableRow(subNode)
+                                    .onHover { isHovered in
+                                        print("isHovered")
+                                        if isHovered {
+                                            self.hoveredNodeID = subNode.id
+                                        } else {
+                                            self.hoveredNodeID = nil
+                                        }
+                                    }
+                            }
+                        }
+                        .onHover { isHovered in
+                            print("isHovered")
+                            if isHovered {
+                                self.hoveredNodeID = node.id
+                            } else {
+                                self.hoveredNodeID = nil
                             }
                         }
                     }
@@ -135,8 +162,10 @@ struct TableView: View {
                 }
                 
             }
-            
+            // ???: -  없으면 hover되었을 때 뷰 업데이트 안됨.
+            Text("\(hoveredNodeID ?? UUID())").hidden()
         }
+        .animation(.easeInOut, value: editingNodeID)
     }
     
     

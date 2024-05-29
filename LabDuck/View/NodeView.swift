@@ -48,12 +48,10 @@ struct NodeView: View {
             InputPointsView()
             ZStack() {
                 VStack(spacing: 0) {
-                    VStack(alignment: .leading, spacing: 10) {
-                        ZStack{
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack(spacing: 8) {
                             if isEditing {
-                                HStack{
-                                    SelectColorView()
-                                }
+                                SelectColorView()
                             }
                             Spacer()
                             HStack(alignment:.top) {
@@ -89,7 +87,6 @@ struct NodeView: View {
                             }
                         }
                         .cornerRadius(10)
-                        .padding(10)
                         .confirmationDialog("정말 삭제하시겠습니까?", isPresented: $showAlert, titleVisibility: .visible) {
                             Button("네", role: .none) {
                                 document.removeNode(node.id, undoManager: undoManager, animation: .default)
@@ -262,25 +259,22 @@ struct NodeView: View {
 extension NodeView {
     @ViewBuilder
     private func SelectColorView() -> some View {
-        HStack(spacing: 6) {
-            ForEach(KPColorTheme.allCases, id: \.self) { colorTheme in
-                Button {
-                    document.updateNode(node.id, colorTheme: colorTheme, undoManager: undoManager)
-                } label: {
-                    Image(systemName: "checkmark.circle.fill")
-                        .resizable()
-                        .frame(width: 16, height: 16)
-                        .foregroundColor(.blue.opacity(node.colorTheme == colorTheme ? 1 : 0))
-                }
-
-                .background(colorTheme.backgroundColor)
-                .clipShape(RoundedRectangle(cornerRadius: 3))
-                .buttonStyle(.borderless)
-
+        ForEach(KPColorTheme.allCases, id: \.self) { colorTheme in
+            Button {
+                document.updateNode(node.id, colorTheme: colorTheme, undoManager: undoManager)
+            } label: {
+                Image(systemName: "checkmark.circle.fill")
+                    .resizable()
+                    .frame(width: 16, height: 16)
+                    .foregroundColor(.blue.opacity(node.colorTheme == colorTheme ? 1 : 0))
             }
-            Spacer()
+
+            .background(colorTheme.backgroundColor)
+            .clipShape(RoundedRectangle(cornerRadius: 3))
+            .buttonStyle(.borderless)
+
         }
-        .background(Color.clear)
+        Spacer()
     }
 
     private func TitleTextField() -> some View {
