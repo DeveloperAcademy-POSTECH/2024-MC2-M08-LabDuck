@@ -20,34 +20,38 @@ struct EditSheetView: View {
     @State private var isHovered = false
 
     var body: some View {
-        VStack {
-            headerView
-            
-            ScrollView {
-                VStack(alignment: .leading) {
-                    titleSection
-                    noteSection
-                    if !relatedNodes.isEmpty {
-                        relatedInfoSection
+        VStack(spacing: 0) {
+            VStack {
+                headerView
+
+                ScrollView {
+                    VStack(alignment: .leading) {
+                        titleSection
+                        noteSection
+                        if !relatedNodes.isEmpty {
+                            relatedInfoSection
+                        }
+                        tagsAndUrlSections
+                        Spacer()
                     }
-                    tagsAndUrlSections
-                    Spacer()
                 }
             }
+            .padding(32)
+            .background(node.colorTheme.backgroundColor)
+            .onAppear {
+                relatedNodes = findNodes(node)
+            }
+            .onChange(of: node.id) { _, _ in
+                relatedNodes = findNodes(node)
+                tempNodeTitle = self.node.unwrappedTitle
+                tempNodeNote = self.node.unwrappedNote
+                tempNodeURL = self.node.unwrappedURL
+            }
+
+            Divider()
+
+            colorSelectionView
         }
-        .padding(32)
-        .background(node.colorTheme.backgroundColor)
-        .onAppear {
-            relatedNodes = findNodes(node)
-        }
-        .onChange(of: node.id) { _, _ in
-            relatedNodes = findNodes(node)
-            tempNodeTitle = self.node.unwrappedTitle
-            tempNodeNote = self.node.unwrappedNote
-            tempNodeURL = self.node.unwrappedURL
-        }
-        
-        colorSelectionView
     }
     
     private var headerView: some View {

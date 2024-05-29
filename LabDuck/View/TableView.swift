@@ -23,7 +23,7 @@ struct TableView: View {
 
 
     var body: some View {
-        VStack{
+        VStack {
             Table(of: KPNode.self, selection: $selection, sortOrder: $sortOrder) {
                 TableColumn("Color", value: \.colorTheme.rawValue)
                 { node in
