@@ -51,6 +51,7 @@ struct TextView: View {
                         self.isEditing = true
                     }
                     .font(.title)
+                    .foregroundColor(.black)
             }
         }
         .onAppear {

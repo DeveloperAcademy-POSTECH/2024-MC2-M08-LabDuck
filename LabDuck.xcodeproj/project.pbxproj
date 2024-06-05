@@ -81,9 +81,9 @@
 		6F9D09C82BEDC29500159BFC /* LabDuckApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabDuckApp.swift; sourceTree = "<group>"; };
 		6F9D09CC2BEDC29700159BFC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6F9D09CF2BEDC29700159BFC /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		6F9D09D12BEDC29700159BFC /* LabDuck.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LabDuck.entitlements; sourceTree = "<group>"; };
 		6FA98D702BFADD6F00F7D19E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		6FA98D712BFAF5CF00F7D19E /* MainViewPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewPreference.swift; sourceTree = "<group>"; };
+		983FEA372C0FEC5100E6A272 /* LabDuck.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LabDuck.entitlements; sourceTree = "<group>"; };
 		BD2082772C03A1F80078B8F1 /* TagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsView.swift; sourceTree = "<group>"; };
 		BD33D8A42BFF7BD500B86A09 /* EditSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSheetView.swift; sourceTree = "<group>"; };
 		BD33D8A62BFF80C900B86A09 /* TagPopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagPopupView.swift; sourceTree = "<group>"; };
@@ -177,6 +177,7 @@
 		6F9D09BC2BEDC29500159BFC = {
 			isa = PBXGroup;
 			children = (
+				983FEA372C0FEC5100E6A272 /* LabDuck.entitlements */,
 				6F9D09C72BEDC29500159BFC /* LabDuck */,
 				6F9D09C62BEDC29500159BFC /* Products */,
 			);
@@ -199,7 +200,6 @@
 				6F050B1B2BF1AA61003D54BD /* Model */,
 				6F050B1A2BF1AA5B003D54BD /* View */,
 				6F9D09CC2BEDC29700159BFC /* Assets.xcassets */,
-				6F9D09D12BEDC29700159BFC /* LabDuck.entitlements */,
 				6F9D09CE2BEDC29700159BFC /* Preview Content */,
 			);
 			path = LabDuck;
@@ -456,14 +456,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = LabDuck/LabDuck.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"LabDuck/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = SPWZSLF9KX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LabDuck/Info.plist;
@@ -471,12 +470,13 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.4;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = team.kapochip.LabDuck;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -490,14 +490,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = LabDuck/LabDuck.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"LabDuck/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = SPWZSLF9KX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LabDuck/Info.plist;
@@ -505,12 +504,13 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.4;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = team.kapochip.LabDuck;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

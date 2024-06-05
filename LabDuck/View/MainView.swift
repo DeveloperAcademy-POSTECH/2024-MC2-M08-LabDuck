@@ -171,7 +171,7 @@ struct MainView: View {
                 }
             }
             .navigationTitle("\(board.title)")
-            .toolbarBackground(Color(hex: 0xEAEAEA))
+//            .toolbarBackground(Color(hex: 0xEAEAEA))
         }
         .onAppear {
             self.viewType = self.board.viewType

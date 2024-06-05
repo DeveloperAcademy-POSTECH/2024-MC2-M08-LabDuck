@@ -63,6 +63,7 @@ struct EditSheetView: View {
             }) {
                 Image(systemName: "trash")
                     .frame(width: 20, height: 20)
+                    .foregroundColor(.black)
             }
 
             Button(action: {
@@ -70,6 +71,7 @@ struct EditSheetView: View {
             }) {
                 Image(systemName: "arrow.right.to.line")
                     .frame(width: 20, height: 20)
+                    .foregroundColor(.black)
             }
         }
         .padding(4)
@@ -169,7 +171,7 @@ struct EditSheetView: View {
     }
     
     private var urlSection: some View {
-        Section(header: sectionHeader("URL")) {
+        Section(header: sectionHeader("URL")) {//여기
             styledTextEditor(
                 text: $tempNodeURL,
                 lineLimit: 4,
@@ -192,6 +194,7 @@ struct EditSheetView: View {
             HStack {
                 Image(systemName: "tag")
                     .frame(width: 16, height: 16)
+                    .foregroundColor(.black)
                 Text("태그 추가")
                     .font(Font.custom("SF Pro", size: 13))
                     .foregroundColor(Color(hex: 0x808080))
@@ -271,7 +274,10 @@ struct EditSheetView: View {
             .font(Font.custom("SF Pro", size: 13))
             .foregroundStyle(.secondary)
             .padding(.top, 16)
+            .foregroundColor(.black)
     }
+    
+    
     
     private func relatedNodeButton(_ relatedNode: KPNode) -> some View {
         Button(action: {

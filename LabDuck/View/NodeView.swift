@@ -314,7 +314,7 @@ extension NodeView {
                 } label: {
                     HStack {
                         Image(systemName: "note.text").foregroundColor(.gray)
-                        Text("노트 작성").foregroundColor(.gray)
+                        Text("노트 작성").foregroundColor(.black)
                         Spacer()
                     }
                 }
@@ -356,7 +356,7 @@ extension NodeView {
                 } label: {
                     HStack{
                         Image(systemName: "note.text").foregroundColor(.gray)
-                        Text("링크 추가").foregroundColor(.gray)
+                        Text("링크 추가").foregroundColor(.black)
                         Spacer()
                     }
                 }
@@ -375,7 +375,7 @@ extension NodeView {
                     isEditingForTag.toggle()
                 } label: {
                     HStack{
-                        Image(systemName: "tag").foregroundColor(.gray)
+                        Image(systemName: "tag").foregroundColor(.black)
                         Text("태그 추가").foregroundColor(.gray)
                     }
                 }
